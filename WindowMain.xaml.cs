@@ -95,6 +95,11 @@ namespace SmartLogReader
 
 		void MeClosing(object sender, CancelEventArgs e)
 		{
+            if (WindowState == WindowState.Minimized)
+            {
+                log.Smart("state is minimized", LogLevel.Warn);
+                WindowState = WindowState.Normal;
+            }
             var screen = WindowState == WindowState.Maximized ? Utils.GetScreenByPixel(Left + Width / 2, Top + Height / 2) : Utils.GetScreenByPixel(Left, Top);
             log.Smart($"Left = {Left}, Top = {Top}, screen = '{screen?.Name}'");
             Properties.Settings.Default.Top = Top;
