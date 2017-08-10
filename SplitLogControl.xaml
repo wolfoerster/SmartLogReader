@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="SmartLogReader.SplitLogControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:my="clr-namespace:SmartLogReader">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <!-- -->
+      <my:WaitControl x:Name="waitControl" Grid.RowSpan="2" Panel.ZIndex="1" Visibility="Collapsed"/>
+      <!-- -->
+      <StackPanel Orientation="Horizontal" TextElement.FontFamily="SegoeUI" TextElement.FontSize="12" Margin="4,4,0,4">
+        <Button Content="{Binding ReaderFileInfo}" ToolTip="{Binding ReaderFileName}" Command="{Binding OpenCmd}" MinWidth="20" Focusable="false"/>
+        <ToggleButton Content="F" ToolTip="Follow tail" IsChecked="{Binding FollowTail}" Width="20" Margin="4,0,0,0" Focusable="false"/>
+        <ToggleButton Content="E" ToolTip="Enable filter" IsChecked="{Binding IsFilterEnabled}" Width="20" Margin="4,0,0,0" Focusable="false"/>
+        <Button Content="C" ToolTip="{Binding ConfigureCmd.Text}" Command="{Binding ConfigureCmd}" Width="20" Margin="4,0,0,0" Focusable="false"/>
+        <ToggleButton Content="S" ToolTip="Split log" IsChecked="{Binding IsSplitLog}" Width="20" Margin="4,0,0,0" Focusable="false"/>
+        <ToggleButton Content="Y" ToolTip="Sync selection" IsChecked="{Binding IsSyncSelection}" Width="20" Margin="4,0,0,0" Focusable="false" Visibility="{Binding OptionalButtonsVisibility}"/>
+        <Button Content="X" ToolTip="{Binding CloseCmd.Text}" Command="{Binding CloseCmd}" Width="20" Margin="4,0,0,0" Focusable="false" Visibility="{Binding OptionalButtonsVisibility}"/>
+      </StackPanel>
+      <!-- -->
+      <my:SplitGrid Grid.Row="1" x:Name="splitGrid">
+        <!-- -->
+        <my:LogControl x:Name="myLogControl1"/>
+        <!-- -->
+        <my:LogControl Grid.Row="2" x:Name="myLogControl2"/>
+        <!-- -->
+      </my:SplitGrid>
+      <!-- -->
+    </Grid>
+</UserControl>

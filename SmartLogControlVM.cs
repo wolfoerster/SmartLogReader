@@ -1,0 +1,691 @@
+﻿//******************************************************************************************
+// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+//
+// This file is part of the SmartLogReader project which can be found on github.com
+//
+// SmartLogReader is free software: you can redistribute it and/or modify it under the terms 
+// of the GNU General Public License as published by the Free Software Foundation, 
+// either version 3 of the License, or (at your option) any later version.
+// 
+// SmartLogReader is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************************
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Xml.Serialization;
+using SmartLogging;
+
+namespace SmartLogReader
+{
+    /// <summary>
+    /// The main viewmodel for a SmartLogControl.
+    /// </summary>
+    public class SmartLogControlVM : SplitGridViewModel3
+	{
+        private static readonly SmartLogger log = new SmartLogger();
+
+        /// <summary>
+		/// Fill some static lists.
+		/// </summary>
+		static SmartLogControlVM()
+		{
+			InitLists();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SmartLogControlVM()
+		{
+            GridLength0 = 1;
+			GridLength2 = 2;
+			GridLength4 = 0;
+			InitCommands();
+			SearchText = "Search for me";
+		}
+
+		/// <summary>
+		/// A flag indicating that the main view model is initialized.
+		/// </summary>
+		public static bool IsInitialized { get; protected set; }
+
+		/// <summary>
+		/// Deserialize from XML.
+		/// </summary>
+		public static SmartLogControlVM FromXML(string xml)
+		{
+			log.Smart($"Create viewmodel from the following settings: {xml}");
+
+			//--- There are property setters which call ReloadFiles() during XML deserialization. 
+			//--- To prevent this, we use this static boolean value:
+			IsInitialized = false;
+
+			SmartLogControlVM viewModel = Utils.FromXML<SmartLogControlVM>(xml);
+
+			if (viewModel == null)
+			{
+				//--- Do not create subVMs in the ctors or getters!
+				viewModel = new SmartLogControlVM();
+				viewModel.MyClientControlVM = NewSplitLogControlVM();
+				viewModel.MyServerControlVM = NewSplitLogControlVM();
+				viewModel.MyAdditionalControlVM = NewSplitLogControlVM();
+			}
+
+			if (viewModel.MyStandaloneControlVM == null)
+				viewModel.MyStandaloneControlVM = NewSplitLogControlVM();
+
+			if (viewModel.ColorSpecs == null)
+				viewModel.ColorSpecs = Record.GetDefaultColorSpecs();
+
+			IsInitialized = true;
+			return viewModel;
+		}
+
+		/// <summary>
+		/// Create a new sub viewmodel with subsub viewmodels.
+		/// </summary>
+		static SplitLogControlVM NewSplitLogControlVM()
+		{
+			//--- Do not create subsubVMs in the ctors or getters!
+			SplitLogControlVM vm = new SplitLogControlVM();
+			vm.MyLogControlVM1 = new LogControlVM();
+			vm.MyLogControlVM2 = new LogControlVM();
+			return vm;
+		}
+
+		/// <summary>
+		/// Serialize to XML.
+		/// </summary>
+		public string ToXML()
+		{
+			if (App.OpenFileName == null)
+			{
+				GetGridLengths();
+				myClientControlVM.GetGridLengths();
+				myServerControlVM.GetGridLengths();
+				myAdditionalControlVM.GetGridLengths();
+			}
+			else
+			{
+				ModifyLayout(false);
+			}
+			return Utils.ToXML(this);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public override string ToString()
+		{
+			return "SmartLogControlVM[" + DisplayName + "]";
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		static void InitLists()
+		{
+			Fonts = new List<string>();
+			Fonts.Add("Consolas");
+			Fonts.Add("Courier New");
+            Fonts.Add("Lucida Console");
+
+			ReadModes = new List<string>();
+			ReadModes.Add("All records");
+			ReadModes.Add("Last session");
+			ReadModes.Add("Last 24 hours");
+			ReadModes.Add("Last 8 hours");
+			ReadModes.Add("Last hour");
+
+			LogLevels = new List<string>();
+			LogLevels.Add("Debug");
+			LogLevels.Add("Info");
+			LogLevels.Add("Warn");
+			LogLevels.Add("Error");
+			LogLevels.Add("Fatal");
+
+			RecordDetails = new List<string>();
+			RecordDetails.Add("Time");
+			RecordDetails.Add("Logger");
+			RecordDetails.Add("Level");
+            RecordDetails.Add("ThreadIds");
+            RecordDetails.Add("Method");
+		}
+		static public List<string> Fonts { get; set; }
+		static public List<string> ReadModes { get; set; }
+		static public List<string> LogLevels { get; set; }
+		static public List<string> RecordDetails { get; set; }
+
+		#region Sub viewmodels
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SplitLogControlVM MyClientControlVM 
+		{
+            get { return myClientControlVM; }
+			set
+			{
+				Utils.OnlyOnce(myClientControlVM, value);
+				myClientControlVM = value;
+				myClientControlVM.Reader = new LogReader();
+				myClientControlVM.PropertyChanged += SubVMPropertyChanged;
+				myClientControlVM.OptionalButtonsVisibility = Visibility.Visible;
+                //myClientControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
+				myClientControlVM.IsSyncSelection = true;
+			}
+		}
+		SplitLogControlVM myClientControlVM;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SplitLogControlVM MyServerControlVM 
+		{
+            get { return myServerControlVM; }
+			set
+			{
+				Utils.OnlyOnce(myServerControlVM, value);
+				myServerControlVM = value;
+				myServerControlVM.Reader = new LogReader();
+				myServerControlVM.PropertyChanged += SubVMPropertyChanged;
+				myServerControlVM.OptionalButtonsVisibility = Visibility.Visible;
+				//myServerControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
+				myServerControlVM.IsSyncSelection = true;
+			}
+		}
+		SplitLogControlVM myServerControlVM;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SplitLogControlVM MyAdditionalControlVM 
+		{
+			get { return myAdditionalControlVM; }
+			set
+			{
+				Utils.OnlyOnce(myAdditionalControlVM, value);
+				myAdditionalControlVM = value;
+				myAdditionalControlVM.Reader = new LogReader();
+				myAdditionalControlVM.PropertyChanged += SubVMPropertyChanged;
+				myAdditionalControlVM.OptionalButtonsVisibility = Visibility.Visible;
+			}
+		}
+		SplitLogControlVM myAdditionalControlVM;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SplitLogControlVM MyStandaloneControlVM
+		{
+			get { return myStandaloneControlVM; }
+			set
+			{
+				Utils.OnlyOnce(myStandaloneControlVM, value);
+				myStandaloneControlVM = value;
+			}
+		}
+		SplitLogControlVM myStandaloneControlVM;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void SubVMPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			SplitLogControlVM vm = sender as SplitLogControlVM;
+
+			if (e.PropertyName == "FindMatchingExternal")
+			{
+				myClientControlVM.FindMatchingExternal(vm.SelectedRecord);
+				myServerControlVM.FindMatchingExternal(vm.SelectedRecord);
+				myAdditionalControlVM.FindMatchingExternal(vm.SelectedRecord);
+			}
+			else if (e.PropertyName == "FollowTail")
+			{
+				if (vm != myAdditionalControlVM || vm.IsSyncSelection)
+				{
+					myClientControlVM.SyncFollowTail(vm);
+					myServerControlVM.SyncFollowTail(vm);
+					myAdditionalControlVM.SyncFollowTail(vm);
+				}
+			}
+			else if (e.PropertyName == "NoLastFile")
+			{
+				FirePropertyChanged("NoLastFile");
+			}
+		}
+
+		#endregion Sub viewmodels
+
+		#region Public Properties
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int SelectedFont
+		{
+			get { return selectedFont; }
+			set
+			{
+				if (selectedFont != value)
+				{
+					selectedFont = value;
+					FirePropertyChanged("SelectedFont");
+					SelectedFamily = new FontFamily(Fonts[value]);
+				}
+			}
+		}
+		int selectedFont = 0;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		[XmlIgnore]
+		public FontFamily SelectedFamily
+		{
+			get { return selectedFamily; }
+			set
+			{
+				if (selectedFamily != value)
+				{
+					selectedFamily = value;
+					FirePropertyChanged("SelectedFamily");
+				}
+			}
+		}
+		FontFamily selectedFamily = new FontFamily(Fonts[0]);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int SelectedSize
+		{
+			get { return selectedSize; }
+			set
+			{
+				if (selectedSize != value)
+				{
+					selectedSize = value;
+					FirePropertyChanged("SelectedSize");
+				}
+			}
+		}
+		int selectedSize = 12;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int SelectedLogLevel
+		{
+			get { return (int)LogReader.Level; }
+			set
+			{
+				if (SelectedLogLevel != value)
+				{
+					LogReader.Level = (LogLevel)value;
+					FirePropertyChanged("SelectedLogLevel");
+					ReloadFiles();
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int SelectedReadMode
+		{
+			get { return (int)LogReader.ReadMode; }
+			set
+			{
+				if (SelectedReadMode != value)
+				{
+					LogReader.ReadMode = (LogReadMode)value;
+					FirePropertyChanged("SelectedReadMode");
+					ReloadFiles();
+				}
+			}
+		}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SearchText { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public ColorSpecCollection ColorSpecs
+		{
+			get { return Record.ColorSpecs; }
+			set
+			{
+				if (Record.ColorSpecs != value)
+				{
+					Record.ColorSpecs = value;
+					FirePropertyChanged("ColorSpecs");
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public Size DetailsWindowSize
+		{
+			get { return DetailsWindow.LastSize; }
+			set { DetailsWindow.LastSize = value; }
+		}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool DetailsWindowWrap
+        {
+            get { return DetailsWindow.DoWrap; }
+            set { DetailsWindow.DoWrap = value; }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool ShowTime
+        {
+            get { return Record.ShowTime; }
+            set { Record.ShowTime = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool ShowLogger
+        {
+            get { return Record.ShowLogger; }
+            set { Record.ShowLogger = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool ShowLevel
+        {
+            get { return Record.ShowLevel; }
+            set { Record.ShowLevel = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool ShowThreadIds
+        {
+            get { return Record.ShowThreadIds; }
+            set { Record.ShowThreadIds = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool ShowMethod
+        {
+            get { return Record.ShowMethod; }
+            set { Record.ShowMethod = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AmountOfTime
+        {
+            get { return Record.AmountOfTime; }
+            set { Record.AmountOfTime = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AmountOfLogger
+        {
+            get { return Record.AmountOfLogger; }
+            set { Record.AmountOfLogger = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AmountOfLevel
+        {
+            get { return Record.AmountOfLevel; }
+            set { Record.AmountOfLevel = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AmountOfThreadIds
+        {
+            get { return Record.AmountOfThreadIds; }
+            set { Record.AmountOfThreadIds = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AmountOfMethod
+        {
+            get { return Record.AmountOfMethod; }
+            set { Record.AmountOfMethod = value; UpdateUI(); }
+        }
+
+        #endregion Public Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void UpdateUI()
+        {
+            if (IsInitialized)
+            {
+                myClientControlVM.HandleRecordsChanged();
+                myServerControlVM.HandleRecordsChanged();
+                myAdditionalControlVM.HandleRecordsChanged();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Shutdown()
+		{
+            string reason = "Shutdown";
+			myClientControlVM.Reader.Stop(reason);
+            myServerControlVM.Reader.Stop(reason);
+            myAdditionalControlVM.Reader.Stop(reason);
+
+			return ToXML();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public void LoadFiles()
+		{
+			//--- if no filename is given in the command line, open all last files
+			if (App.OpenFileName == null)
+			{
+                myClientControlVM.LoadFile(myClientControlVM.LastFile);
+                myServerControlVM.LoadFile(myServerControlVM.LastFile);
+				myAdditionalControlVM.LoadFile(myAdditionalControlVM.LastFile);
+			}
+			else //--- open the specified file only
+			{
+				ModifyLayout(true);
+				myAdditionalControlVM.LoadFile(App.OpenFileName);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void ReloadFiles()
+		{
+			if (!IsInitialized)
+				return;
+
+			myClientControlVM.ReloadFile();
+			myServerControlVM.ReloadFile();
+			myAdditionalControlVM.ReloadFile();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void ModifyLayout(bool mode)
+		{
+			if (mode) //--- call at the begin
+			{
+				//--- Only MyAdditionalControlVM shall be shown. Before setting the grid lengths, store the current ones. 
+				//--- Also replace MyAdditionalControlVM values with MyStandaloneControlVM values.
+				gridLength0 = GridLength0; GridLength0 = 0;
+				gridLength2 = GridLength2; GridLength2 = 0;
+				gridLength4 = GridLength4; GridLength4 = 1;
+				SwapAdditionalVMs();
+
+				if (!App.OpenFileName.equals(myAdditionalControlVM.LastFile))
+					myAdditionalControlVM.MyLogControlVM1.IsFilterEnabled = false;
+			}
+			else //--- call on exit
+			{
+				GridLength0 = gridLength0;
+				GridLength2 = gridLength2;
+				GridLength4 = gridLength4;
+				SwapAdditionalVMs();
+			}
+		}
+		double gridLength0, gridLength2, gridLength4;
+
+		void SwapAdditionalVMs()
+		{
+			SplitLogControlVM tmp = NewSplitLogControlVM();
+			CopyValues(myAdditionalControlVM, tmp);
+			CopyValues(myStandaloneControlVM, myAdditionalControlVM);
+			CopyValues(tmp, myStandaloneControlVM);
+		}
+
+		private void CopyValues(SplitLogControlVM source, SplitLogControlVM target)
+		{
+			target.GridLength0 = source.GridLength0;
+			target.GridLength2 = source.GridLength2;
+			target.LastFile = source.LastFile;
+			target.IsSplitLog = source.IsSplitLog;
+			target.IsSyncSelection = source.IsSyncSelection;
+			CopyValues(source.MyLogControlVM1, target.MyLogControlVM1);
+			CopyValues(source.MyLogControlVM2, target.MyLogControlVM2);
+		}
+
+		private void CopyValues(LogControlVM source, LogControlVM target)
+		{
+			target.IsFilterEnabled = source.IsFilterEnabled;
+			target.IncludeList = new FilterCollection(source.IncludeList);
+			target.ExcludeList = new FilterCollection(source.ExcludeList);
+		}
+
+		#region Commands
+
+		void InitCommands()
+		{
+			CommandBindings.Add(new CommandBinding(CopyCmd, ExecuteCopyCmd, CanExecuteCopyCmd));
+			CommandBindings.Add(new CommandBinding(FindCmd, ExecuteFindCmd, CanExecuteFindCmd));
+			CommandBindings.Add(new CommandBinding(SearchUpCmd, ExecuteSearchUpCmd, CanExecuteSearchUpCmd));
+			CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
+			CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
+		}
+
+		/// <summary>
+		/// FindCmd
+		/// </summary>
+		void CanExecuteFindCmd(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		void ExecuteFindCmd(object sender, ExecutedRoutedEventArgs e)
+		{
+			FirePropertyChanged("SetFocusOnSearchBox");
+		}
+
+		/// <summary>
+		/// SearchUpCmd. Cannot be moved to LogControlVM (although it would be nice) because
+		/// the UIElements (search up and down buttons) will not find the command in the visual tree. 
+		/// That's because the buttons are part of the SearchControl which is part of the SmartLogControl 
+		/// and the LogControls are deep inside other branches of the main control.
+		/// </summary>
+		void CanExecuteSearchUpCmd(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = !string.IsNullOrEmpty(SearchText);
+		}
+
+		void ExecuteSearchUpCmd(object sender, ExecutedRoutedEventArgs e)
+		{
+			LogControlVM.CurrentVM.Search(SearchText, false);
+		}
+
+		/// <summary>
+		/// SearchDownCmd
+		/// </summary>
+		void CanExecuteSearchDownCmd(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = !string.IsNullOrEmpty(SearchText);
+		}
+
+		void ExecuteSearchDownCmd(object sender, ExecutedRoutedEventArgs e)
+		{
+			LogControlVM.CurrentVM.Search(SearchText, true);
+		}
+
+		/// <summary>
+		/// CopyCmd
+		/// </summary>
+		void CanExecuteCopyCmd(object sender, CanExecuteRoutedEventArgs e)
+		{
+			bool cannotExecute = LogControlVM.CurrentVM.RecordsView == null || LogControlVM.CurrentVM.RecordsView.CurrentItem == null;
+			e.CanExecute = !cannotExecute;
+		}
+
+		void ExecuteCopyCmd(object sender, ExecutedRoutedEventArgs e)
+		{
+			Record record = LogControlVM.CurrentVM.RecordsView.CurrentItem as Record;
+			Clipboard.SetText(record.LongString);
+		}
+
+        /// <summary>
+        /// HighlightingCmd
+        /// </summary>
+        void CanExecuteHighlightingCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void ExecuteHighlightingCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            ColorSpecCollection colorSpecs = new ColorSpecCollection(ColorSpecs);
+            HighLightingDialog dlg = new HighLightingDialog(colorSpecs);
+            Utils.MoveToMouse(dlg, HighlightingCmd.Text);
+
+            if (dlg.ShowDialog() == true)
+            {
+                ColorSpecs = new ColorSpecCollection(colorSpecs);
+                myClientControlVM.HandleRecordsChanged();
+                myServerControlVM.HandleRecordsChanged();
+                myAdditionalControlVM.HandleRecordsChanged();
+            }
+        }
+
+		#endregion Commands
+	}
+}

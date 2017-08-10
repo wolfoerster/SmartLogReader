@@ -1,0 +1,9 @@
+﻿<UserControl x:Class="SmartLogReader.SearchControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackPanel Orientation="Horizontal">
+    <TextBox x:Name="textBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="180" AcceptsReturn="false"/>
+    <Button Content="&#8595;" ToolTip="{Binding SearchDownCmd.Text}" Command="{Binding SearchDownCmd}" Width="20" Tag=""/>
+    <Button Content="&#8593;" ToolTip="{Binding SearchUpCmd.Text}" Command="{Binding SearchUpCmd}" Width="20"/>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="SmartLogReader.SmartLogControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:my="clr-namespace:SmartLogReader">
+  <UserControl.InputBindings>
+    <KeyBinding Key="F3" Command="{Binding SearchDownCmd}"/>
+    <KeyBinding Key="F4" Command="{Binding SearchUpCmd}"/>
+    <KeyBinding Key="F3" Modifiers="Shift" Command="{Binding SearchUpCmd}"/>
+  </UserControl.InputBindings>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <!-- -->
+    <StackPanel Orientation="Horizontal">
+      <ComboBox Width="120" Margin="4,0,0,0" ItemsSource="{Binding ReadModes}" SelectedIndex="{Binding SelectedReadMode}" ToolTip="Select amount to read by time"/>
+      <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding LogLevels}" SelectedIndex="{Binding SelectedLogLevel}" ToolTip="Select amount to read by log level"/>
+      <my:DetailsControl Width="120" Margin="12,0,0,0" ToolTip="Select how much of a record is shown"/>
+      <Button Width="120" Margin="12,0,0,0" ToolTip="{Binding HighlightingCmd.Text}" Command="{Binding HighlightingCmd}" HorizontalContentAlignment="Left">
+        <TextBlock Text="{Binding HighlightingCmd.Name}" Margin="4,0,4,0"/>
+      </Button>
+      <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding Fonts}" SelectedIndex="{Binding SelectedFont}" ToolTip="Select display font"/>
+      <my:NumberBox Width="44" Number="{Binding SelectedSize}" Minimum="4" Maximum="48" Margin="4,0,0,0" ToolTip="Select font size"/>
+      <my:SearchControl Margin="12,0,0,0" ToolTip="Search records"/>
+    </StackPanel>
+    <!-- -->
+    <my:SplitGrid Grid.Row="1" x:Name="splitGrid" Margin="0,4,0,0" TextElement.FontSize="{Binding SelectedSize}" TextElement.FontFamily="{Binding SelectedFamily}" TextOptions.TextRenderingMode="ClearType">
+      <!-- -->
+      <my:SplitLogControl Grid.Column="0" x:Name="myClientControl"/>
+      <!-- -->
+      <my:SplitLogControl Grid.Column="2" x:Name="myServerControl"/>
+      <!-- -->
+      <my:SplitLogControl Grid.Column="4" x:Name="myAdditionalControl"/>
+      <!-- -->
+    </my:SplitGrid>
+    <!-- -->
+  </Grid>
+</UserControl>
