@@ -106,8 +106,8 @@ namespace SmartLogReader
 			}
 
 			//--- so option is either "/restart" or unknown
-			//if (NeedToRestart())
-				//Shutdown();
+			if (NeedToRestart())
+				Shutdown();
 		}
 		public static string OpenFileName;
 		string localName, localDir, blockingFile;

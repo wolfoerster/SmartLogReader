@@ -49,32 +49,31 @@ namespace SmartLogReader
 			doMaximize = false;
 			WindowState = WindowState.Normal;
 
-			Screen screen = Utils.GetScreenByName(Properties.Settings.Default.ScreenName);
-            log.Smart($"Left = {Left}, Top = {Top}, screen = '{screen?.Name}', {Properties.Settings.Default.ScreenName}");
-            log.Smart($"ScreenName = {Properties.Settings.Default.ScreenName}, screen = '{screen?.Name}'");
-			if (screen == null)
+            var name = Properties.Settings.Default.ScreenName;
+            Screen screen = Utils.GetScreenByName(name);
+            log.Smart($"screen for '{name}' is '{screen?.Name}'");
+            if (screen == null)
 			{
-				screen = Utils.GetPrimaryScreen();
+                screen = Utils.GetPrimaryScreen();
 				Top = screen.WorkArea.Top;
 				Left = screen.WorkArea.Left + 110;
 				Width = screen.WorkArea.Width - 270;
 				Height = screen.WorkArea.Height;
-			}
-			else
+            }
+            else
 			{
-				doMaximize = Properties.Settings.Default.WindowState == 2;
+                doMaximize = Properties.Settings.Default.WindowState == 2;
 				if (doMaximize)
 				{
 					Top = screen.WorkArea.Top + 1;
 					Left = screen.WorkArea.Left + 1;
 					Width = screen.WorkArea.Width - 2;
 					Height = screen.WorkArea.Height - 2;
-                    log.Smart($"Left = {Left}, Top = {Top}, screen = '{screen?.Name}', {Properties.Settings.Default.ScreenName}");
                 }
             }
 
-			#endregion Window size and position
-		}
+            #endregion Window size and position
+        }
         bool doMaximize;
         DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
 
@@ -96,12 +95,15 @@ namespace SmartLogReader
 		void MeClosing(object sender, CancelEventArgs e)
 		{
             if (WindowState == WindowState.Minimized)
-            {
-                log.Smart("state is minimized", LogLevel.Warn);
                 WindowState = WindowState.Normal;
-            }
-            var screen = WindowState == WindowState.Maximized ? Utils.GetScreenByPixel(Left + Width / 2, Top + Height / 2) : Utils.GetScreenByPixel(Left, Top);
-            log.Smart($"Left = {Left}, Top = {Top}, screen = '{screen?.Name}'");
+
+            var pt = WindowState == WindowState.Maximized ? new Point(Left + Width / 2, Top + Height / 2) : new Point(Left, Top);
+            var screen = Utils.GetScreenByPixel(pt);
+            if (screen == null)
+                log.Smart($"Cannot identify screen at point {pt}", LogLevel.Warn);
+            else
+                log.Smart($"Screen at point {pt} is {screen.Name}");
+
             Properties.Settings.Default.Top = Top;
 			Properties.Settings.Default.Left = Left;
 			Properties.Settings.Default.Width = Width;
