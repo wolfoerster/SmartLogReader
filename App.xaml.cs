@@ -16,6 +16,7 @@
 //******************************************************************************************
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Threading;
 using System.Reflection;
@@ -82,6 +83,16 @@ namespace SmartLogReader
             //--- initialize logging
             SmartLogger.Init(localDir + "\\SmartLogReader.log");
             log.Start();
+
+            //--- don't start twice
+            String myprocessname = Process.GetCurrentProcess().ProcessName;
+            int count = Process.GetProcesses().Count(p => p.ProcessName == myprocessname);
+            if (count > 1)
+            {
+                log.Smart($"found {count} processes with the same name {myprocessname} ==> shutdown");
+                Shutdown();
+                return;
+            }
 
             string action = option == "/restart" ? "Restarting" : "Starting";
             log.Smart($"{action} application {localName}, option: '{option}'");
