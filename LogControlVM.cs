@@ -143,8 +143,17 @@ namespace SmartLogReader
 		/// </summary>
 		public void Refresh()
 		{
-			if (RecordsView != null)
-				RecordsView.Refresh();
+            if (RecordsView != null)
+            {
+                try
+                {
+                    RecordsView.Refresh();
+                }
+                catch (Exception e)
+                {
+                    log.Exception(e);
+                }
+            }
 
 			CheckListEmptyReason();
 		}
@@ -154,8 +163,17 @@ namespace SmartLogReader
 		/// </summary>
 		public void ScrollToBottom()
 		{
-			if (RecordsView != null)
-				RecordsView.MoveCurrentToLast();
+            if (RecordsView != null)
+            {
+                try
+                {
+                    RecordsView.MoveCurrentToLast();
+                }
+                catch (Exception e)
+                {
+                    log.Exception(e);
+                }
+            }
 		}
 
 		/// <summary>
