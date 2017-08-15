@@ -33,7 +33,7 @@ namespace SmartLogReader
 
 		void OnButtonNew(object sender, RoutedEventArgs e)
 		{
-			ColorSpecs.Insert(0, new ColorSpec(6, 0, "*"));
+			ColorSpecs.Insert(0, new ColorSpec(7, 0, "*"));
 		}
 
 		void OnButtonX(object sender, RoutedEventArgs e)
