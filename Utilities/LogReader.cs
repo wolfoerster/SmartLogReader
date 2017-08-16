@@ -15,11 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.ComponentModel;
 using SmartLogging;
-using System.Diagnostics;
 
 namespace SmartLogReader
 {
@@ -55,14 +55,6 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        static LogReader()
-        {
-            ReadMode = LogReadMode.LastSession;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public LogReader()
         {
             Records = new RecordCollection();
@@ -93,23 +85,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public static LogReadMode ReadMode
-        {
-            get { return readMode; }
-            set
-            {
-                hours = 0;
-                readMode = value;
-                switch (readMode)
-                {
-                    case LogReadMode.LastHour: hours = 1; break;
-                    case LogReadMode.Last8Hours: hours = 8; break;
-                    case LogReadMode.Last24Hours: hours = 24; break;
-                }
-            }
-        }
-        static LogReadMode readMode;
-        static int hours;
+        public static LogReadMode ReadMode;
 
         /// <summary>
         /// 
@@ -265,12 +241,15 @@ namespace SmartLogReader
             if (record.Level < Level)
                 return false;
 
-            if (hours == 0)
-                return true;
+            double hours = (DateTime.UtcNow - record.UtcTime).TotalHours;
+            switch (ReadMode)
+            {
+                case LogReadMode.LastHour: return hours < 1;
+                case LogReadMode.Last8Hours: return hours < 8;
+                case LogReadMode.Last24Hours: return hours < 24;
+            }
 
-            DateTime now = DateTime.UtcNow;
-            TimeSpan span = now - record.UtcTime;
-            return span.TotalHours < hours;
+            return true;
         }
 
         /// <summary>
@@ -367,11 +346,17 @@ namespace SmartLogReader
             ReportStatus(ReaderStatus.FinishedWork, cancelReason);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             StatusChanged?.Invoke(this, (ReaderStatus)e.ProgressPercentage, e.UserState as string);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         void ReportStatus(ReaderStatus code, string text = null)
         {
             if (worker.IsBusy)
