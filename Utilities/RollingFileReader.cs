@@ -34,7 +34,7 @@ namespace SmartLogReader
         protected readonly SmartLogger log;
 
         /// <summary>
-        /// 
+        /// The name of the related file.
         /// </summary>
         public string FileName
         {
@@ -52,7 +52,7 @@ namespace SmartLogReader
         protected string fileName;
 
         /// <summary>
-        /// 
+        /// The size of the related file.
         /// </summary>
         public long FileSize
         {
@@ -61,7 +61,7 @@ namespace SmartLogReader
         private long prevLength;
 
         /// <summary>
-        /// 
+        /// Read latest bytes from the related file.
         /// </summary>
         public byte[] ReadNextBytes()
         {
@@ -69,14 +69,14 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
+        /// Read latest bytes from a specified file.
         /// </summary>
-        private byte[] ReadNextBytes(string logFile)
+        private byte[] ReadNextBytes(string path)
         {
             try
             {
-                //--- did the file size change?
-                FileInfo fileInfo = new FileInfo(logFile);
+                //--- if the file size did not change, we're done
+                FileInfo fileInfo = new FileInfo(path);
                 if (fileInfo.Length == prevLength)
                     return null;
 
@@ -84,7 +84,7 @@ namespace SmartLogReader
                 byte[] rolledBytes = null;
                 if (fileInfo.Length < prevLength)
                 {
-                    string rolledFile = logFile + ".1";
+                    string rolledFile = path + ".1";
                     if (File.Exists(rolledFile))
                     {
                         log.Smart($"reading rolled file {rolledFile}");
@@ -96,7 +96,7 @@ namespace SmartLogReader
 
                 //--- now go on with the current file
                 int count = (int)(fileInfo.Length - prevLength);
-                var bytes = ReadBytes(logFile, prevLength, count);
+                var bytes = ReadBytes(path, prevLength, count);
                 prevLength = fileInfo.Length;
 
                 if (rolledBytes == null || rolledBytes.Length == 0)
@@ -112,9 +112,9 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
+        /// Read some bytes from a specified file.
         /// </summary>
-        private static byte[] ReadBytes(string path, long startPosition, long count)
+        private byte[] ReadBytes(string path, long startPosition, long count)
         {
             try
             {
@@ -129,16 +129,15 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                var log = new SmartLogger();
                 log.Exception(e);
             }
             return null;
         }
 
         /// <summary>
-        /// 
+        /// Read all bytes from a specified file.
         /// </summary>
-        protected byte[] ReadAllBytes(string path)
+        protected byte[] ReadBytes(string path)
         {
             try
             {

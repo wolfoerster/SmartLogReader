@@ -95,28 +95,11 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void CheckFile(string logFile = null)
-        {
+        void ExtractRecords(byte[] bytes)
+        { 
             bool hasChanges = false;
-            Record record = null;
-            byte[] bytes = null;
-
-            if (logFile == null)
-            {
-                if (NoFileToReadFrom())
-                    return;
-
-                bytes = ReadNextBytes();
-            }
-            else
-            {
-                bytes = ReadAllBytes(logFile);
-            }
-
-            //--- extract records
             if (bytes != null)
             {
-                //log.Smart($"read {bytes.Length} new bytes");
                 Stopwatch watch = Stopwatch.StartNew();
 
                 if (byteParser == null)
@@ -126,11 +109,10 @@ namespace SmartLogReader
 
                 while (true)
                 {
-                    Record next = byteParser.GetNextRecord();
-                    if (next == null)
+                    Record record = byteParser.GetNextRecord();
+                    if (record == null)
                         break;
 
-                    record = next;
                     if (watch.ElapsedMilliseconds > 60)
                     {
                         watch.Restart();
@@ -166,7 +148,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        private bool NoFileToReadFrom()
+        private bool FileExists()
         {
             bool didExist = fileExists;
             fileExists = File.Exists(FileName);
@@ -176,34 +158,31 @@ namespace SmartLogReader
             {
                 if (didExist)
                 {
-                    Reset();
+                    Reset(FileName);
                     log.Smart($"Lost file for {FileName}");
                 }
             }
             else
             {
                 if (!didExist)
+                {
                     log.Smart($"Found again file for {FileName}");
+                }
             }
 
-            //--- another file might exist now
-            return !fileExists;
+            return fileExists;
         }
-        protected bool fileExists;
+        private bool fileExists;
 
         /// <summary>
         /// 
         /// </summary>
-        protected void Reset(string newFileName = null)
+        protected void Reset(string path)
         {
             byteParser = null;
-
-            if (newFileName != null)
-            {
-                fileName = "???";
-                FileName = newFileName;
-                ReportStatus(ReaderStatus.FileChanged);
-            }
+            fileName = null;
+            FileName = path;
+            ReportStatus(ReaderStatus.FileChanged);
 
             if (Records.Count > 0)
             {
@@ -306,13 +285,19 @@ namespace SmartLogReader
             //--- first check if there is a rolled file
             string rolledFile = fileName + ".1";
             if (File.Exists(rolledFile))
-                CheckFile(rolledFile);
+            {
+                byte[] bytes = ReadBytes(rolledFile);
+                ExtractRecords(bytes);
+            }
 
             //--- go into an endless loop and check the file every second
             for (int count = 0; ; ++count)
             {
-                if (count == 0)
-                    CheckFile();
+                if (count == 0 && FileExists())
+                {
+                    byte[] bytes = ReadNextBytes();
+                    ExtractRecords(bytes);
+                }
 
                 if (worker.CancellationPending)
                 {
@@ -322,7 +307,7 @@ namespace SmartLogReader
                 }
 
                 Thread.Sleep(50);
-                if (count > 9)
+                if (count > 19)
                     count = -1;
             }
 
