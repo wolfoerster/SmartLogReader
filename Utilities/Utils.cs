@@ -325,26 +325,32 @@ namespace SmartLogReader
 
 		static public Screen GetScreenByName(string name)
 		{
+            log.Smart($"name = {name}");
 			if (string.IsNullOrWhiteSpace(name))
 				return null;
 
 			List<Screen> screens = GetAllScreens();
 			foreach (var screen in screens)
 			{
-				if (screen.Name == name)
+                log.Smart($"screen.Name = {screen.Name}");
+                if (screen.Name == name)
 					return screen;
 			}
-			return null;
+            log.Smart("not found");
+            return null;
 		}
 
 		static public Screen GetScreenByPixel(Point pt)
 		{
-			List<Screen> screens = GetAllScreens();
+            log.Smart($"pt = {pt}");
+            List<Screen> screens = GetAllScreens();
 			foreach (var screen in screens)
 			{
-				if (screen.WorkArea.Contains(pt))
+                log.Smart($"{screen.Name}.WorkArea = {screen.WorkArea}");
+                if (screen.WorkArea.Contains(pt))
 					return screen;
 			}
+            log.Smart("not found");
 			return null;
 		}
 

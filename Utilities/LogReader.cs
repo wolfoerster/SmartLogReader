@@ -322,7 +322,7 @@ namespace SmartLogReader
                 }
 
                 Thread.Sleep(50);
-                if (count > 19)
+                if (count > 9)
                     count = -1;
             }
 

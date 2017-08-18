@@ -51,7 +51,6 @@ namespace SmartLogReader
 
             var name = Properties.Settings.Default.ScreenName;
             Screen screen = Utils.GetScreenByName(name);
-            log.Smart($"screen for '{name}' is '{screen?.Name}'");
             if (screen == null)
 			{
                 screen = Utils.GetPrimaryScreen();
@@ -84,7 +83,6 @@ namespace SmartLogReader
 
         void MeLoaded(object sender, RoutedEventArgs e)
 		{
-            log.Smart();
             if (doMaximize)
 				WindowState = WindowState.Maximized;
 
@@ -99,10 +97,6 @@ namespace SmartLogReader
 
             var pt = WindowState == WindowState.Maximized ? new Point(Left + Width / 2, Top + Height / 2) : new Point(Left, Top);
             var screen = Utils.GetScreenByPixel(pt);
-            if (screen == null)
-                log.Smart($"Cannot identify screen at point {pt}", LogLevel.Warn);
-            else
-                log.Smart($"Screen at point {pt} is {screen.Name}");
 
             Properties.Settings.Default.Top = Top;
 			Properties.Settings.Default.Left = Left;
