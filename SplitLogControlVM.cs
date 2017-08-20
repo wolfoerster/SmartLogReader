@@ -15,22 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using Microsoft.Win32;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.ComponentModel;
-using System.Windows.Threading;
 using System.Xml.Serialization;
+using Microsoft.Win32;
 using SmartLogging;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public class SplitLogControlVM : SplitGridViewModel2
+    /// <summary>
+    /// 
+    /// </summary>
+    public class SplitLogControlVM : SplitGridViewModel2
 	{
         /// <summary>
         /// 
@@ -321,9 +320,9 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        private void ReaderStatusChanged(object sender, ReaderStatus code, string text)
+        private void ReaderStatusChanged(object sender, ReaderStatus status, string text)
         {
-            switch (code)
+            switch (status)
             {
                 case ReaderStatus.FileChanged:
                     HandleReaderFileNameChanged();

@@ -342,13 +342,13 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void ReportStatus(ReaderStatus code, string text = null)
+        void ReportStatus(ReaderStatus status, string text = null)
         {
             if (worker.IsBusy)
             {
                 try
                 {
-                    worker.ReportProgress((int)code, text);
+                    worker.ReportProgress((int)status, text);
                     return;
                 }
                 catch (Exception e)
@@ -357,7 +357,7 @@ namespace SmartLogReader
                 }
             }
 
-            StatusChanged?.Invoke(this, code, text);
+            StatusChanged?.Invoke(this, status, text);
         }
 
         #endregion BackgroundWorker

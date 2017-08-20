@@ -125,10 +125,13 @@ namespace SmartLogReader
 		{
 			string reason = "";
 
-			if (Records == null || Records.Count == 0)
-				reason = "No records";
+            if (Records == null)
+                reason = "Split is disabled";
 
-			else if (RecordsView.Count == 0 && Records.Count > 0)
+            else if (Records.Count == 0)
+                reason = "No records";
+
+            else if (RecordsView.Count == 0 && Records.Count > 0)
 				reason = "No records passing filter";
 
 			if (ListEmptyReason != reason)
