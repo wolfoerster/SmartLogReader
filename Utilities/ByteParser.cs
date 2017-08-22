@@ -33,7 +33,7 @@ namespace SmartLogReader
 		private static readonly byte Colon = 0x3A;//= ':'
         private static readonly byte Comma = 0x2C;//= ','
 		private static readonly byte FullStop = 0x2E;//= '.'
-        private static readonly string LegacyKey = "Aurora";
+        private static readonly string LegacyKey = "novaSuite";
 
 		/// <summary>
 		/// 
