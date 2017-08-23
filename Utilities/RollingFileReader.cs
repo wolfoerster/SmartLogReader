@@ -68,11 +68,14 @@ namespace SmartLogReader
             return ReadNextBytes(fileName);
         }
 
+        protected bool IsNewLogFile;
+
         /// <summary>
         /// Read latest bytes from a specified file.
         /// </summary>
         private byte[] ReadNextBytes(string path)
         {
+            IsNewLogFile = false;
             try
             {
                 //--- if the file size did not change, we're done
@@ -90,8 +93,12 @@ namespace SmartLogReader
                         log.Smart($"reading rolled file {rolledFile}");
                         rolledBytes = ReadNextBytes(rolledFile);
                         log.Smart($"found {rolledBytes?.Length} bytes in rolled file");
-                        prevLength = 0;
                     }
+                    else
+                    {
+                        IsNewLogFile = true;
+                    }
+                    prevLength = 0;
                 }
 
                 //--- now go on with the current file

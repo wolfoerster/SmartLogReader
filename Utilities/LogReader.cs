@@ -96,7 +96,10 @@ namespace SmartLogReader
         /// 
         /// </summary>
         void ExtractRecords(byte[] bytes)
-        { 
+        {
+            if (IsNewLogFile && ReadMode == LogReadMode.LastSession && Records.Count > 0)
+                Records.Clear();
+
             bool hasChanges = false;
             if (bytes != null)
             {
