@@ -21,7 +21,8 @@ namespace SmartLogReader
 	/// </summary>
 	public partial class FilterDialog : Dialog
 	{
-		public FilterDialog(LogControlVM viewModel)
+#warning TODO: make column for ExpectedValue starlike
+        public FilterDialog(LogControlVM viewModel)
 		{
 			InitializeComponent();
 			DataContext = viewModel;
