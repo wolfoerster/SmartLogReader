@@ -45,7 +45,7 @@ namespace SmartLogReader
 		public SmartLogControlVM()
 		{
             GridLength0 = 1;
-			GridLength2 = 2;
+			GridLength2 = 0;
 			GridLength4 = 0;
 			InitCommands();
 			SearchText = "Search for me";

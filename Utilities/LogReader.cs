@@ -85,7 +85,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public static LogReadMode ReadMode;
+        public static LogReadMode ReadMode = LogReadMode.LastSession;
 
         /// <summary>
         /// 

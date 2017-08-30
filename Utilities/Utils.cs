@@ -577,11 +577,14 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 			{
 				Window mainWindow = Application.Current.MainWindow;
 				pt = Mouse.GetPosition(mainWindow);
+                log.Smart($"Mouse.GetPosition(mainWindow) returned {pt}");
 				pt = mainWindow.PointToScreen(pt);
-				topLeft = pt;
+                log.Smart($"mainWindow.PointToScreen(pt) returned {pt}");
+                topLeft = pt;
 			}
 
 			Screen screen = GetScreenByPixel(pt);
+            log.Smart($"screen.ScreenArea = {screen.ScreenArea}");
 
 			double top = pt.Y - 80;
 			if (top < screen.ScreenArea.Top)
