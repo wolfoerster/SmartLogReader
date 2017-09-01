@@ -608,6 +608,7 @@ namespace SmartLogReader
 			CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
             CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
             CommandBindings.Add(new CommandBinding(SaveWorkspaceCmd, ExecuteSaveWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
+            CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
 		}
 
 		/// <summary>
@@ -690,25 +691,33 @@ namespace SmartLogReader
             }
         }
 
+        #endregion Commands
+
+        #region Workspaces
+
         /// <summary>
-        /// SaveWorkspaceCmd
+        /// 
         /// </summary>
         void CanExecuteSaveWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = selectedWorkspace > -1;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         void ExecuteSaveWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                DeleteWorkspace();
-            else
-                SaveWorkspace();
+            SaveWorkspace();
         }
 
-        #endregion Commands
-
-        #region Workspaces
+        /// <summary>
+        /// 
+        /// </summary>
+        void ExecuteDeleteWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            DeleteWorkspace();
+        }
 
         /// <summary>
         /// 
@@ -837,6 +846,10 @@ namespace SmartLogReader
             }
 
             string xml = File.ReadAllText(path);
+
+            //why???
+            ColorSpecs.Clear();
+
             IsInitialized = false;
             var vm = Utils.FromXML<SmartLogControlVM>(xml);
             IsInitialized = true;
@@ -847,11 +860,23 @@ namespace SmartLogReader
                 return;
             }
 
-            ColorSpecs = new ColorSpecCollection(vm.ColorSpecs);
+            //why?
+            //ColorSpecs = new ColorSpecCollection(vm.ColorSpecs);
+
             CopyValues(vm.MyClientControlVM, MyClientControlVM);
             CopyValues(vm.MyServerControlVM, MyServerControlVM);
             CopyValues(vm.MyAdditionalControlVM, MyAdditionalControlVM);
+
+            ApplyGridLengths(vm);
             ReloadFiles();
+        }
+
+        void ApplyGridLengths(SmartLogControlVM vm)
+        {
+            GridLength0 = vm.GridLength0;
+            GridLength2 = vm.GridLength2;
+            GridLength4 = vm.GridLength4;
+            FirePropertyChanged("ApplyGridLengths");
         }
 
         #endregion Workspaces

@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using System.ComponentModel;
 using System.Windows.Controls;
 using SmartLogging;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for SmartLogControl.xaml
-	/// </summary>
-	public partial class SmartLogControl : UserControl
+    /// <summary>
+    /// Interaction logic for SmartLogControl.xaml
+    /// </summary>
+    public partial class SmartLogControl : UserControl
 	{
         private static readonly SmartLogger log = new SmartLogger();
 
@@ -82,23 +82,44 @@ namespace SmartLogReader
 				{
 					ApplyNoLastFile();
 				}
+                else if (e.PropertyName == "ApplyGridLengths")
+                {
+                    ApplyGridLengths();
+                }
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void GetGridLengths()
+        /// <summary>
+        /// 
+        /// </summary>
+        void GetGridLengths()
 		{
 			viewModel.GridLength0 = splitGrid.ColumnDefinitions[0].Width.Value;
 			viewModel.GridLength2 = splitGrid.ColumnDefinitions[2].Width.Value;
 			viewModel.GridLength4 = splitGrid.ColumnDefinitions[4].Width.Value;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ApplyNoLastFile()
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ApplyGridLengths()
+        {
+            double sum = GetColWidth(0) + GetColWidth(2) + GetColWidth(4);
+
+            splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0 / sum, GridUnitType.Star);
+            splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2 / sum, GridUnitType.Star);
+            splitGrid.ColumnDefinitions[4].Width = new GridLength(viewModel.GridLength4 / sum, GridUnitType.Star);
+        }
+
+        double GetColWidth(int index)
+        {
+            return splitGrid.ColumnDefinitions[index].Width.Value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void ApplyNoLastFile()
 		{
 			GetGridLengths();
 			if (viewModel.GridLength0 == 0 && viewModel.GridLength2 == 0)

@@ -20,11 +20,12 @@
       <Button Width="120" Margin="12,0,0,0" ToolTip="{Binding HighlightingCmd.Text}" Command="{Binding HighlightingCmd}" HorizontalContentAlignment="Left">
         <TextBlock Text="{Binding HighlightingCmd.Name}" Margin="4,0,4,0"/>
       </Button>
-      <ComboBox Width="120" Margin="12,0,0,0" ToolTip="Workspace" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="True" Text="{Binding NewWorkspace, UpdateSourceTrigger=LostFocus}"/>
-      <Button Content="S" ToolTip="{Binding SaveWorkspaceCmd.Text}" Command="{Binding SaveWorkspaceCmd}" Width="20"/>
       <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding Fonts}" SelectedIndex="{Binding SelectedFont}" ToolTip="Select display font"/>
       <my:NumberBox Width="44" Number="{Binding SelectedSize}" Minimum="4" Maximum="48" Margin="4,0,0,0" ToolTip="Select font size"/>
       <my:SearchControl Margin="12,0,0,0" ToolTip="Search records"/>
+      <ComboBox Width="160" Margin="12,0,0,0" ToolTip="Enter or select a workspace name" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="True" Text="{Binding NewWorkspace, UpdateSourceTrigger=LostFocus}"/>
+      <Button Content="S" ToolTip="{Binding SaveWorkspaceCmd.Text}" Command="{Binding SaveWorkspaceCmd}" Width="20"/>
+      <Button Content="D" ToolTip="{Binding DeleteWorkspaceCmd.Text}" Command="{Binding DeleteWorkspaceCmd}" Width="20"/>
     </StackPanel>
     <!-- -->
     <my:SplitGrid Grid.Row="1" x:Name="splitGrid" Margin="0,4,0,0" TextElement.FontSize="{Binding SelectedSize}" TextElement.FontFamily="{Binding SelectedFamily}" TextOptions.TextRenderingMode="ClearType">
