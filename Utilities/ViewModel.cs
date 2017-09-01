@@ -64,17 +64,18 @@ namespace SmartLogReader
 		{
 			CopyCmd = new UICommand("Copy selected", "Copy", Key.C, ModifierKeys.Control, "Ctrl+C");
 			OpenCmd = new UICommand("Open log file", "Open", Key.O, ModifierKeys.Control, "Ctrl+O");
-			CloseCmd = new UICommand("Close log file", "Close", Key.X, ModifierKeys.Control, "Ctrl+X");
-			ConfigureCmd = new UICommand("Configure filter", "Configure", Key.C, ModifierKeys.Alt, "Alt+C");
+            CloseCmd = new UICommand("Close log file", "Close", Key.X, ModifierKeys.Control, "Ctrl+X");
+            ConfigureCmd = new UICommand("Configure filter", "Configure", Key.C, ModifierKeys.Alt, "Alt+C");
 			HighlightingCmd = new UICommand("Select highlighting colors", "Highlighting", Key.H, ModifierKeys.Control, "Ctrl+H");
 
 			SplitCmd = new UICommand("Split log (TODO)", "Split", Key.S, ModifierKeys.Control, "Ctrl+S");
 			FindCmd = new UICommand("Find record", "Find", Key.F, ModifierKeys.Control, "Ctrl+F");
 			SearchUpCmd = new UICommand("Search records up (Shift+Enter, Shift+F3, F4)", "Search up", Key.Return, ModifierKeys.Shift, "Shift+Return");
 			SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
-		}
+            SaveWorkspaceCmd = new UICommand("Save workspace", "Save", Key.S, ModifierKeys.Control, "Ctrl+S");
+        }
 
-		static public UICommand CopyCmd { get; set; }
+        static public UICommand CopyCmd { get; set; }
 		static public UICommand OpenCmd { get; set; }
 		static public UICommand CloseCmd { get; set; }
 		static public UICommand ConfigureCmd { get; set; }
@@ -83,7 +84,8 @@ namespace SmartLogReader
 		static public UICommand SplitCmd { get; set; }
 		static public UICommand SearchUpCmd { get; set; }
 		static public UICommand FindCmd { get; set; }
-		static public UICommand SearchDownCmd { get; set; }
+        static public UICommand SearchDownCmd { get; set; }
+        static public UICommand SaveWorkspaceCmd { get; set; }
 	}
 
 	/// <summary>

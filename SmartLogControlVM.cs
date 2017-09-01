@@ -14,8 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -262,14 +265,14 @@ namespace SmartLogReader
 			}
 		}
 
-		#endregion Sub viewmodels
+        #endregion Sub viewmodels
 
-		#region Public Properties
+        #region Public Properties
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int SelectedFont
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SelectedFont
 		{
 			get { return selectedFont; }
 			set
@@ -506,8 +509,8 @@ namespace SmartLogReader
 			myClientControlVM.Reader.Stop(reason);
             myServerControlVM.Reader.Stop(reason);
             myAdditionalControlVM.Reader.Stop(reason);
-
-			return ToXML();
+            SaveWorkspace();
+            return ToXML();
 		}
 
 		/// <summary>
@@ -603,7 +606,8 @@ namespace SmartLogReader
 			CommandBindings.Add(new CommandBinding(FindCmd, ExecuteFindCmd, CanExecuteFindCmd));
 			CommandBindings.Add(new CommandBinding(SearchUpCmd, ExecuteSearchUpCmd, CanExecuteSearchUpCmd));
 			CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
-			CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
+            CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
+            CommandBindings.Add(new CommandBinding(SaveWorkspaceCmd, ExecuteSaveWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
 		}
 
 		/// <summary>
@@ -686,6 +690,170 @@ namespace SmartLogReader
             }
         }
 
-		#endregion Commands
-	}
+        /// <summary>
+        /// SaveWorkspaceCmd
+        /// </summary>
+        void CanExecuteSaveWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = selectedWorkspace > -1;
+        }
+
+        void ExecuteSaveWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                DeleteWorkspace();
+            else
+                SaveWorkspace();
+        }
+
+        #endregion Commands
+
+        #region Workspaces
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<string> Workspaces
+        {
+            get { return workspaces; }
+        }
+        private ObservableCollection<string> workspaces = new ObservableCollection<string>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SelectedWorkspace
+        {
+            get { return selectedWorkspace; }
+            set
+            {
+                if (selectedWorkspace != value)
+                {
+                    selectedWorkspace = value;
+                    OnPropertyChanged();
+                    if (IsInitialized)
+                        LoadWorkspace();
+                }
+            }
+        }
+        int selectedWorkspace = -1;
+
+        /// <summary>
+        /// 
+        /// </summary>
+		[XmlIgnore]
+        public string NewWorkspace
+        {
+            get
+            {
+                if (selectedWorkspace >= 0 && selectedWorkspace < workspaces.Count)
+                    return workspaces[selectedWorkspace];
+
+                return null;
+            }
+            set
+            {
+                if (IsNewWorkspace(value))
+                {
+                    workspaces.Add(value);
+                    IsInitialized = false;
+                    SelectedWorkspace = workspaces.Count - 1;
+                    IsInitialized = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private bool IsNewWorkspace(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            foreach (var workspace in workspaces)
+            {
+                if (workspace.equals(value))
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string GetWorkspaceFile()
+        {
+            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartLogReader");
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            return Path.Combine(dir, workspaces[selectedWorkspace]) + ".xml";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void DeleteWorkspace()
+        {
+            if (selectedWorkspace < 0)
+                return;
+
+            string path = GetWorkspaceFile();
+            log.Smart($"path = {path}");
+            Utils.DeleteFile(path);
+            workspaces.RemoveAt(selectedWorkspace);
+            SelectedWorkspace = -1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void SaveWorkspace()
+        {
+            if (selectedWorkspace < 0)
+                return;
+
+            string path = GetWorkspaceFile();
+            log.Smart($"path = {path}");
+            File.WriteAllText(path, ToXML());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void LoadWorkspace()
+        {
+            if (selectedWorkspace < 0)
+                return;
+
+            string path = GetWorkspaceFile();
+            log.Smart($"path = {path}");
+            if (!File.Exists(path))
+            {
+                log.Smart("file does not exist");
+                return;
+            }
+
+            string xml = File.ReadAllText(path);
+            IsInitialized = false;
+            var vm = Utils.FromXML<SmartLogControlVM>(xml);
+            IsInitialized = true;
+
+            if (vm == null)
+            {
+                log.Smart("vm = null", LogLevel.Warn);
+                return;
+            }
+
+            ColorSpecs = new ColorSpecCollection(vm.ColorSpecs);
+            CopyValues(vm.MyClientControlVM, MyClientControlVM);
+            CopyValues(vm.MyServerControlVM, MyServerControlVM);
+            CopyValues(vm.MyAdditionalControlVM, MyAdditionalControlVM);
+            ReloadFiles();
+        }
+
+        #endregion Workspaces
+    }
 }

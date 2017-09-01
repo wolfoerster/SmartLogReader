@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SmartLogReader
 {
@@ -42,5 +43,13 @@ namespace SmartLogReader
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-	}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 }

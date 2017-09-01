@@ -20,17 +20,8 @@
       <Button Width="120" Margin="12,0,0,0" ToolTip="{Binding HighlightingCmd.Text}" Command="{Binding HighlightingCmd}" HorizontalContentAlignment="Left">
         <TextBlock Text="{Binding HighlightingCmd.Name}" Margin="4,0,4,0"/>
       </Button>
-      <!--<ComboBox Width="120" Margin="12,0,0,0" ToolTip="Workspace" SelectedIndex="0">
-        <ComboBoxItem Content="Workspace 1"/>
-        <ComboBoxItem Content="Workspace 2"/>
-        <ComboBoxItem Content="Workspace 3"/>
-        <ComboBoxItem Content="Workspace 4"/>
-        <ComboBoxItem Content="Workspace 5"/>
-        <ComboBoxItem Content="Workspace 6"/>
-        <ComboBoxItem Content="Workspace 7"/>
-        <ComboBoxItem Content="Workspace 8"/>
-        <ComboBoxItem Content="Workspace 9"/>
-      </ComboBox>-->
+      <ComboBox Width="120" Margin="12,0,0,0" ToolTip="Workspace" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="True" Text="{Binding NewWorkspace, UpdateSourceTrigger=LostFocus}"/>
+      <Button Content="S" ToolTip="{Binding SaveWorkspaceCmd.Text}" Command="{Binding SaveWorkspaceCmd}" Width="20"/>
       <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding Fonts}" SelectedIndex="{Binding SelectedFont}" ToolTip="Select display font"/>
       <my:NumberBox Width="44" Number="{Binding SelectedSize}" Minimum="4" Maximum="48" Margin="4,0,0,0" ToolTip="Select font size"/>
       <my:SearchControl Margin="12,0,0,0" ToolTip="Search records"/>
