@@ -87,6 +87,12 @@ namespace SmartLogReader
             if (viewModel.ColorSpecs == null)
                 viewModel.ColorSpecs = Record.GetDefaultColorSpecs();
 
+            if (viewModel.Workspaces.Count == 0)
+            {
+                viewModel.Workspaces.Add("Default workspace");
+                viewModel.SelectedWorkspace = 0;
+            }
+
             IsInitialized = true;
             return viewModel;
         }
@@ -617,7 +623,7 @@ namespace SmartLogReader
             CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
             CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
             CommandBindings.Add(new CommandBinding(SaveWorkspaceCmd, ExecuteSaveWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
-            CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
+            CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteDeleteWorkspaceCmd));
         }
 
         /// <summary>
@@ -707,30 +713,6 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void CanExecuteSaveWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;// selectedWorkspace > -1;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        void ExecuteSaveWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
-        {
-            SaveWorkspace();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        void ExecuteDeleteWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
-        {
-            DeleteWorkspace();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public ObservableCollection<string> Workspaces
         {
             get { return workspaces; }
@@ -802,6 +784,31 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
+        void CanExecuteSaveWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void ExecuteSaveWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveWorkspace();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void CanExecuteDeleteWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = selectedWorkspace > 0;
+        }
+
+        void ExecuteDeleteWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            DeleteWorkspace();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         private string GetWorkspaceFile()
         {
             string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartLogReader");
@@ -863,28 +870,38 @@ namespace SmartLogReader
             IsInitialized = false;
             ColorSpecs.Clear();
             var vm = Utils.FromXML<SmartLogControlVM>(xml);
-            IsInitialized = true;
 
             if (vm == null)
             {
                 log.Smart("vm = null", LogLevel.Warn);
+                IsInitialized = true;
                 return;
             }
 
             CopyValues(vm.MyClientControlVM, MyClientControlVM, true);
             CopyValues(vm.MyServerControlVM, MyServerControlVM, true);
             CopyValues(vm.MyAdditionalControlVM, MyAdditionalControlVM, true);
-
-            ApplyGridLengths(vm);
+            CopyValues(vm);
+            IsInitialized = true;
             ReloadFiles();
         }
 
-        void ApplyGridLengths(SmartLogControlVM vm)
+        void CopyValues(SmartLogControlVM vm)
         {
             GridLength0 = vm.GridLength0;
             GridLength2 = vm.GridLength2;
             GridLength4 = vm.GridLength4;
             FirePropertyChanged("ApplyGridLengths");
+            FirePropertyChanged("ShowTime");
+            FirePropertyChanged("ShowLogger");
+            FirePropertyChanged("ShowLevel");
+            FirePropertyChanged("ShowThreadIds");
+            FirePropertyChanged("ShowMethod");
+            FirePropertyChanged("AmountOfTime");
+            FirePropertyChanged("AmountOfLogger");
+            FirePropertyChanged("AmountOfLevel");
+            FirePropertyChanged("AmountOfThreadIds");
+            FirePropertyChanged("AmountOfMethod");
         }
 
         #endregion Workspaces
