@@ -31,239 +31,246 @@ namespace SmartLogReader
     /// The main viewmodel for a SmartLogControl.
     /// </summary>
     public class SmartLogControlVM : SplitGridViewModel3
-	{
+    {
         private static readonly SmartLogger log = new SmartLogger();
 
         /// <summary>
-		/// Fill some static lists.
-		/// </summary>
-		static SmartLogControlVM()
-		{
-			InitLists();
-		}
+        /// Fill some static lists.
+        /// </summary>
+        static SmartLogControlVM()
+        {
+            InitLists();
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SmartLogControlVM()
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public SmartLogControlVM()
+        {
             GridLength0 = 1;
-			GridLength2 = 0;
-			GridLength4 = 0;
-			InitCommands();
-			SearchText = "Search for me";
-		}
+            GridLength2 = 0;
+            GridLength4 = 0;
+            InitCommands();
+            SearchText = "Search for me";
+        }
 
-		/// <summary>
-		/// A flag indicating that the main view model is initialized.
-		/// </summary>
-		public static bool IsInitialized { get; protected set; }
+        /// <summary>
+        /// A flag indicating that the main view model is initialized.
+        /// </summary>
+        public static bool IsInitialized { get; protected set; }
 
-		/// <summary>
-		/// Deserialize from XML.
-		/// </summary>
-		public static SmartLogControlVM FromXML(string xml)
-		{
-			log.Smart($"Create viewmodel from the following settings: {xml}");
+        /// <summary>
+        /// Deserialize from XML.
+        /// </summary>
+        public static SmartLogControlVM FromXML(string xml)
+        {
+            log.Smart($"Create viewmodel from the following settings: {xml}");
 
-			//--- There are property setters which call ReloadFiles() during XML deserialization. 
-			//--- To prevent this, we use this static boolean value:
-			IsInitialized = false;
+            //--- There are property setters which call ReloadFiles() during XML deserialization. 
+            //--- To prevent this, we use this static boolean value:
+            IsInitialized = false;
 
-			SmartLogControlVM viewModel = Utils.FromXML<SmartLogControlVM>(xml);
+            SmartLogControlVM viewModel = Utils.FromXML<SmartLogControlVM>(xml);
 
-			if (viewModel == null)
-			{
-				//--- Do not create subVMs in the ctors or getters!
-				viewModel = new SmartLogControlVM();
-				viewModel.MyClientControlVM = NewSplitLogControlVM();
-				viewModel.MyServerControlVM = NewSplitLogControlVM();
-				viewModel.MyAdditionalControlVM = NewSplitLogControlVM();
-			}
+            if (viewModel == null)
+            {
+                //--- Do not create subVMs in the ctors or getters!
+                viewModel = new SmartLogControlVM();
+                viewModel.MyClientControlVM = NewSplitLogControlVM();
+                viewModel.MyServerControlVM = NewSplitLogControlVM();
+                viewModel.MyAdditionalControlVM = NewSplitLogControlVM();
+            }
 
-			if (viewModel.MyStandaloneControlVM == null)
-				viewModel.MyStandaloneControlVM = NewSplitLogControlVM();
+            if (viewModel.MyStandaloneControlVM == null)
+                viewModel.MyStandaloneControlVM = NewSplitLogControlVM();
 
-			if (viewModel.ColorSpecs == null)
-				viewModel.ColorSpecs = Record.GetDefaultColorSpecs();
+            if (viewModel.ColorSpecs == null)
+                viewModel.ColorSpecs = Record.GetDefaultColorSpecs();
 
-			IsInitialized = true;
-			return viewModel;
-		}
+            IsInitialized = true;
+            return viewModel;
+        }
 
-		/// <summary>
-		/// Create a new sub viewmodel with subsub viewmodels.
-		/// </summary>
-		static SplitLogControlVM NewSplitLogControlVM()
-		{
-			//--- Do not create subsubVMs in the ctors or getters!
-			SplitLogControlVM vm = new SplitLogControlVM();
-			vm.MyLogControlVM1 = new LogControlVM();
-			vm.MyLogControlVM2 = new LogControlVM();
-			return vm;
-		}
+        /// <summary>
+        /// Create a new sub viewmodel with subsub viewmodels.
+        /// </summary>
+        static SplitLogControlVM NewSplitLogControlVM()
+        {
+            //--- Do not create subsubVMs in the ctors or getters!
+            SplitLogControlVM vm = new SplitLogControlVM();
+            vm.MyLogControlVM1 = new LogControlVM();
+            vm.MyLogControlVM2 = new LogControlVM();
+            return vm;
+        }
 
-		/// <summary>
-		/// Serialize to XML.
-		/// </summary>
-		public string ToXML()
-		{
-			if (App.OpenFileName == null)
-			{
-				GetGridLengths();
-				myClientControlVM.GetGridLengths();
-				myServerControlVM.GetGridLengths();
-				myAdditionalControlVM.GetGridLengths();
-			}
-			else
-			{
-				ModifyLayout(false);
-			}
-			return Utils.ToXML(this);
-		}
+        /// <summary>
+        /// Serialize to XML.
+        /// </summary>
+        public string ToXML()
+        {
+            if (App.OpenFileName == null)
+            {
+                GetGridLengths();
+                myClientControlVM.GetGridLengths();
+                myServerControlVM.GetGridLengths();
+                myAdditionalControlVM.GetGridLengths();
+            }
+            else
+            {
+                ModifyLayout(false);
+            }
+            return Utils.ToXML(this);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public override string ToString()
-		{
-			return "SmartLogControlVM[" + DisplayName + "]";
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public override string ToString()
+        {
+            return "SmartLogControlVM[" + DisplayName + "]";
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static void InitLists()
-		{
-			Fonts = new List<string>();
-			Fonts.Add("Consolas");
-			Fonts.Add("Courier New");
+        /// <summary>
+        /// 
+        /// </summary>
+        static void InitLists()
+        {
+            Fonts = new List<string>();
+            Fonts.Add("Consolas");
+            Fonts.Add("Courier New");
             Fonts.Add("Lucida Console");
 
-			ReadModes = new List<string>();
-			ReadModes.Add("All records");
-			ReadModes.Add("Last session");
-			ReadModes.Add("Last 24 hours");
-			ReadModes.Add("Last 8 hours");
-			ReadModes.Add("Last hour");
+            ReadModes = new List<string>();
+            ReadModes.Add("All records");
+            ReadModes.Add("Last session");
+            ReadModes.Add("Last 24 hours");
+            ReadModes.Add("Last 8 hours");
+            ReadModes.Add("Last hour");
 
-			LogLevels = new List<string>();
-			LogLevels.Add("Debug");
-			LogLevels.Add("Info");
-			LogLevels.Add("Warn");
-			LogLevels.Add("Error");
-			LogLevels.Add("Fatal");
+            LogLevels = new List<string>();
+            LogLevels.Add("Debug");
+            LogLevels.Add("Info");
+            LogLevels.Add("Warn");
+            LogLevels.Add("Error");
+            LogLevels.Add("Fatal");
 
-			RecordDetails = new List<string>();
-			RecordDetails.Add("Time");
-			RecordDetails.Add("Logger");
-			RecordDetails.Add("Level");
+            RecordDetails = new List<string>();
+            RecordDetails.Add("Time");
+            RecordDetails.Add("Logger");
+            RecordDetails.Add("Level");
             RecordDetails.Add("ThreadIds");
             RecordDetails.Add("Method");
-		}
-		static public List<string> Fonts { get; set; }
-		static public List<string> ReadModes { get; set; }
-		static public List<string> LogLevels { get; set; }
-		static public List<string> RecordDetails { get; set; }
+        }
+        static public List<string> Fonts { get; set; }
+        static public List<string> ReadModes { get; set; }
+        static public List<string> LogLevels { get; set; }
+        static public List<string> RecordDetails { get; set; }
 
-		#region Sub viewmodels
+        #region Sub viewmodels
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SplitLogControlVM MyClientControlVM 
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public SplitLogControlVM MyClientControlVM
+        {
             get { return myClientControlVM; }
-			set
-			{
-				Utils.OnlyOnce(myClientControlVM, value);
-				myClientControlVM = value;
-				myClientControlVM.Reader = new LogReader();
-				myClientControlVM.PropertyChanged += SubVMPropertyChanged;
-				myClientControlVM.OptionalButtonsVisibility = Visibility.Visible;
+            set
+            {
+                Utils.OnlyOnce(myClientControlVM, value);
+                myClientControlVM = value;
+                myClientControlVM.Reader = new LogReader();
+                myClientControlVM.PropertyChanged += SubVMPropertyChanged;
+                myClientControlVM.OptionalButtonsVisibility = Visibility.Visible;
                 //myClientControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
-				myClientControlVM.IsSyncSelection = true;
-			}
-		}
-		SplitLogControlVM myClientControlVM;
+                myClientControlVM.IsSyncSelection = true;
+            }
+        }
+        SplitLogControlVM myClientControlVM;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SplitLogControlVM MyServerControlVM 
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public SplitLogControlVM MyServerControlVM
+        {
             get { return myServerControlVM; }
-			set
-			{
-				Utils.OnlyOnce(myServerControlVM, value);
-				myServerControlVM = value;
-				myServerControlVM.Reader = new LogReader();
-				myServerControlVM.PropertyChanged += SubVMPropertyChanged;
-				myServerControlVM.OptionalButtonsVisibility = Visibility.Visible;
-				//myServerControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
-				myServerControlVM.IsSyncSelection = true;
-			}
-		}
-		SplitLogControlVM myServerControlVM;
+            set
+            {
+                Utils.OnlyOnce(myServerControlVM, value);
+                myServerControlVM = value;
+                myServerControlVM.Reader = new LogReader();
+                myServerControlVM.PropertyChanged += SubVMPropertyChanged;
+                myServerControlVM.OptionalButtonsVisibility = Visibility.Visible;
+                //myServerControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
+                myServerControlVM.IsSyncSelection = true;
+            }
+        }
+        SplitLogControlVM myServerControlVM;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SplitLogControlVM MyAdditionalControlVM 
-		{
-			get { return myAdditionalControlVM; }
-			set
-			{
-				Utils.OnlyOnce(myAdditionalControlVM, value);
-				myAdditionalControlVM = value;
-				myAdditionalControlVM.Reader = new LogReader();
-				myAdditionalControlVM.PropertyChanged += SubVMPropertyChanged;
-				myAdditionalControlVM.OptionalButtonsVisibility = Visibility.Visible;
-			}
-		}
-		SplitLogControlVM myAdditionalControlVM;
+        /// <summary>
+        /// 
+        /// </summary>
+        public SplitLogControlVM MyAdditionalControlVM
+        {
+            get { return myAdditionalControlVM; }
+            set
+            {
+                Utils.OnlyOnce(myAdditionalControlVM, value);
+                myAdditionalControlVM = value;
+                myAdditionalControlVM.Reader = new LogReader();
+                myAdditionalControlVM.PropertyChanged += SubVMPropertyChanged;
+                myAdditionalControlVM.OptionalButtonsVisibility = Visibility.Visible;
+            }
+        }
+        SplitLogControlVM myAdditionalControlVM;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SplitLogControlVM MyStandaloneControlVM
-		{
-			get { return myStandaloneControlVM; }
-			set
-			{
-				Utils.OnlyOnce(myStandaloneControlVM, value);
-				myStandaloneControlVM = value;
-			}
-		}
-		SplitLogControlVM myStandaloneControlVM;
+        /// <summary>
+        /// 
+        /// </summary>
+        public SplitLogControlVM MyStandaloneControlVM
+        {
+            get { return myStandaloneControlVM; }
+            set
+            {
+                Utils.OnlyOnce(myStandaloneControlVM, value);
+                myStandaloneControlVM = value;
+            }
+        }
+        SplitLogControlVM myStandaloneControlVM;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void SubVMPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			SplitLogControlVM vm = sender as SplitLogControlVM;
+        /// <summary>
+        /// 
+        /// </summary>
+        void SubVMPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SplitLogControlVM vm = sender as SplitLogControlVM;
 
-			if (e.PropertyName == "FindMatchingExternal")
-			{
-				myClientControlVM.FindMatchingExternal(vm.SelectedRecord);
-				myServerControlVM.FindMatchingExternal(vm.SelectedRecord);
-				myAdditionalControlVM.FindMatchingExternal(vm.SelectedRecord);
-			}
-			else if (e.PropertyName == "FollowTail")
-			{
-				if (vm != myAdditionalControlVM || vm.IsSyncSelection)
-				{
-					myClientControlVM.SyncFollowTail(vm);
-					myServerControlVM.SyncFollowTail(vm);
-					myAdditionalControlVM.SyncFollowTail(vm);
-				}
-			}
-			else if (e.PropertyName == "NoLastFile")
-			{
-				FirePropertyChanged("NoLastFile");
-			}
-		}
+            if (e.PropertyName == "FindMatchingExternal")
+            {
+                myClientControlVM.FindMatchingExternal(vm.SelectedRecord);
+                myServerControlVM.FindMatchingExternal(vm.SelectedRecord);
+                myAdditionalControlVM.FindMatchingExternal(vm.SelectedRecord);
+            }
+            else if (e.PropertyName == "FollowTail")
+            {
+                if (vm != myAdditionalControlVM || vm.IsSyncSelection)
+                {
+                    myClientControlVM.SyncFollowTail(vm);
+                    myServerControlVM.SyncFollowTail(vm);
+                    myAdditionalControlVM.SyncFollowTail(vm);
+                }
+            }
+            else if (e.PropertyName == "NoLastFile")
+            {
+                if (vm == myAdditionalControlVM || vm == myServerControlVM)
+                {
+                    ComingFromAdditionalVM = vm == myAdditionalControlVM;
+                    FirePropertyChanged("NoLastFile");
+                }
+            }
+        }
+
+        [XmlIgnore]
+        internal bool ComingFromAdditionalVM { get; private set; }
 
         #endregion Sub viewmodels
 
@@ -273,118 +280,118 @@ namespace SmartLogReader
         /// 
         /// </summary>
         public int SelectedFont
-		{
-			get { return selectedFont; }
-			set
-			{
-				if (selectedFont != value)
-				{
-					selectedFont = value;
-					FirePropertyChanged("SelectedFont");
-					SelectedFamily = new FontFamily(Fonts[value]);
-				}
-			}
-		}
-		int selectedFont = 0;
+        {
+            get { return selectedFont; }
+            set
+            {
+                if (selectedFont != value)
+                {
+                    selectedFont = value;
+                    FirePropertyChanged("SelectedFont");
+                    SelectedFamily = new FontFamily(Fonts[value]);
+                }
+            }
+        }
+        int selectedFont = 0;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public FontFamily SelectedFamily
-		{
-			get { return selectedFamily; }
-			set
-			{
-				if (selectedFamily != value)
-				{
-					selectedFamily = value;
-					FirePropertyChanged("SelectedFamily");
-				}
-			}
-		}
-		FontFamily selectedFamily = new FontFamily(Fonts[0]);
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public FontFamily SelectedFamily
+        {
+            get { return selectedFamily; }
+            set
+            {
+                if (selectedFamily != value)
+                {
+                    selectedFamily = value;
+                    FirePropertyChanged("SelectedFamily");
+                }
+            }
+        }
+        FontFamily selectedFamily = new FontFamily(Fonts[0]);
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int SelectedSize
-		{
-			get { return selectedSize; }
-			set
-			{
-				if (selectedSize != value)
-				{
-					selectedSize = value;
-					FirePropertyChanged("SelectedSize");
-				}
-			}
-		}
-		int selectedSize = 12;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SelectedSize
+        {
+            get { return selectedSize; }
+            set
+            {
+                if (selectedSize != value)
+                {
+                    selectedSize = value;
+                    FirePropertyChanged("SelectedSize");
+                }
+            }
+        }
+        int selectedSize = 12;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int SelectedLogLevel
-		{
-			get { return (int)LogReader.Level; }
-			set
-			{
-				if (SelectedLogLevel != value)
-				{
-					LogReader.Level = (LogLevel)value;
-					FirePropertyChanged("SelectedLogLevel");
-					ReloadFiles();
-				}
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SelectedLogLevel
+        {
+            get { return (int)LogReader.Level; }
+            set
+            {
+                if (SelectedLogLevel != value)
+                {
+                    LogReader.Level = (LogLevel)value;
+                    FirePropertyChanged("SelectedLogLevel");
+                    ReloadFiles();
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int SelectedReadMode
-		{
-			get { return (int)LogReader.ReadMode; }
-			set
-			{
-				if (SelectedReadMode != value)
-				{
-					LogReader.ReadMode = (LogReadMode)value;
-					FirePropertyChanged("SelectedReadMode");
-					ReloadFiles();
-				}
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SelectedReadMode
+        {
+            get { return (int)LogReader.ReadMode; }
+            set
+            {
+                if (SelectedReadMode != value)
+                {
+                    LogReader.ReadMode = (LogReadMode)value;
+                    FirePropertyChanged("SelectedReadMode");
+                    ReloadFiles();
+                }
+            }
+        }
 
         /// <summary>
         /// 
         /// </summary>
         public string SearchText { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public ColorSpecCollection ColorSpecs
-		{
-			get { return Record.ColorSpecs; }
-			set
-			{
-				if (Record.ColorSpecs != value)
-				{
-					Record.ColorSpecs = value;
-					FirePropertyChanged("ColorSpecs");
-				}
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public ColorSpecCollection ColorSpecs
+        {
+            get { return Record.ColorSpecs; }
+            set
+            {
+                if (Record.ColorSpecs != value)
+                {
+                    Record.ColorSpecs = value;
+                    FirePropertyChanged("ColorSpecs");
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public Size DetailsWindowSize
-		{
-			get { return DetailsWindow.LastSize; }
-			set { DetailsWindow.LastSize = value; }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public Size DetailsWindowSize
+        {
+            get { return DetailsWindow.LastSize; }
+            set { DetailsWindow.LastSize = value; }
+        }
 
         /// <summary>
         /// 
@@ -504,169 +511,171 @@ namespace SmartLogReader
         /// 
         /// </summary>
         public string Shutdown()
-		{
+        {
             string reason = "Shutdown";
-			myClientControlVM.Reader.Stop(reason);
+            myClientControlVM.Reader.Stop(reason);
             myServerControlVM.Reader.Stop(reason);
             myAdditionalControlVM.Reader.Stop(reason);
             SaveWorkspace();
             return ToXML();
-		}
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void LoadFiles()
-		{
-			//--- if no filename is given in the command line, open all last files
-			if (App.OpenFileName == null)
-			{
+        /// <summary>
+        /// 
+        /// </summary>
+        public void LoadFiles()
+        {
+            //--- if no filename is given in the command line, open all last files
+            if (App.OpenFileName == null)
+            {
                 myClientControlVM.LoadFile(myClientControlVM.LastFile);
                 myServerControlVM.LoadFile(myServerControlVM.LastFile);
-				myAdditionalControlVM.LoadFile(myAdditionalControlVM.LastFile);
-			}
-			else //--- open the specified file only
-			{
-				ModifyLayout(true);
-				myAdditionalControlVM.LoadFile(App.OpenFileName);
-			}
-		}
+                myAdditionalControlVM.LoadFile(myAdditionalControlVM.LastFile);
+            }
+            else //--- open the specified file only
+            {
+                ModifyLayout(true);
+                myAdditionalControlVM.LoadFile(App.OpenFileName);
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ReloadFiles()
-		{
-			if (!IsInitialized)
-				return;
+        /// <summary>
+        /// 
+        /// </summary>
+        void ReloadFiles()
+        {
+            if (!IsInitialized)
+                return;
 
-			myClientControlVM.ReloadFile();
-			myServerControlVM.ReloadFile();
-			myAdditionalControlVM.ReloadFile();
-		}
+            myClientControlVM.ReloadFile();
+            myServerControlVM.ReloadFile();
+            myAdditionalControlVM.ReloadFile();
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ModifyLayout(bool mode)
-		{
-			if (mode) //--- call at the begin
-			{
-				//--- Only MyAdditionalControlVM shall be shown. Before setting the grid lengths, store the current ones. 
-				//--- Also replace MyAdditionalControlVM values with MyStandaloneControlVM values.
-				gridLength0 = GridLength0; GridLength0 = 0;
-				gridLength2 = GridLength2; GridLength2 = 0;
-				gridLength4 = GridLength4; GridLength4 = 1;
-				SwapAdditionalVMs();
+        /// <summary>
+        /// 
+        /// </summary>
+        void ModifyLayout(bool mode)
+        {
+            if (mode) //--- call at the begin
+            {
+                //--- Only MyAdditionalControlVM shall be shown. Before setting the grid lengths, store the current ones. 
+                //--- Also replace MyAdditionalControlVM values with MyStandaloneControlVM values.
+                gridLength0 = GridLength0; GridLength0 = 0;
+                gridLength2 = GridLength2; GridLength2 = 0;
+                gridLength4 = GridLength4; GridLength4 = 1;
+                SwapAdditionalVMs();
 
-				if (!App.OpenFileName.equals(myAdditionalControlVM.LastFile))
-					myAdditionalControlVM.MyLogControlVM1.IsFilterEnabled = false;
-			}
-			else //--- call on exit
-			{
-				GridLength0 = gridLength0;
-				GridLength2 = gridLength2;
-				GridLength4 = gridLength4;
-				SwapAdditionalVMs();
-			}
-		}
-		double gridLength0, gridLength2, gridLength4;
+                if (!App.OpenFileName.equals(myAdditionalControlVM.LastFile))
+                    myAdditionalControlVM.MyLogControlVM1.IsFilterEnabled = false;
+            }
+            else //--- call on exit
+            {
+                GridLength0 = gridLength0;
+                GridLength2 = gridLength2;
+                GridLength4 = gridLength4;
+                SwapAdditionalVMs();
+            }
+        }
+        double gridLength0, gridLength2, gridLength4;
 
-		void SwapAdditionalVMs()
-		{
-			SplitLogControlVM tmp = NewSplitLogControlVM();
-			CopyValues(myAdditionalControlVM, tmp);
-			CopyValues(myStandaloneControlVM, myAdditionalControlVM);
-			CopyValues(tmp, myStandaloneControlVM);
-		}
+        void SwapAdditionalVMs()
+        {
+            SplitLogControlVM tmp = NewSplitLogControlVM();
+            CopyValues(myAdditionalControlVM, tmp);
+            CopyValues(myStandaloneControlVM, myAdditionalControlVM);
+            CopyValues(tmp, myStandaloneControlVM);
+        }
 
-		private void CopyValues(SplitLogControlVM source, SplitLogControlVM target)
-		{
-			target.GridLength0 = source.GridLength0;
-			target.GridLength2 = source.GridLength2;
-			target.LastFile = source.LastFile;
-			target.IsSplitLog = source.IsSplitLog;
-			target.IsSyncSelection = source.IsSyncSelection;
-			CopyValues(source.MyLogControlVM1, target.MyLogControlVM1);
-			CopyValues(source.MyLogControlVM2, target.MyLogControlVM2);
-		}
+        private void CopyValues(SplitLogControlVM source, SplitLogControlVM target, bool applyGridLengths = false)
+        {
+            target.GridLength0 = source.GridLength0;
+            target.GridLength2 = source.GridLength2;
+            target.LastFile = source.LastFile;
+            target.IsSplitLog = source.IsSplitLog;
+            target.IsSyncSelection = source.IsSyncSelection;
+            CopyValues(source.MyLogControlVM1, target.MyLogControlVM1);
+            CopyValues(source.MyLogControlVM2, target.MyLogControlVM2);
+            if (applyGridLengths)
+                target.ApplyGridLengths();
+        }
 
-		private void CopyValues(LogControlVM source, LogControlVM target)
-		{
-			target.IsFilterEnabled = source.IsFilterEnabled;
-			target.IncludeList = new FilterCollection(source.IncludeList);
-			target.ExcludeList = new FilterCollection(source.ExcludeList);
-		}
+        private void CopyValues(LogControlVM source, LogControlVM target)
+        {
+            target.IsFilterEnabled = source.IsFilterEnabled;
+            target.IncludeList = new FilterCollection(source.IncludeList);
+            target.ExcludeList = new FilterCollection(source.ExcludeList);
+        }
 
-		#region Commands
+        #region Commands
 
-		void InitCommands()
-		{
-			CommandBindings.Add(new CommandBinding(CopyCmd, ExecuteCopyCmd, CanExecuteCopyCmd));
-			CommandBindings.Add(new CommandBinding(FindCmd, ExecuteFindCmd, CanExecuteFindCmd));
-			CommandBindings.Add(new CommandBinding(SearchUpCmd, ExecuteSearchUpCmd, CanExecuteSearchUpCmd));
-			CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
+        void InitCommands()
+        {
+            CommandBindings.Add(new CommandBinding(CopyCmd, ExecuteCopyCmd, CanExecuteCopyCmd));
+            CommandBindings.Add(new CommandBinding(FindCmd, ExecuteFindCmd, CanExecuteFindCmd));
+            CommandBindings.Add(new CommandBinding(SearchUpCmd, ExecuteSearchUpCmd, CanExecuteSearchUpCmd));
+            CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
             CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
             CommandBindings.Add(new CommandBinding(SaveWorkspaceCmd, ExecuteSaveWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
             CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
-		}
+        }
 
-		/// <summary>
-		/// FindCmd
-		/// </summary>
-		void CanExecuteFindCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
+        /// <summary>
+        /// FindCmd
+        /// </summary>
+        void CanExecuteFindCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
-		void ExecuteFindCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			FirePropertyChanged("SetFocusOnSearchBox");
-		}
+        void ExecuteFindCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            FirePropertyChanged("SetFocusOnSearchBox");
+        }
 
-		/// <summary>
-		/// SearchUpCmd. Cannot be moved to LogControlVM (although it would be nice) because
-		/// the UIElements (search up and down buttons) will not find the command in the visual tree. 
-		/// That's because the buttons are part of the SearchControl which is part of the SmartLogControl 
-		/// and the LogControls are deep inside other branches of the main control.
-		/// </summary>
-		void CanExecuteSearchUpCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = !string.IsNullOrEmpty(SearchText);
-		}
+        /// <summary>
+        /// SearchUpCmd. Cannot be moved to LogControlVM (although it would be nice) because
+        /// the UIElements (search up and down buttons) will not find the command in the visual tree. 
+        /// That's because the buttons are part of the SearchControl which is part of the SmartLogControl 
+        /// and the LogControls are deep inside other branches of the main control.
+        /// </summary>
+        void CanExecuteSearchUpCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !string.IsNullOrEmpty(SearchText);
+        }
 
-		void ExecuteSearchUpCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			LogControlVM.CurrentVM.Search(SearchText, false);
-		}
+        void ExecuteSearchUpCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            LogControlVM.CurrentVM.Search(SearchText, false);
+        }
 
-		/// <summary>
-		/// SearchDownCmd
-		/// </summary>
-		void CanExecuteSearchDownCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = !string.IsNullOrEmpty(SearchText);
-		}
+        /// <summary>
+        /// SearchDownCmd
+        /// </summary>
+        void CanExecuteSearchDownCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !string.IsNullOrEmpty(SearchText);
+        }
 
-		void ExecuteSearchDownCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			LogControlVM.CurrentVM.Search(SearchText, true);
-		}
+        void ExecuteSearchDownCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            LogControlVM.CurrentVM.Search(SearchText, true);
+        }
 
-		/// <summary>
-		/// CopyCmd
-		/// </summary>
-		void CanExecuteCopyCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			bool cannotExecute = LogControlVM.CurrentVM.RecordsView == null || LogControlVM.CurrentVM.RecordsView.CurrentItem == null;
-			e.CanExecute = !cannotExecute;
-		}
+        /// <summary>
+        /// CopyCmd
+        /// </summary>
+        void CanExecuteCopyCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            bool cannotExecute = LogControlVM.CurrentVM.RecordsView == null || LogControlVM.CurrentVM.RecordsView.CurrentItem == null;
+            e.CanExecute = !cannotExecute;
+        }
 
-		void ExecuteCopyCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			Record record = LogControlVM.CurrentVM.RecordsView.CurrentItem as Record;
-			Clipboard.SetText(record.LongString);
-		}
+        void ExecuteCopyCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            Record record = LogControlVM.CurrentVM.RecordsView.CurrentItem as Record;
+            Clipboard.SetText(record.LongString);
+        }
 
         /// <summary>
         /// HighlightingCmd
@@ -700,7 +709,7 @@ namespace SmartLogReader
         /// </summary>
         void CanExecuteSaveWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = selectedWorkspace > -1;
+            e.CanExecute = true;// selectedWorkspace > -1;
         }
 
         /// <summary>
@@ -736,6 +745,7 @@ namespace SmartLogReader
             get { return selectedWorkspace; }
             set
             {
+                log.Smart($"old = {selectedWorkspace}, new = {value}");
                 if (selectedWorkspace != value)
                 {
                     selectedWorkspace = value;
@@ -798,22 +808,10 @@ namespace SmartLogReader
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
+            if (selectedWorkspace < 0 || selectedWorkspace >= workspaces.Count)
+                return null;
+
             return Path.Combine(dir, workspaces[selectedWorkspace]) + ".xml";
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void DeleteWorkspace()
-        {
-            if (selectedWorkspace < 0)
-                return;
-
-            string path = GetWorkspaceFile();
-            log.Smart($"path = {path}");
-            Utils.DeleteFile(path);
-            workspaces.RemoveAt(selectedWorkspace);
-            SelectedWorkspace = -1;
         }
 
         /// <summary>
@@ -821,12 +819,30 @@ namespace SmartLogReader
         /// </summary>
         private void SaveWorkspace()
         {
-            if (selectedWorkspace < 0)
-                return;
-
             string path = GetWorkspaceFile();
-            log.Smart($"path = {path}");
-            File.WriteAllText(path, ToXML());
+            log.Smart($"path = '{path}'");
+            if (path != null)
+                File.WriteAllText(path, ToXML());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void DeleteWorkspace()
+        {
+            string path = GetWorkspaceFile();
+            log.Smart($"path = '{path}'");
+            if (path != null)
+            {
+                var msg = $"Do you really want to delete workspace {workspaces[selectedWorkspace]}?";
+                var res = MessageBox.Show(msg, "Delete Workspace", MessageBoxButton.YesNo);
+                if (res == MessageBoxResult.Yes)
+                {
+                    Utils.DeleteFile(path);
+                    workspaces.RemoveAt(selectedWorkspace);
+                    SelectedWorkspace = -1;
+                }
+            }
         }
 
         /// <summary>
@@ -834,11 +850,8 @@ namespace SmartLogReader
         /// </summary>
         private void LoadWorkspace()
         {
-            if (selectedWorkspace < 0)
-                return;
-
             string path = GetWorkspaceFile();
-            log.Smart($"path = {path}");
+            log.Smart($"path = '{path}'");
             if (!File.Exists(path))
             {
                 log.Smart("file does not exist");
@@ -847,10 +860,8 @@ namespace SmartLogReader
 
             string xml = File.ReadAllText(path);
 
-            //why???
-            ColorSpecs.Clear();
-
             IsInitialized = false;
+            ColorSpecs.Clear();
             var vm = Utils.FromXML<SmartLogControlVM>(xml);
             IsInitialized = true;
 
@@ -860,12 +871,9 @@ namespace SmartLogReader
                 return;
             }
 
-            //why?
-            //ColorSpecs = new ColorSpecCollection(vm.ColorSpecs);
-
-            CopyValues(vm.MyClientControlVM, MyClientControlVM);
-            CopyValues(vm.MyServerControlVM, MyServerControlVM);
-            CopyValues(vm.MyAdditionalControlVM, MyAdditionalControlVM);
+            CopyValues(vm.MyClientControlVM, MyClientControlVM, true);
+            CopyValues(vm.MyServerControlVM, MyServerControlVM, true);
+            CopyValues(vm.MyAdditionalControlVM, MyAdditionalControlVM, true);
 
             ApplyGridLengths(vm);
             ReloadFiles();

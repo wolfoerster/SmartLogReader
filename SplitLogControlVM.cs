@@ -246,7 +246,8 @@ namespace SmartLogReader
 			Reader.FileName = null;
 			Reader.Records.Clear();
 			HandleRecordsChanged();
-		}
+            HandleReaderFileNameChanged();
+        }
 
 		/// <summary>
 		/// 
@@ -271,6 +272,14 @@ namespace SmartLogReader
                 return  DisplayName + " " + Utils.GetFileSizeString(reader.FileSize);
             }
 		}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ApplyGridLengths()
+        {
+            FirePropertyChanged("ApplyGridLengths");
+        }
 
         /// <summary>
         /// 

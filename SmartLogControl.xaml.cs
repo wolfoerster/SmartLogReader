@@ -26,147 +26,135 @@ namespace SmartLogReader
     /// Interaction logic for SmartLogControl.xaml
     /// </summary>
     public partial class SmartLogControl : UserControl
-	{
+    {
         private static readonly SmartLogger log = new SmartLogger();
 
         /// <summary>
         /// 
         /// </summary>
         public SmartLogControl()
-		{
-			InitializeComponent();
-			AllowDrop = true;
-			Drop += MeDrop;
-		}
+        {
+            InitializeComponent();
+            AllowDrop = true;
+            Drop += MeDrop;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SmartLogControlVM ViewModel
-		{
-			get { return viewModel; }
-			set
-			{
-				Utils.OnlyOnce(viewModel, value);
-				DataContext = viewModel = value;
-				viewModel.PropertyChanged += ViewModelPropertyChanged;
-				CommandBindings.AddRange(viewModel.CommandBindings);
+        /// <summary>
+        /// 
+        /// </summary>
+        public SmartLogControlVM ViewModel
+        {
+            get { return viewModel; }
+            set
+            {
+                Utils.OnlyOnce(viewModel, value);
+                DataContext = viewModel = value;
+                viewModel.PropertyChanged += ViewModelPropertyChanged;
+                CommandBindings.AddRange(viewModel.CommandBindings);
 
-				myClientControl.ViewModel = viewModel.MyClientControlVM;
-				myServerControl.ViewModel = viewModel.MyServerControlVM;
-				myAdditionalControl.ViewModel = viewModel.MyAdditionalControlVM;
-			}
-		}
-		private SmartLogControlVM viewModel;
+                myClientControl.ViewModel = viewModel.MyClientControlVM;
+                myServerControl.ViewModel = viewModel.MyServerControlVM;
+                myAdditionalControl.ViewModel = viewModel.MyAdditionalControlVM;
+            }
+        }
+        private SmartLogControlVM viewModel;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
             log.Smart(e.PropertyName);
-			if (e.PropertyName == "SelectedRecordDetails")
-			{
-				viewModel.MyClientControlVM.HandleRecordsChanged(false);
-				viewModel.MyServerControlVM.HandleRecordsChanged(false);
-				viewModel.MyAdditionalControlVM.HandleRecordsChanged(false);
-			}
-			//--- need ColumnDefinitions for the rest of this method
-			else if (splitGrid.ColumnDefinitions.Count > 4)
-			{
-				if (e.PropertyName == "GridLengthsRequired")
-				{
-					GetGridLengths();
-				}
-				else if (e.PropertyName == "NoLastFile")
-				{
-					ApplyNoLastFile();
-				}
+            if (e.PropertyName == "SelectedRecordDetails")
+            {
+                viewModel.MyClientControlVM.HandleRecordsChanged(false);
+                viewModel.MyServerControlVM.HandleRecordsChanged(false);
+                viewModel.MyAdditionalControlVM.HandleRecordsChanged(false);
+            }
+            //--- need ColumnDefinitions for the rest of this method
+            else if (splitGrid.ColumnDefinitions.Count > 4)
+            {
+                if (e.PropertyName == "GridLengthsRequired")
+                {
+                    GetGridLengths();
+                }
+                else if (e.PropertyName == "NoLastFile")
+                {
+                    ApplyNoLastFile();
+                }
                 else if (e.PropertyName == "ApplyGridLengths")
                 {
                     ApplyGridLengths();
                 }
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// 
         /// </summary>
         void GetGridLengths()
-		{
-			viewModel.GridLength0 = splitGrid.ColumnDefinitions[0].Width.Value;
-			viewModel.GridLength2 = splitGrid.ColumnDefinitions[2].Width.Value;
-			viewModel.GridLength4 = splitGrid.ColumnDefinitions[4].Width.Value;
-		}
+        {
+            viewModel.GridLength0 = splitGrid.ColumnDefinitions[0].Width.Value;
+            viewModel.GridLength2 = splitGrid.ColumnDefinitions[2].Width.Value;
+            viewModel.GridLength4 = splitGrid.ColumnDefinitions[4].Width.Value;
+        }
 
         /// <summary>
         /// 
         /// </summary>
         private void ApplyGridLengths()
         {
-            double sum = GetColWidth(0) + GetColWidth(2) + GetColWidth(4);
-
-            splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0 / sum, GridUnitType.Star);
-            splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2 / sum, GridUnitType.Star);
-            splitGrid.ColumnDefinitions[4].Width = new GridLength(viewModel.GridLength4 / sum, GridUnitType.Star);
-        }
-
-        double GetColWidth(int index)
-        {
-            return splitGrid.ColumnDefinitions[index].Width.Value;
+            splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0, GridUnitType.Star);
+            splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2, GridUnitType.Star);
+            splitGrid.ColumnDefinitions[4].Width = new GridLength(viewModel.GridLength4, GridUnitType.Star);
         }
 
         /// <summary>
         /// 
         /// </summary>
         void ApplyNoLastFile()
-		{
-			GetGridLengths();
-			if (viewModel.GridLength0 == 0 && viewModel.GridLength2 == 0)
-			{
-				splitGrid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
-				splitGrid.ColumnDefinitions[2].Width = new GridLength(2, GridUnitType.Star);
-			}
-			splitGrid.ColumnDefinitions[4].Width = new GridLength(0, GridUnitType.Star);
-		}
+        {
+            int index = viewModel.ComingFromAdditionalVM ? 4 : 2;
+            splitGrid.ColumnDefinitions[index].Width = new GridLength(0, GridUnitType.Star);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void EnsureMyAdditionalControlIsVisible()
-		{
-			GetGridLengths();
-			if (viewModel.GridLength4 != 0)
-				return;
+        /// <summary>
+        /// 
+        /// </summary>
+        public void EnsureMyAdditionalControlIsVisible()
+        {
+            GetGridLengths();
+            if (viewModel.GridLength4 != 0)
+                return;
 
-			splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0 * 2, GridUnitType.Star);
-			splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2 * 2, GridUnitType.Star);
-			splitGrid.ColumnDefinitions[4].Width = new GridLength(viewModel.GridLength0 + viewModel.GridLength2, GridUnitType.Star);
-		}
+            splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0 * 2, GridUnitType.Star);
+            splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2 * 2, GridUnitType.Star);
+            splitGrid.ColumnDefinitions[4].Width = new GridLength(viewModel.GridLength0 + viewModel.GridLength2, GridUnitType.Star);
+        }
 
-		/// <summary>
-		/// Drop handler.
-		/// </summary>
-		void MeDrop(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
-			{
-				string[] fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
-				foreach (var fileName in fileNames)
-				{
+        /// <summary>
+        /// Drop handler.
+        /// </summary>
+        void MeDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (var fileName in fileNames)
+                {
                     log.Smart(fileName);
-					string ext = Path.GetExtension(fileName);
-					if (ext.equals(".log"))
-					{
-						if (File.Exists(fileName))
-						{
-							EnsureMyAdditionalControlIsVisible();
-							viewModel.MyAdditionalControlVM.LoadFile(fileName);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
+                    string ext = Path.GetExtension(fileName);
+                    if (ext.equals(".log"))
+                    {
+                        if (File.Exists(fileName))
+                        {
+                            EnsureMyAdditionalControlIsVisible();
+                            viewModel.MyAdditionalControlVM.LoadFile(fileName);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

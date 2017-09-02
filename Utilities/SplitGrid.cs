@@ -20,57 +20,57 @@ using System.Windows.Controls;
 
 namespace SmartLogReader
 {
-	public class SplitGrid : Grid
-	{
-		public SplitGrid()
-		{
-			Loaded += MeLoaded;
-		}
+    public class SplitGrid : Grid
+    {
+        public SplitGrid()
+        {
+            Loaded += MeLoaded;
+        }
 
-		void MeLoaded(object sender, RoutedEventArgs e)
-		{
+        void MeLoaded(object sender, RoutedEventArgs e)
+        {
             double length = 3;
-			SplitGridViewModel2 viewModel2 = DataContext as SplitGridViewModel2;
-			SplitGridViewModel3 viewModel3 = DataContext as SplitGridViewModel3;
+            SplitGridViewModel2 viewModel2 = DataContext as SplitGridViewModel2;
+            SplitGridViewModel3 viewModel3 = DataContext as SplitGridViewModel3;
 
-			if (viewModel3 == null)//--- create a single splitter at row 1
-			{
-				RowDefinitions.Add(new RowDefinition() { Height = new GridLength(viewModel2.GridLength0, GridUnitType.Star) });
-				RowDefinitions.Add(new RowDefinition() { Height = new GridLength(length, GridUnitType.Pixel) });
-				RowDefinitions.Add(new RowDefinition() { Height = new GridLength(viewModel2.GridLength2, GridUnitType.Star) });
+            if (viewModel3 == null)//--- create a single splitter at row 1
+            {
+                RowDefinitions.Add(new RowDefinition() { Height = new GridLength(viewModel2.GridLength0, GridUnitType.Star) });
+                RowDefinitions.Add(new RowDefinition() { Height = new GridLength(length, GridUnitType.Pixel) });
+                RowDefinitions.Add(new RowDefinition() { Height = new GridLength(viewModel2.GridLength2, GridUnitType.Star) });
 
-				GridSplitter splitter = NewGridSplitter(1, 0);
-				Children.Add(splitter);
-			}
-			else//--- create two splitters at column 1 and column 3
-			{
-				ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(viewModel3.GridLength0, GridUnitType.Star) });
-				ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(length, GridUnitType.Pixel) });
-				ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(viewModel3.GridLength2, GridUnitType.Star) });
-				ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(length, GridUnitType.Pixel) });
-				ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(viewModel3.GridLength4, GridUnitType.Star) });
+                GridSplitter splitter = NewGridSplitter(1, 0);
+                Children.Add(splitter);
+            }
+            else//--- create two splitters at column 1 and column 3
+            {
+                ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(viewModel3.GridLength0, GridUnitType.Star) });
+                ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(length, GridUnitType.Pixel) });
+                ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(viewModel3.GridLength2, GridUnitType.Star) });
+                ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(length, GridUnitType.Pixel) });
+                ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(viewModel3.GridLength4, GridUnitType.Star) });
 
-				GridSplitter splitter = NewGridSplitter(0, 1);
-				Children.Add(splitter);
+                GridSplitter splitter = NewGridSplitter(0, 1);
+                Children.Add(splitter);
 
-				splitter = NewGridSplitter(0, 3);
-				Children.Add(splitter);
-			}
-		}
+                splitter = NewGridSplitter(0, 3);
+                Children.Add(splitter);
+            }
+        }
 
-		public static GridSplitter NewGridSplitter(int row, int col)
-		{
-			GridSplitter splitter = new GridSplitter();
+        private static GridSplitter NewGridSplitter(int row, int col)
+        {
+            GridSplitter splitter = new GridSplitter();
 
-			splitter.Focusable = false;
-			splitter.Background = Brushes.Orange;
-			splitter.VerticalAlignment = VerticalAlignment.Stretch;
-			splitter.HorizontalAlignment = HorizontalAlignment.Stretch;
+            splitter.Focusable = false;
+            splitter.Background = Brushes.Orange;
+            splitter.VerticalAlignment = VerticalAlignment.Stretch;
+            splitter.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-			Grid.SetRow(splitter, row);
-			Grid.SetColumn(splitter, col);
+            Grid.SetRow(splitter, row);
+            Grid.SetColumn(splitter, col);
 
-			return splitter;
-		}
-	}
+            return splitter;
+        }
+    }
 }

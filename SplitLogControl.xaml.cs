@@ -21,20 +21,20 @@ using SmartLogging;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for SplitLogControl.xaml
-	/// </summary>
-	public partial class SplitLogControl : UserControl
-	{
+    /// <summary>
+    /// Interaction logic for SplitLogControl.xaml
+    /// </summary>
+    public partial class SplitLogControl : UserControl
+    {
         /// <summary>
         /// 
         /// </summary>
         public SplitLogControl()
-		{
+        {
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
             log = new SmartLogger($"{name}.{++instanceCounter}");
-			InitializeComponent();
-		}
+            InitializeComponent();
+        }
         private readonly SmartLogger log;
         private static int instanceCounter;
 
@@ -42,61 +42,66 @@ namespace SmartLogReader
         /// 
         /// </summary>
         public override string ToString()
-		{
-			return "SplitLogControl[" + viewModel.DisplayName + "]";
-		}
+        {
+            return "SplitLogControl[" + viewModel.DisplayName + "]";
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public SplitLogControlVM ViewModel
-		{
-			get { return viewModel; }
-			set
-			{
+        /// <summary>
+        /// 
+        /// </summary>
+        public SplitLogControlVM ViewModel
+        {
+            get { return viewModel; }
+            set
+            {
                 Utils.OnlyOnce(viewModel, value);
-				DataContext = viewModel = value;
-				viewModel.PropertyChanged += ViewModelPropertyChanged;
-				CommandBindings.AddRange(viewModel.CommandBindings);
+                DataContext = viewModel = value;
+                viewModel.PropertyChanged += ViewModelPropertyChanged;
+                CommandBindings.AddRange(viewModel.CommandBindings);
 
-				myLogControl1.ViewModel = viewModel.MyLogControlVM1;
-				myLogControl2.ViewModel = viewModel.MyLogControlVM2;
-			}
-		}
-		private SplitLogControlVM viewModel;
+                myLogControl1.ViewModel = viewModel.MyLogControlVM1;
+                myLogControl2.ViewModel = viewModel.MyLogControlVM2;
+            }
+        }
+        private SplitLogControlVM viewModel;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == "ShowWaitControl")
-			{
-				waitControl.Progress = 0;
-				waitControl.Visibility = Visibility.Visible;
-			}
-			else if (e.PropertyName == "HideWaitControl")
-			{
-				waitControl.Visibility = Visibility.Collapsed;
-			}
-			else if (e.PropertyName == "ShowProgress")
-			{
-				waitControl.Progress = viewModel.Reader.Progress;
-			}
-			//--- need RowDefinitions for the rest of this method
-			else if (splitGrid.RowDefinitions.Count > 2)
-			{
-				if (e.PropertyName == "GridLengthsRequired")
-				{
-					viewModel.GridLength0 = splitGrid.RowDefinitions[0].Height.Value;
-					viewModel.GridLength2 = splitGrid.RowDefinitions[2].Height.Value;
-				}
-				else if (e.PropertyName == "IsSplitLog")
-				{
-					splitGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
-					splitGrid.RowDefinitions[2].Height = new GridLength(viewModel.IsSplitLog ? 1 : 0, GridUnitType.Star);
-				}
-			}
-		}
-	}
+        /// <summary>
+        /// 
+        /// </summary>
+        void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "ShowWaitControl")
+            {
+                waitControl.Progress = 0;
+                waitControl.Visibility = Visibility.Visible;
+            }
+            else if (e.PropertyName == "HideWaitControl")
+            {
+                waitControl.Visibility = Visibility.Collapsed;
+            }
+            else if (e.PropertyName == "ShowProgress")
+            {
+                waitControl.Progress = viewModel.Reader.Progress;
+            }
+            //--- need RowDefinitions for the rest of this method
+            else if (splitGrid.RowDefinitions.Count > 2)
+            {
+                if (e.PropertyName == "GridLengthsRequired")
+                {
+                    viewModel.GridLength0 = splitGrid.RowDefinitions[0].Height.Value;
+                    viewModel.GridLength2 = splitGrid.RowDefinitions[2].Height.Value;
+                }
+                else if (e.PropertyName == "ApplyGridLengths")
+                {
+                    splitGrid.RowDefinitions[0].Height = new GridLength(viewModel.GridLength0, GridUnitType.Star);
+                    splitGrid.RowDefinitions[2].Height = new GridLength(viewModel.GridLength2, GridUnitType.Star);
+                }
+                else if (e.PropertyName == "IsSplitLog")
+                {
+                    splitGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+                    splitGrid.RowDefinitions[2].Height = new GridLength(viewModel.IsSplitLog ? 1 : 0, GridUnitType.Star);
+                }
+            }
+        }
+    }
 }
