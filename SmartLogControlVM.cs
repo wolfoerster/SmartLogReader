@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -806,11 +807,13 @@ namespace SmartLogReader
         {
             DeleteWorkspace();
         }
+
         /// <summary>
         /// 
         /// </summary>
         private string GetWorkspaceFile()
         {
+            //string path = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
             string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartLogReader");
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
@@ -892,16 +895,13 @@ namespace SmartLogReader
             GridLength2 = vm.GridLength2;
             GridLength4 = vm.GridLength4;
             FirePropertyChanged("ApplyGridLengths");
-            FirePropertyChanged("ShowTime");
-            FirePropertyChanged("ShowLogger");
-            FirePropertyChanged("ShowLevel");
-            FirePropertyChanged("ShowThreadIds");
-            FirePropertyChanged("ShowMethod");
-            FirePropertyChanged("AmountOfTime");
-            FirePropertyChanged("AmountOfLogger");
-            FirePropertyChanged("AmountOfLevel");
-            FirePropertyChanged("AmountOfThreadIds");
-            FirePropertyChanged("AmountOfMethod");
+
+            string[] props = new string[] { "Time", "Logger", "Level", "ThreadIds", "Method" };
+            foreach (var prop in props)
+            {
+                FirePropertyChanged("Show" + prop);
+                FirePropertyChanged("AmountOf" + prop);
+            }
         }
 
         #endregion Workspaces
