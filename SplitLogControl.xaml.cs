@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
-using System.Windows;
 using System.ComponentModel;
+using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using SmartLogging;
 
@@ -34,6 +35,8 @@ namespace SmartLogReader
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
             log = new SmartLogger($"{name}.{++instanceCounter}");
             InitializeComponent();
+            AllowDrop = true;
+            Drop += MeDrop;
         }
         private readonly SmartLogger log;
         private static int instanceCounter;
@@ -100,6 +103,30 @@ namespace SmartLogReader
                 {
                     splitGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
                     splitGrid.RowDefinitions[2].Height = new GridLength(viewModel.IsSplitLog ? 1 : 0, GridUnitType.Star);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Drop handler.
+        /// </summary>
+        void MeDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (var fileName in fileNames)
+                {
+                    log.Smart(fileName);
+                    string ext = Path.GetExtension(fileName);
+                    if (ext.equals(".log"))
+                    {
+                        if (File.Exists(fileName))
+                        {
+                            viewModel.LoadFile(fileName);
+                            break;
+                        }
+                    }
                 }
             }
         }

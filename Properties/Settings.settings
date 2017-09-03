@@ -20,7 +20,7 @@
     <Setting Name="ScreenName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="SmartLogControlVM" Type="System.String" Scope="User">
+    <Setting Name="LastWorkspace" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

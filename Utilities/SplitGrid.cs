@@ -29,7 +29,7 @@ namespace SmartLogReader
 
         void MeLoaded(object sender, RoutedEventArgs e)
         {
-            double length = 3;
+            double length = 4;
             SplitGridViewModel2 viewModel2 = DataContext as SplitGridViewModel2;
             SplitGridViewModel3 viewModel3 = DataContext as SplitGridViewModel3;
 

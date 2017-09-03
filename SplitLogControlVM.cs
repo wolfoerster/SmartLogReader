@@ -17,7 +17,6 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Serialization;
@@ -30,18 +29,18 @@ namespace SmartLogReader
     /// 
     /// </summary>
     public class SplitLogControlVM : SplitGridViewModel2
-	{
+    {
         /// <summary>
         /// 
         /// </summary>
         public SplitLogControlVM()
-		{
+        {
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
             log = new SmartLogger($"{name}.{++instanceCounter}");
-			GridLength0 = 1;
-			GridLength2 = 0;
-			InitCommands();
-		}
+            GridLength0 = 1;
+            GridLength2 = 0;
+            InitCommands();
+        }
         private readonly SmartLogger log;
         private static int instanceCounter;
 
@@ -51,227 +50,227 @@ namespace SmartLogReader
         /// 
         /// </summary>
         public LogControlVM MyLogControlVM1
-		{
-			get { return myLogControlVM1; }
-			set
-			{
-				Utils.OnlyOnce(myLogControlVM1, value);
-				myLogControlVM1 = value;
-				myLogControlVM1.PropertyChanged += SubVMPropertyChanged;
-			}
-		}
-		private LogControlVM myLogControlVM1;
+        {
+            get { return myLogControlVM1; }
+            set
+            {
+                Utils.OnlyOnce(myLogControlVM1, value);
+                myLogControlVM1 = value;
+                myLogControlVM1.PropertyChanged += SubVMPropertyChanged;
+            }
+        }
+        private LogControlVM myLogControlVM1;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public LogControlVM MyLogControlVM2
-		{
-			get { return myLogControlVM2; }
-			set
-			{
-				Utils.OnlyOnce(myLogControlVM2, value);
-				myLogControlVM2 = value;
-				myLogControlVM2.PropertyChanged += SubVMPropertyChanged;
-			}
-		}
-		private LogControlVM myLogControlVM2;
+        /// <summary>
+        /// 
+        /// </summary>
+        public LogControlVM MyLogControlVM2
+        {
+            get { return myLogControlVM2; }
+            set
+            {
+                Utils.OnlyOnce(myLogControlVM2, value);
+                myLogControlVM2 = value;
+                myLogControlVM2.PropertyChanged += SubVMPropertyChanged;
+            }
+        }
+        private LogControlVM myLogControlVM2;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void SubVMPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == "IsFilterEnabled")
-			{
-				HandleFilterChanged();
-			}
-			else if (e.PropertyName == "CurrentVM")
-			{
-				myCurrentVM = LogControlVM.CurrentVM;
-				FirePropertyChanged("IsFilterEnabled");//--- to update the [E] button in the UI
-			}
-		}
-		LogControlVM myCurrentVM;
+        /// <summary>
+        /// 
+        /// </summary>
+        void SubVMPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsFilterEnabled")
+            {
+                HandleFilterChanged();
+            }
+            else if (e.PropertyName == "CurrentVM")
+            {
+                myCurrentVM = LogControlVM.CurrentVM;
+                FirePropertyChanged("IsFilterEnabled");//--- to update the [E] button in the UI
+            }
+        }
+        LogControlVM myCurrentVM;
 
-		#endregion Sub viewmodels
+        #endregion Sub viewmodels
 
-		#region Public Properties
+        #region Public Properties
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsSplitLog
-		{
-			get { return isSplitLog; }
-			set
-			{
-				if (isSplitLog != value)
-				{
-					isSplitLog = value;
-					InitializeSubViewModel(2, value);
-					FirePropertyChanged("IsSplitLog");
-					if (value)
-						ApplySyncAndSplit();
-				}
-			}
-		}
-		private bool isSplitLog;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsSplitLog
+        {
+            get { return isSplitLog; }
+            set
+            {
+                if (isSplitLog != value)
+                {
+                    isSplitLog = value;
+                    InitializeSubViewModel(2, value);
+                    FirePropertyChanged("IsSplitLog");
+                    if (value)
+                        ApplySyncAndSplit();
+                }
+            }
+        }
+        private bool isSplitLog;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsSyncSelection
-		{
-			get { return isSyncSelection; }
-			set
-			{
-				if (isSyncSelection != value)
-				{
-					isSyncSelection = value;
-					FirePropertyChanged("IsSyncSelection");
-					if (value)
-						ApplySyncAndSplit();
-				}
-			}
-		}
-		private bool isSyncSelection;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsSyncSelection
+        {
+            get { return isSyncSelection; }
+            set
+            {
+                if (isSyncSelection != value)
+                {
+                    isSyncSelection = value;
+                    FirePropertyChanged("IsSyncSelection");
+                    if (value)
+                        ApplySyncAndSplit();
+                }
+            }
+        }
+        private bool isSyncSelection = true;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string LastFile { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LastFile { get; set; }
 
-		#endregion Public Properties
+        #endregion Public Properties
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public LogReader Reader
-		{
-			get { return reader; }
-			set
-			{
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public LogReader Reader
+        {
+            get { return reader; }
+            set
+            {
                 log.Smart();
                 Utils.OnlyOnce(reader, value);
-				reader = value;
+                reader = value;
                 reader.StatusChanged += ReaderStatusChanged;
-				InitializeSubViewModel(1, true);
-				InitializeSubViewModel(2, isSplitLog);
-			}
-		}
+                InitializeSubViewModel(1, true);
+                InitializeSubViewModel(2, isSplitLog);
+            }
+        }
         LogReader reader;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		private void InitializeSubViewModel(int vmID, bool mode)
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        private void InitializeSubViewModel(int vmID, bool mode)
+        {
             log.Smart();
             LogControlVM subViewModel = vmID == 1 ? myLogControlVM1 : myLogControlVM2;
-			if (mode)
-			{
-				if (subViewModel.Records != null)
-					InitializeSubViewModel(vmID, false);
+            if (mode)
+            {
+                if (subViewModel.Records != null)
+                    InitializeSubViewModel(vmID, false);
 
-				if (reader != null)
-				{
-					subViewModel.Records = reader.Records;
-					subViewModel.RecordsView.CurrentChanged += RecordsViewCurrentChanged;
-				}
-			}
-			else
-			{
-				if (subViewModel.Records != null)
-				{
-					subViewModel.RecordsView.CurrentChanged -= RecordsViewCurrentChanged;
-					subViewModel.Records = null;
-				}
-			}
-		}
+                if (reader != null)
+                {
+                    subViewModel.Records = reader.Records;
+                    subViewModel.RecordsView.CurrentChanged += RecordsViewCurrentChanged;
+                }
+            }
+            else
+            {
+                if (subViewModel.Records != null)
+                {
+                    subViewModel.RecordsView.CurrentChanged -= RecordsViewCurrentChanged;
+                    subViewModel.Records = null;
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public override string ToString()
-		{
-			return "SplitLogControlVM[" + DisplayName + "]";
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public override string ToString()
+        {
+            return "SplitLogControlVM[" + DisplayName + "]";
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool LoadFile(string fileName)
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool LoadFile(string fileName)
+        {
             log.Smart(fileName);
             if (!File.Exists(fileName))
-			{
-				HandleNoLastFile();
-				return false;
-			}
+            {
+                HandleNoLastFile();
+                return false;
+            }
 
-			LastFile = fileName;
-			FirePropertyChanged("ShowWaitControl");
+            LastFile = fileName;
+            FirePropertyChanged("ShowWaitControl");
 
-			if (reader.IsBusy)
-				reader.Stop("LoadFile");
-			else
-				reader.LoadFile(LastFile);
+            if (reader.IsBusy)
+                reader.Stop("LoadFile");
+            else
+                reader.LoadFile(LastFile);
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Stop the reader and wait for RunWorkerCompleted notification.
-		/// </summary>
-		public void ReloadFile()
-		{
-			if (!File.Exists(LastFile))
-			{
-				HandleNoLastFile();
-				return;
-			}
+        /// <summary>
+        /// Stop the reader and wait for RunWorkerCompleted notification.
+        /// </summary>
+        public void ReloadFile()
+        {
+            if (!File.Exists(LastFile))
+            {
+                HandleNoLastFile();
+                return;
+            }
 
-			LoadFile(LastFile);
-		}
+            LoadFile(LastFile);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void HandleNoLastFile()
-		{
-			LastFile = null;
-			IsSplitLog = false;
-			Reader.FileName = null;
-			Reader.Records.Clear();
-			HandleRecordsChanged();
+        /// <summary>
+        /// 
+        /// </summary>
+        public void HandleNoLastFile()
+        {
+            LastFile = null;
+            IsSplitLog = false;
+            Reader.FileName = null;
+            Reader.Records.Clear();
+            HandleRecordsChanged();
             HandleReaderFileNameChanged();
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public string ReaderFileName
-		{
-			get { return reader.FileName ?? OpenCmd.Text; }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public string ReaderFileName
+        {
+            get { return reader.FileName ?? OpenCmd.Text; }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public string ReaderFileInfo
-		{
-			get
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public string ReaderFileInfo
+        {
+            get
             {
                 if (string.IsNullOrEmpty(DisplayName))
                     return "O";
 
-                return  DisplayName + " " + Utils.GetFileSizeString(reader.FileSize);
+                return DisplayName + " " + Utils.GetFileSizeString(reader.FileSize);
             }
-		}
+        }
 
         /// <summary>
         /// 
@@ -285,46 +284,27 @@ namespace SmartLogReader
         /// 
         /// </summary>
         void ApplySyncAndSplit()
-		{
+        {
             log.Smart();
-			if (!SmartLogControlVM.IsInitialized || myLogControlVM1.RecordsView == null)
-				return;
+            if (!SmartLogControlVM.IsInitialized || myLogControlVM1.RecordsView == null)
+                return;
 
-			if (isSyncSelection)
-			{
-				//--- find the matching record in view2:
-				SelectedRecord = myLogControlVM1.RecordsView.CurrentItem as Record;
-				FindMatchingInternal(myLogControlVM2.RecordsView, false);
+            if (isSyncSelection)
+            {
+                //--- find the matching record in view2:
+                SelectedRecord = myLogControlVM1.RecordsView.CurrentItem as Record;
+                FindMatchingInternal(myLogControlVM2.RecordsView, false);
 
-				//--- find the matching record in external views:
-				FirePropertyChanged("FindMatchingExternal");
-			}
+                //--- find the matching record in external views:
+                FirePropertyChanged("FindMatchingExternal");
+            }
 
-			if (isSplitLog)
-			{
+            if (isSplitLog)
+            {
                 //--- now that the control is split, the current item might be out of view1:
                 myLogControlVM1.RecordsView.Dispatch(() => myLogControlVM1.ScrollCurrentIntoView());
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public Visibility OptionalButtonsVisibility
-		{
-			get { return optionalButtonsVisibility; }
-			set
-			{
-				if (optionalButtonsVisibility != value)
-				{
-					optionalButtonsVisibility = value;
-					FirePropertyChanged("OptionalButtonsVisibility");
-				}
-			}
-		}
-		private Visibility optionalButtonsVisibility;
-
+            }
+        }
 
         /// <summary>
         /// 
@@ -349,9 +329,12 @@ namespace SmartLogReader
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void HandleFinishedWork(string reason)
         {
-			if (reason == "LoadFile")
+            if (reason == "LoadFile")
             {
                 reader.LoadFile(LastFile);
             }
@@ -361,314 +344,314 @@ namespace SmartLogReader
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void HandleReaderFileNameChanged()
-		{
-			DisplayName = Path.GetFileName(reader.FileName);
-			myLogControlVM1.DisplayName = DisplayName + "-1";
-			myLogControlVM2.DisplayName = DisplayName + "-2";
-			FirePropertyChanged("ReaderFileName");
-			FirePropertyChanged("ReaderFileInfo");
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        void HandleReaderFileNameChanged()
+        {
+            DisplayName = Path.GetFileName(reader.FileName);
+            myLogControlVM1.DisplayName = DisplayName + "-1";
+            myLogControlVM2.DisplayName = DisplayName + "-2";
+            FirePropertyChanged("ReaderFileName");
+            FirePropertyChanged("ReaderFileInfo");
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void HandleRecordsChanged(bool mode = true)
-		{
-			dontCare++;
-			myLogControlVM1.Refresh();
-			myLogControlVM2.Refresh();
-			CheckScrolling();
-			dontCare--;
+        /// <summary>
+        /// 
+        /// </summary>
+        public void HandleRecordsChanged(bool mode = true)
+        {
+            dontCare++;
+            myLogControlVM1.Refresh();
+            myLogControlVM2.Refresh();
+            CheckScrolling();
+            dontCare--;
 
-			if (mode)
-			{
-				FirePropertyChanged("ReaderFileInfo");
-				FirePropertyChanged("HideWaitControl");
-			}
+            if (mode)
+            {
+                FirePropertyChanged("ReaderFileInfo");
+                FirePropertyChanged("HideWaitControl");
+            }
 
-			if (!done)
-			{
-				done = true;
-				myLogControlVM1.SetAsCurrentVM();
-				myLogControlVM1.SetFocusOnSelected();
-			}
-		}
-		bool done;
-		int dontCare;
+            if (!done)
+            {
+                done = true;
+                myLogControlVM1.SetAsCurrentVM();
+                myLogControlVM1.SetFocusOnSelected();
+            }
+        }
+        bool done;
+        int dontCare;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void HandleFilterChanged()
-		{
-			LogControlVM vm = myCurrentVM;
-			if (vm == null || vm.RecordsView == null)
-				return;
+        /// <summary>
+        /// 
+        /// </summary>
+        public void HandleFilterChanged()
+        {
+            LogControlVM vm = myCurrentVM;
+            if (vm == null || vm.RecordsView == null)
+                return;
 
-			SelectedRecord = vm.RecordsView.CurrentItem as Record;
-			HandleRecordsChanged(false);
-			if (!FollowTail)
-				FindMatchingInternal(vm.RecordsView, false);
-		}
+            SelectedRecord = vm.RecordsView.CurrentItem as Record;
+            HandleRecordsChanged(false);
+            if (!FollowTail)
+                FindMatchingInternal(vm.RecordsView, false);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void RecordsViewCurrentChanged(object sender, EventArgs e)
-		{
-			ListCollectionView view = sender as ListCollectionView;
-			if (view == null || dontCare != 0)
-				return;
+        /// <summary>
+        /// 
+        /// </summary>
+        void RecordsViewCurrentChanged(object sender, EventArgs e)
+        {
+            ListCollectionView view = sender as ListCollectionView;
+            if (view == null || dontCare != 0)
+                return;
 
-			int index = view.CurrentPosition;
-			FollowTail = index < 0;
-			//FollowTail = index < 0 || index >= view.Count - 1;
+            int index = view.CurrentPosition;
+            FollowTail = index < 0;
+            //FollowTail = index < 0 || index >= view.Count - 1;
 
-			if (!FollowTail)
-			{
-				SelectedRecord = view.CurrentItem as Record;
-				if (IsSyncSelection)
-				{
-					FindMatchingInternal(view, true);
-					FirePropertyChanged("FindMatchingExternal");
-				}
-			}
-		}
+            if (!FollowTail)
+            {
+                SelectedRecord = view.CurrentItem as Record;
+                if (IsSyncSelection)
+                {
+                    FindMatchingInternal(view, true);
+                    FirePropertyChanged("FindMatchingExternal");
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public Record SelectedRecord { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public Record SelectedRecord { get; protected set; }
 
-		/// <summary>
-		/// Looks for a record which matches SelectedRecord in the same view or the other view of the same viewmodel.
-		/// </summary>
-		void FindMatchingInternal(ListCollectionView view1, bool theOtherView)
-		{
-			ListCollectionView view2 = view1;
-			if (theOtherView)
-				view2 = view1 == MyLogControlVM1.RecordsView ? MyLogControlVM2.RecordsView : MyLogControlVM1.RecordsView;
+        /// <summary>
+        /// Looks for a record which matches SelectedRecord in the same view or the other view of the same viewmodel.
+        /// </summary>
+        void FindMatchingInternal(ListCollectionView view1, bool theOtherView)
+        {
+            ListCollectionView view2 = view1;
+            if (theOtherView)
+                view2 = view1 == MyLogControlVM1.RecordsView ? MyLogControlVM2.RecordsView : MyLogControlVM1.RecordsView;
 
-			if (view2 == null || SelectedRecord == null)
-				return;
+            if (view2 == null || SelectedRecord == null)
+                return;
 
-			Record match = FindMatching(view2, x => x.RecordNum >= SelectedRecord.RecordNum);
-			if (match != null)
-				HighlightRecord(view2, match);
-		}
+            Record match = FindMatching(view2, x => x.RecordNum >= SelectedRecord.RecordNum);
+            if (match != null)
+                HighlightRecord(view2, match);
+        }
 
-		/// <summary>
-		/// Looks for a record which matches extRecord from another viewmodel.
-		/// </summary>
-		public void FindMatchingExternal(Record extRecord)
-		{
-			if (extRecord == null || extRecord == SelectedRecord || !IsSyncSelection)
-				return;
+        /// <summary>
+        /// Looks for a record which matches extRecord from another viewmodel.
+        /// </summary>
+        public void FindMatchingExternal(Record extRecord)
+        {
+            if (extRecord == null || extRecord == SelectedRecord || !IsSyncSelection)
+                return;
 
-			FindMatchingExternal(myLogControlVM1.RecordsView, extRecord);
-			FindMatchingExternal(myLogControlVM2.RecordsView, extRecord);
-		}
+            FindMatchingExternal(myLogControlVM1.RecordsView, extRecord);
+            FindMatchingExternal(myLogControlVM2.RecordsView, extRecord);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		private void FindMatchingExternal(ListCollectionView view, Record extRecord)
-		{
-			if (view != null)
-			{
-				Record match = FindMatching(view, x => x.UtcTime >= extRecord.UtcTime);
-				if (match != null)
-					HighlightRecord(view, match);
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        private void FindMatchingExternal(ListCollectionView view, Record extRecord)
+        {
+            if (view != null)
+            {
+                Record match = FindMatching(view, x => x.UtcTime >= extRecord.UtcTime);
+                if (match != null)
+                    HighlightRecord(view, match);
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		private Record FindMatching(ListCollectionView view, Predicate<Record> predicate)
-		{
-			Record match = null;
-			for (int i = 0; i < view.Count; i++)
-			{
-				Record record = view.GetItemAt(i) as Record;
-				if (predicate.Invoke(record))
-				{
-					match = record;
-					break;
-				}
-			}
+        /// <summary>
+        /// 
+        /// </summary>
+        private Record FindMatching(ListCollectionView view, Predicate<Record> predicate)
+        {
+            Record match = null;
+            for (int i = 0; i < view.Count; i++)
+            {
+                Record record = view.GetItemAt(i) as Record;
+                if (predicate.Invoke(record))
+                {
+                    match = record;
+                    break;
+                }
+            }
 
-			if (match == null && view.Count > 0)
-				match = view.GetItemAt(view.Count - 1) as Record;
+            if (match == null && view.Count > 0)
+                match = view.GetItemAt(view.Count - 1) as Record;
 
-			return match;
-		}
+            return match;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		private void HighlightRecord(ListCollectionView view, Record record)
-		{
-			FollowTail = false;
-			if (record == view.CurrentItem)//view.MoveCurrentTo() will not help to scroll current into view
-			{
-				LogControlVM vm = view == myLogControlVM1.RecordsView ? myLogControlVM1 : myLogControlVM2;
-				vm.ScrollCurrentIntoView();
-			}
-			else
-			{
-				dontCare++;
-				view.MoveCurrentTo(record);
-				dontCare--;
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        private void HighlightRecord(ListCollectionView view, Record record)
+        {
+            FollowTail = false;
+            if (record == view.CurrentItem)//view.MoveCurrentTo() will not help to scroll current into view
+            {
+                LogControlVM vm = view == myLogControlVM1.RecordsView ? myLogControlVM1 : myLogControlVM2;
+                vm.ScrollCurrentIntoView();
+            }
+            else
+            {
+                dontCare++;
+                view.MoveCurrentTo(record);
+                dontCare--;
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public bool FollowTail
-		{
-			get { return followTail; }
-			set
-			{
-				if (followTail != value)
-				{
-					followTail = value;
-					FirePropertyChanged("FollowTail");
-					CheckScrolling();
-				}
-			}
-		}
-		bool followTail = true;
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public bool FollowTail
+        {
+            get { return followTail; }
+            set
+            {
+                if (followTail != value)
+                {
+                    followTail = value;
+                    FirePropertyChanged("FollowTail");
+                    CheckScrolling();
+                }
+            }
+        }
+        bool followTail = true;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void SyncFollowTail(SplitLogControlVM vm)
-		{
-			if (IsSyncSelection)
-				FollowTail = vm.FollowTail;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SyncFollowTail(SplitLogControlVM vm)
+        {
+            if (IsSyncSelection)
+                FollowTail = vm.FollowTail;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void CheckScrolling()
-		{
-			if (FollowTail)
-			{
-				dontCare++;
-				myLogControlVM1.ScrollToBottom();
-				myLogControlVM2.ScrollToBottom();
-				dontCare--;
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void CheckScrolling()
+        {
+            if (FollowTail)
+            {
+                dontCare++;
+                myLogControlVM1.ScrollToBottom();
+                myLogControlVM2.ScrollToBottom();
+                dontCare--;
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public bool IsFilterEnabled
-		{
-			get 
-			{
-				if (myCurrentVM == null)
-					myCurrentVM = myLogControlVM1;
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public bool IsFilterEnabled
+        {
+            get
+            {
+                if (myCurrentVM == null)
+                    myCurrentVM = myLogControlVM1;
 
-				return myCurrentVM.IsFilterEnabled; 
-			}
-			set
-			{
-				if (myCurrentVM.IsFilterEnabled != value)
-				{
-					myCurrentVM.IsFilterEnabled = value;
-					FirePropertyChanged("IsFilterEnabled");
-				}
-			}
-		}
+                return myCurrentVM.IsFilterEnabled;
+            }
+            set
+            {
+                if (myCurrentVM.IsFilterEnabled != value)
+                {
+                    myCurrentVM.IsFilterEnabled = value;
+                    FirePropertyChanged("IsFilterEnabled");
+                }
+            }
+        }
 
-		#region Commands
+        #region Commands
 
-		void InitCommands()
-		{
-			CommandBindings.Add(new CommandBinding(OpenCmd, ExecuteOpenCmd, CanExecuteOpenCmd));
-			CommandBindings.Add(new CommandBinding(CloseCmd, ExecuteCloseCmd, CanExecuteCloseCmd));
-			CommandBindings.Add(new CommandBinding(SplitCmd, ExecuteSplitCmd, CanExecuteSplitCmd));
-			CommandBindings.Add(new CommandBinding(ConfigureCmd, ExecuteConfigureCmd, CanExecuteConfigureCmd));
-		}
+        void InitCommands()
+        {
+            CommandBindings.Add(new CommandBinding(OpenCmd, ExecuteOpenCmd, CanExecuteOpenCmd));
+            CommandBindings.Add(new CommandBinding(CloseCmd, ExecuteCloseCmd, CanExecuteCloseCmd));
+            CommandBindings.Add(new CommandBinding(SplitCmd, ExecuteSplitCmd, CanExecuteSplitCmd));
+            CommandBindings.Add(new CommandBinding(ConfigureCmd, ExecuteConfigureCmd, CanExecuteConfigureCmd));
+        }
 
-		/// <summary>
-		/// OpenCmd
-		/// </summary>
-		void CanExecuteOpenCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
+        /// <summary>
+        /// OpenCmd
+        /// </summary>
+        void CanExecuteOpenCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
-		void ExecuteOpenCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = "Log Files|*.log";
-			dlg.Title = "Select a file";
+        void ExecuteOpenCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "Log Files|*.log";
+            dlg.Title = "Select a file";
 
-			if (dlg.ShowDialog() == true)
-				LoadFile(dlg.FileName);
-		}
+            if (dlg.ShowDialog() == true)
+                LoadFile(dlg.FileName);
+        }
 
-		/// <summary>
-		/// CloseCmd
-		/// </summary>
-		void CanExecuteCloseCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
+        /// <summary>
+        /// CloseCmd
+        /// </summary>
+        void CanExecuteCloseCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
-		void ExecuteCloseCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			reader.Stop("NoLastFile");
-			FirePropertyChanged("NoLastFile");
-		}
+        void ExecuteCloseCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            reader.Stop("NoLastFile");
+            FirePropertyChanged("NoLastFile");
+        }
 
-		/// <summary>
-		/// SplitCmd
-		/// </summary>
-		void CanExecuteSplitCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
+        /// <summary>
+        /// SplitCmd
+        /// </summary>
+        void CanExecuteSplitCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
-		void ExecuteSplitCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			IsSplitLog ^= true;
-		}
+        void ExecuteSplitCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            IsSplitLog ^= true;
+        }
 
-		/// <summary>
-		/// ConfigureCmd
-		/// </summary>
-		void CanExecuteConfigureCmd(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
+        /// <summary>
+        /// ConfigureCmd
+        /// </summary>
+        void CanExecuteConfigureCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
-		void ExecuteConfigureCmd(object sender, ExecutedRoutedEventArgs e)
-		{
-			LogControlVM clone = myCurrentVM.Clone();
-			FilterDialog dlg = new FilterDialog(clone);
-			Utils.MoveToMouse(dlg, "Configure filter");
+        void ExecuteConfigureCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            LogControlVM clone = myCurrentVM.Clone();
+            FilterDialog dlg = new FilterDialog(clone);
+            Utils.MoveToMouse(dlg, "Configure filter");
 
-			if (dlg.ShowDialog() == true)
-			{
-				myCurrentVM.ReadFilterSettings(clone);
-				myCurrentVM.SetFocusOnSelected();
-			}
-		}
+            if (dlg.ShowDialog() == true)
+            {
+                myCurrentVM.ReadFilterSettings(clone);
+                myCurrentVM.SetFocusOnSelected();
+            }
+        }
 
-		#endregion Commands
-	}
+        #endregion Commands
+    }
 }

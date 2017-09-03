@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using SmartLogging;
@@ -35,8 +34,6 @@ namespace SmartLogReader
         public SmartLogControl()
         {
             InitializeComponent();
-            AllowDrop = true;
-            Drop += MeDrop;
         }
 
         /// <summary>
@@ -112,48 +109,22 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void ApplyNoLastFile()
+        private void ApplyNoLastFile()
         {
-            int index = viewModel.ComingFromAdditionalVM ? 4 : 2;
-            splitGrid.ColumnDefinitions[index].Width = new GridLength(0, GridUnitType.Star);
-        }
+            int index = viewModel.ColumnIndex;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public void EnsureMyAdditionalControlIsVisible()
-        {
-            GetGridLengths();
-            if (viewModel.GridLength4 != 0)
-                return;
-
-            splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0 * 2, GridUnitType.Star);
-            splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2 * 2, GridUnitType.Star);
-            splitGrid.ColumnDefinitions[4].Width = new GridLength(viewModel.GridLength0 + viewModel.GridLength2, GridUnitType.Star);
-        }
-
-        /// <summary>
-        /// Drop handler.
-        /// </summary>
-        void MeDrop(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            int i = 2, j = 4;
+            switch (index)
             {
-                string[] fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (var fileName in fileNames)
-                {
-                    log.Smart(fileName);
-                    string ext = Path.GetExtension(fileName);
-                    if (ext.equals(".log"))
-                    {
-                        if (File.Exists(fileName))
-                        {
-                            EnsureMyAdditionalControlIsVisible();
-                            viewModel.MyAdditionalControlVM.LoadFile(fileName);
-                            break;
-                        }
-                    }
-                }
+                case 2: i = 0; break;
+                case 4: i = 0; j = 2; break;
+            }
+
+            double sum = splitGrid.ColumnDefinitions[i].Width.Value + splitGrid.ColumnDefinitions[j].Width.Value;
+            if (sum > 0)
+            {
+                splitGrid.ColumnDefinitions[index].Width = new GridLength(0, GridUnitType.Star);
+                return;
             }
         }
     }

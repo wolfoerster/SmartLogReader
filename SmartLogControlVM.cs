@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -48,12 +47,38 @@ namespace SmartLogReader
         /// </summary>
         public SmartLogControlVM()
         {
-            GridLength0 = 1;
-            GridLength2 = 0;
+            GridLength0 = 0;
+            GridLength2 = 1;
             GridLength4 = 0;
             InitCommands();
             SearchText = "Search for me";
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static string GetWorkspaceFile(string workspace)
+        {
+            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartLogReader");
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            return Path.Combine(dir, workspace + ".xml");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static SmartLogControlVM FromWorkspace(string path)
+        {
+            if (!File.Exists(path))
+                path = GetWorkspaceFile(DefaultWorkspace);
+
+            string xml = File.Exists(path) ? File.ReadAllText(path) : null;
+            return SmartLogControlVM.FromXML(xml);
+        }
+
+        private static string DefaultWorkspace = "Default workspace";
 
         /// <summary>
         /// A flag indicating that the main view model is initialized.
@@ -63,7 +88,7 @@ namespace SmartLogReader
         /// <summary>
         /// Deserialize from XML.
         /// </summary>
-        public static SmartLogControlVM FromXML(string xml)
+        static SmartLogControlVM FromXML(string xml)
         {
             log.Smart($"Create viewmodel from the following settings: {xml}");
 
@@ -82,15 +107,12 @@ namespace SmartLogReader
                 viewModel.MyAdditionalControlVM = NewSplitLogControlVM();
             }
 
-            if (viewModel.MyStandaloneControlVM == null)
-                viewModel.MyStandaloneControlVM = NewSplitLogControlVM();
-
             if (viewModel.ColorSpecs == null)
                 viewModel.ColorSpecs = Record.GetDefaultColorSpecs();
 
             if (viewModel.Workspaces.Count == 0)
             {
-                viewModel.Workspaces.Add("Default workspace");
+                viewModel.Workspaces.Add(DefaultWorkspace);
                 viewModel.SelectedWorkspace = 0;
             }
 
@@ -115,17 +137,10 @@ namespace SmartLogReader
         /// </summary>
         public string ToXML()
         {
-            if (App.OpenFileName == null)
-            {
-                GetGridLengths();
-                myClientControlVM.GetGridLengths();
-                myServerControlVM.GetGridLengths();
-                myAdditionalControlVM.GetGridLengths();
-            }
-            else
-            {
-                ModifyLayout(false);
-            }
+            GetGridLengths();
+            myClientControlVM.GetGridLengths();
+            myServerControlVM.GetGridLengths();
+            myAdditionalControlVM.GetGridLengths();
             return Utils.ToXML(this);
         }
 
@@ -187,9 +202,6 @@ namespace SmartLogReader
                 myClientControlVM = value;
                 myClientControlVM.Reader = new LogReader();
                 myClientControlVM.PropertyChanged += SubVMPropertyChanged;
-                myClientControlVM.OptionalButtonsVisibility = Visibility.Visible;
-                //myClientControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
-                myClientControlVM.IsSyncSelection = true;
             }
         }
         SplitLogControlVM myClientControlVM;
@@ -206,9 +218,6 @@ namespace SmartLogReader
                 myServerControlVM = value;
                 myServerControlVM.Reader = new LogReader();
                 myServerControlVM.PropertyChanged += SubVMPropertyChanged;
-                myServerControlVM.OptionalButtonsVisibility = Visibility.Visible;
-                //myServerControlVM.OptionalButtonsVisibility = Visibility.Collapsed;
-                myServerControlVM.IsSyncSelection = true;
             }
         }
         SplitLogControlVM myServerControlVM;
@@ -225,24 +234,9 @@ namespace SmartLogReader
                 myAdditionalControlVM = value;
                 myAdditionalControlVM.Reader = new LogReader();
                 myAdditionalControlVM.PropertyChanged += SubVMPropertyChanged;
-                myAdditionalControlVM.OptionalButtonsVisibility = Visibility.Visible;
             }
         }
         SplitLogControlVM myAdditionalControlVM;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public SplitLogControlVM MyStandaloneControlVM
-        {
-            get { return myStandaloneControlVM; }
-            set
-            {
-                Utils.OnlyOnce(myStandaloneControlVM, value);
-                myStandaloneControlVM = value;
-            }
-        }
-        SplitLogControlVM myStandaloneControlVM;
 
         /// <summary>
         /// 
@@ -268,16 +262,13 @@ namespace SmartLogReader
             }
             else if (e.PropertyName == "NoLastFile")
             {
-                if (vm == myAdditionalControlVM || vm == myServerControlVM)
-                {
-                    ComingFromAdditionalVM = vm == myAdditionalControlVM;
-                    FirePropertyChanged("NoLastFile");
-                }
+                ColumnIndex = vm == myClientControlVM ? 0 : vm == myServerControlVM ? 2 : 4;
+                FirePropertyChanged(e.PropertyName);
             }
         }
 
         [XmlIgnore]
-        internal bool ComingFromAdditionalVM { get; private set; }
+        internal int ColumnIndex { get; private set; }
 
         #endregion Sub viewmodels
 
@@ -523,8 +514,7 @@ namespace SmartLogReader
             myClientControlVM.Reader.Stop(reason);
             myServerControlVM.Reader.Stop(reason);
             myAdditionalControlVM.Reader.Stop(reason);
-            SaveWorkspace();
-            return ToXML();
+            return SaveWorkspace();
         }
 
         /// <summary>
@@ -532,18 +522,9 @@ namespace SmartLogReader
         /// </summary>
         public void LoadFiles()
         {
-            //--- if no filename is given in the command line, open all last files
-            if (App.OpenFileName == null)
-            {
-                myClientControlVM.LoadFile(myClientControlVM.LastFile);
-                myServerControlVM.LoadFile(myServerControlVM.LastFile);
-                myAdditionalControlVM.LoadFile(myAdditionalControlVM.LastFile);
-            }
-            else //--- open the specified file only
-            {
-                ModifyLayout(true);
-                myAdditionalControlVM.LoadFile(App.OpenFileName);
-            }
+            myClientControlVM.LoadFile(myClientControlVM.LastFile);
+            myServerControlVM.LoadFile(myServerControlVM.LastFile);
+            myAdditionalControlVM.LoadFile(myAdditionalControlVM.LastFile);
         }
 
         /// <summary>
@@ -562,56 +543,32 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void ModifyLayout(bool mode)
+        public void LoadFile(string path)
         {
-            if (mode) //--- call at the begin
+            var workspace = Path.GetFileNameWithoutExtension(path);
+            if (SelectWorkspace(workspace))
+                return;
+
+            GridLength2 = 1;
+            GridLength0 = GridLength4 = 0;
+            FirePropertyChanged("ApplyGridLengths");
+
+            myServerControlVM.LoadFile(path);
+        }
+
+        private bool SelectWorkspace(string value)
+        {
+            for (int i = 0; i < workspaces.Count; i++)
             {
-                //--- Only MyAdditionalControlVM shall be shown. Before setting the grid lengths, store the current ones. 
-                //--- Also replace MyAdditionalControlVM values with MyStandaloneControlVM values.
-                gridLength0 = GridLength0; GridLength0 = 0;
-                gridLength2 = GridLength2; GridLength2 = 0;
-                gridLength4 = GridLength4; GridLength4 = 1;
-                SwapAdditionalVMs();
-
-                if (!App.OpenFileName.equals(myAdditionalControlVM.LastFile))
-                    myAdditionalControlVM.MyLogControlVM1.IsFilterEnabled = false;
+                if (workspaces[i].equals(value))
+                {
+                    SelectedWorkspace = i;
+                    return true;
+                }
             }
-            else //--- call on exit
-            {
-                GridLength0 = gridLength0;
-                GridLength2 = gridLength2;
-                GridLength4 = gridLength4;
-                SwapAdditionalVMs();
-            }
-        }
-        double gridLength0, gridLength2, gridLength4;
 
-        void SwapAdditionalVMs()
-        {
-            SplitLogControlVM tmp = NewSplitLogControlVM();
-            CopyValues(myAdditionalControlVM, tmp);
-            CopyValues(myStandaloneControlVM, myAdditionalControlVM);
-            CopyValues(tmp, myStandaloneControlVM);
-        }
-
-        private void CopyValues(SplitLogControlVM source, SplitLogControlVM target, bool applyGridLengths = false)
-        {
-            target.GridLength0 = source.GridLength0;
-            target.GridLength2 = source.GridLength2;
-            target.LastFile = source.LastFile;
-            target.IsSplitLog = source.IsSplitLog;
-            target.IsSyncSelection = source.IsSyncSelection;
-            CopyValues(source.MyLogControlVM1, target.MyLogControlVM1);
-            CopyValues(source.MyLogControlVM2, target.MyLogControlVM2);
-            if (applyGridLengths)
-                target.ApplyGridLengths();
-        }
-
-        private void CopyValues(LogControlVM source, LogControlVM target)
-        {
-            target.IsFilterEnabled = source.IsFilterEnabled;
-            target.IncludeList = new FilterCollection(source.IncludeList);
-            target.ExcludeList = new FilterCollection(source.ExcludeList);
+            NewWorkspace = value;
+            return false;
         }
 
         #region Commands
@@ -733,7 +690,7 @@ namespace SmartLogReader
                 {
                     selectedWorkspace = value;
                     OnPropertyChanged();
-                    if (IsInitialized)
+                    if (IsInitialized && value > -1)
                         LoadWorkspace();
                 }
             }
@@ -813,26 +770,22 @@ namespace SmartLogReader
         /// </summary>
         private string GetWorkspaceFile()
         {
-            //string path = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartLogReader");
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
             if (selectedWorkspace < 0 || selectedWorkspace >= workspaces.Count)
                 return null;
 
-            return Path.Combine(dir, workspaces[selectedWorkspace]) + ".xml";
+            return GetWorkspaceFile(workspaces[selectedWorkspace]);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private void SaveWorkspace()
+        private string SaveWorkspace()
         {
             string path = GetWorkspaceFile();
             log.Smart($"path = '{path}'");
             if (path != null)
                 File.WriteAllText(path, ToXML());
+            return path;
         }
 
         /// <summary>
@@ -887,6 +840,26 @@ namespace SmartLogReader
             CopyValues(vm);
             IsInitialized = true;
             ReloadFiles();
+        }
+
+        private void CopyValues(SplitLogControlVM source, SplitLogControlVM target, bool applyGridLengths = false)
+        {
+            target.GridLength0 = source.GridLength0;
+            target.GridLength2 = source.GridLength2;
+            target.LastFile = source.LastFile;
+            target.IsSplitLog = source.IsSplitLog;
+            target.IsSyncSelection = source.IsSyncSelection;
+            CopyValues(source.MyLogControlVM1, target.MyLogControlVM1);
+            CopyValues(source.MyLogControlVM2, target.MyLogControlVM2);
+            if (applyGridLengths)
+                target.ApplyGridLengths();
+        }
+
+        private void CopyValues(LogControlVM source, LogControlVM target)
+        {
+            target.IsFilterEnabled = source.IsFilterEnabled;
+            target.IncludeList = new FilterCollection(source.IncludeList);
+            target.ExcludeList = new FilterCollection(source.ExcludeList);
         }
 
         void CopyValues(SmartLogControlVM vm)
