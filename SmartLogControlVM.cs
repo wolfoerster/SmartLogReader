@@ -490,6 +490,15 @@ namespace SmartLogReader
             set { Record.AmountOfMethod = value; UpdateUI(); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Size FilterDialogSize
+        {
+            get { return FilterDialog.LastSize; }
+            set { FilterDialog.LastSize = value; }
+        }
+
         #endregion Public Properties
 
         /// <summary>

@@ -23,26 +23,26 @@ namespace SmartLogReader
     /// 
     /// </summary>
     public class Notifier : INotifyPropertyChanged
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		protected virtual void FirePropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null)
-			{
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void FirePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
                 //StackTrace stackTrace = new StackTrace();
                 //string methodName = stackTrace.GetFrame(1).GetMethod().Name;
                 //var log = new SmartLogger();
                 //log.Smart($"methodName = {0}, propertyName = {1}", methodName, propertyName));
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
         /// <summary>
         /// 

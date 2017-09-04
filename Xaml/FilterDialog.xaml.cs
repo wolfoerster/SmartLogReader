@@ -14,18 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
+using System.ComponentModel;
+using System.Windows;
+
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for FilterDialog.xaml
-	/// </summary>
-	public partial class FilterDialog : Dialog
-	{
-#warning TODO: make column for ExpectedValue starlike
+    /// <summary>
+    /// Interaction logic for FilterDialog.xaml
+    /// </summary>
+    public partial class FilterDialog : Dialog
+    {
         public FilterDialog(LogControlVM viewModel)
-		{
-			InitializeComponent();
-			DataContext = viewModel;
-		}
-	}
+        {
+            InitializeComponent();
+            DataContext = viewModel;
+            Closing += MeClosing;
+            if (LastSize.Width > 55 && LastSize.Height > 55)
+            {
+                Width = LastSize.Width;
+                Height = LastSize.Height;
+            }
+        }
+
+        public static Size LastSize;
+
+        void MeClosing(object sender, CancelEventArgs e)
+        {
+            LastSize.Width = Width;
+            LastSize.Height = Height;
+        }
+    }
 }

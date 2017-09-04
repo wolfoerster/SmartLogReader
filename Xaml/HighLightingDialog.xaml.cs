@@ -19,44 +19,44 @@ using System.Windows.Controls;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for ColorSpecDialog.xaml
-	/// </summary>
-	public partial class HighLightingDialog : Dialog
-	{
-		public HighLightingDialog(ColorSpecCollection colorSpecs)
-		{
-			InitializeComponent();
-			DataContext = ColorSpecs = colorSpecs;
-		}
-		ColorSpecCollection ColorSpecs;
+    /// <summary>
+    /// Interaction logic for ColorSpecDialog.xaml
+    /// </summary>
+    public partial class HighLightingDialog : Dialog
+    {
+        public HighLightingDialog(ColorSpecCollection colorSpecs)
+        {
+            InitializeComponent();
+            DataContext = ColorSpecs = colorSpecs;
+        }
+        ColorSpecCollection ColorSpecs;
 
-		void OnButtonNew(object sender, RoutedEventArgs e)
-		{
-			ColorSpecs.Insert(0, new ColorSpec(7, 0, "*"));
-		}
+        void OnButtonNew(object sender, RoutedEventArgs e)
+        {
+            ColorSpecs.Insert(0, new ColorSpec(7, 0, "*"));
+        }
 
-		void OnButtonX(object sender, RoutedEventArgs e)
-		{
-			ListBoxItem lbItem = Utils.FindParent<ListBoxItem>(sender as Button);
-			if (lbItem != null)
-			{
-				ColorSpec colorSpec = lbItem.Content as ColorSpec;
-				ColorSpecs.Remove(colorSpec);
-			}
-		}
+        void OnButtonX(object sender, RoutedEventArgs e)
+        {
+            ListBoxItem lbItem = Utils.FindParent<ListBoxItem>(sender as Button);
+            if (lbItem != null)
+            {
+                ColorSpec colorSpec = lbItem.Content as ColorSpec;
+                ColorSpecs.Remove(colorSpec);
+            }
+        }
 
-		void OnButtonReset(object sender, RoutedEventArgs e)
-		{
-			ColorSpecs.Clear();
-			ColorSpecCollection colorSpecs = Record.GetDefaultColorSpecs();
-			foreach (var item in colorSpecs)
-				ColorSpecs.Add(item);
-		}
+        void OnButtonReset(object sender, RoutedEventArgs e)
+        {
+            ColorSpecs.Clear();
+            ColorSpecCollection colorSpecs = Record.GetDefaultColorSpecs();
+            foreach (var item in colorSpecs)
+                ColorSpecs.Add(item);
+        }
 
-		void OnButtonClear(object sender, RoutedEventArgs e)
-		{
-			ColorSpecs.Clear();
-		}
-	}
+        void OnButtonClear(object sender, RoutedEventArgs e)
+        {
+            ColorSpecs.Clear();
+        }
+    }
 }

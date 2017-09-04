@@ -20,33 +20,33 @@ using System.Windows.Input;
 
 namespace SmartLogReader
 {
-	public class Dialog : Window
-	{
-		protected override void OnKeyDown(KeyEventArgs e)
-		{
-			base.OnKeyDown(e);
-			if (e.Key == Key.Escape)
-				Close(false);
-		}
+    public class Dialog : Window
+    {
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape)
+                Close(false);
+        }
 
-		void Close(bool result)
-		{
-			bool isModal = (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
-			if (!isModal)
-				Close();
-			else
-				DialogResult = result;
-		}
+        void Close(bool result)
+        {
+            bool isModal = (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+            if (!isModal)
+                Close();
+            else
+                DialogResult = result;
+        }
 
-		protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
-		{
-			base.OnMouseRightButtonUp(e);
-			Close(false);
-		}
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonUp(e);
+            Close(false);
+        }
 
-		public void OnButtonOK(object sender, RoutedEventArgs e)
-		{
-			Close(true);
-		}
-	}
+        public void OnButtonOK(object sender, RoutedEventArgs e)
+        {
+            Close(true);
+        }
+    }
 }

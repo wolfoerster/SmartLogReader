@@ -14,38 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
-using System.Windows;
-using System.Windows.Input;
-using System.Collections.Generic;
+using System;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace SmartLogReader
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class UICommand : RoutedUICommand
+    public class WidthConverter : IValueConverter
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public UICommand()
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            double width = (double)value;
+            return width - 9;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public UICommand(string text, string name, KeyGesture keyGesture) :
-            base(text, name, typeof(FrameworkElement), new InputGestureCollection(new List<InputGesture>() { keyGesture }))
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public UICommand(string text, string name, Key key, ModifierKeys modifier, string str) :
-            this(text, name, new KeyGesture(key, modifier, str))
-        {
+            return value;
         }
     }
 }

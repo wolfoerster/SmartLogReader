@@ -23,136 +23,136 @@ namespace SmartLogReader
     /// Interaction logic for QuickFilterDialog.xaml
     /// </summary>
     public partial class QuickFilterDialog : Dialog
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public QuickFilterDialog(LogControlVM viewModel, Record record)
-		{
-			InitializeComponent();
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public QuickFilterDialog(LogControlVM viewModel, Record record)
+        {
+            InitializeComponent();
 
-			ViewModel = viewModel;
-			Closing += MeClosing;
+            ViewModel = viewModel;
+            Closing += MeClosing;
 
-			List<IndexValuePair> list = Filter.GetRecordProperties(record);
+            List<IndexValuePair> list = Filter.GetRecordProperties(record);
 
-			foreach (var item in list)
-				item.ViewModel = viewModel;
+            foreach (var item in list)
+                item.ViewModel = viewModel;
 
-			IndexValuePair.FirstIncluded = IndexValuePair.FirstExcluded = -1;
-			listBox.ItemsSource = list;
-		}
-		LogControlVM ViewModel;
+            IndexValuePair.FirstIncluded = IndexValuePair.FirstExcluded = -1;
+            listBox.ItemsSource = list;
+        }
+        LogControlVM ViewModel;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void MeClosing(object sender, CancelEventArgs e)
-		{
-			RemoveLastAnd(ViewModel.IncludeList);
-			RemoveLastAnd(ViewModel.ExcludeList);
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        void MeClosing(object sender, CancelEventArgs e)
+        {
+            RemoveLastAnd(ViewModel.IncludeList);
+            RemoveLastAnd(ViewModel.ExcludeList);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void RemoveLastAnd(FilterCollection list)
-		{
-			if (list.Count > 0)
-				list[list.Count - 1].AndNext = false;
-		}
-	}
+        /// <summary>
+        /// 
+        /// </summary>
+        void RemoveLastAnd(FilterCollection list)
+        {
+            if (list.Count > 0)
+                list[list.Count - 1].AndNext = false;
+        }
+    }
 
-	/// <summary>
-	/// 
-	/// </summary>
-	public class IndexValuePair : Notifier
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public IndexValuePair(int propertyIndex, string propertyValue)
-		{
-			PropertyIndex = propertyIndex;
-			PropertyValue = propertyValue;
-		}
-		int PropertyIndex;
+    /// <summary>
+    /// 
+    /// </summary>
+    public class IndexValuePair : Notifier
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public IndexValuePair(int propertyIndex, string propertyValue)
+        {
+            PropertyIndex = propertyIndex;
+            PropertyValue = propertyValue;
+        }
+        int PropertyIndex;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string PropertyName
-		{
-			get { return Filter.PropertyNames[PropertyIndex]; }
-			set { }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PropertyName
+        {
+            get { return Filter.PropertyNames[PropertyIndex]; }
+            set { }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string PropertyValue { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PropertyValue { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public override string ToString()
-		{
-			return string.Format("IndexValuePair[{0},{1},{2}]", PropertyIndex, PropertyName, PropertyValue);
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public override string ToString()
+        {
+            return string.Format("IndexValuePair[{0},{1},{2}]", PropertyIndex, PropertyName, PropertyValue);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public LogControlVM ViewModel { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public LogControlVM ViewModel { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsIncluded
-		{
-			get { return includedFilter != null; }
-			set
-			{
-				FirePropertyChanged("IsIncluded");
-				ModifyList(ViewModel.IncludeList, ref includedFilter, ref FirstIncluded, value);
-			}
-		}
-		Filter includedFilter;
-		public static int FirstIncluded = -1;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsIncluded
+        {
+            get { return includedFilter != null; }
+            set
+            {
+                FirePropertyChanged("IsIncluded");
+                ModifyList(ViewModel.IncludeList, ref includedFilter, ref FirstIncluded, value);
+            }
+        }
+        Filter includedFilter;
+        public static int FirstIncluded = -1;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsExcluded
-		{
-			get { return excludedFilter != null; }
-			set
-			{
-				FirePropertyChanged("IsExcluded");
-				ModifyList(ViewModel.ExcludeList, ref excludedFilter, ref FirstExcluded, value);
-			}
-		}
-		Filter excludedFilter;
-		public static int FirstExcluded = -1;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsExcluded
+        {
+            get { return excludedFilter != null; }
+            set
+            {
+                FirePropertyChanged("IsExcluded");
+                ModifyList(ViewModel.ExcludeList, ref excludedFilter, ref FirstExcluded, value);
+            }
+        }
+        Filter excludedFilter;
+        public static int FirstExcluded = -1;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ModifyList(FilterCollection filterList, ref Filter filter, ref int indexOfFirst, bool createNewFilter)
-		{
-			if (createNewFilter)
-			{
+        /// <summary>
+        /// 
+        /// </summary>
+        void ModifyList(FilterCollection filterList, ref Filter filter, ref int indexOfFirst, bool createNewFilter)
+        {
+            if (createNewFilter)
+            {
 
-				filter = new Filter(PropertyIndex, 0, PropertyValue);
-				filter.AndNext = true;
-				filterList.Add(filter);
-			}
-			else
-			{
-				filterList.Remove(filter);
-				filter = null;
-			}
-			ViewModel.NotifyFilterChanged();
-		}
-	}
+                filter = new Filter(PropertyIndex, 0, PropertyValue);
+                filter.AndNext = true;
+                filterList.Add(filter);
+            }
+            else
+            {
+                filterList.Remove(filter);
+                filter = null;
+            }
+            ViewModel.NotifyFilterChanged();
+        }
+    }
 }

@@ -22,21 +22,21 @@ using SmartLogging;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public class LogControlVM : ViewModel
-	{
+    /// <summary>
+    /// 
+    /// </summary>
+    public class LogControlVM : ViewModel
+    {
         /// <summary>
         /// 
         /// </summary>
         public LogControlVM()
-		{
+        {
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
             log = new SmartLogger($"{name}.{++instanceCounter}");
-			IncludeList = new FilterCollection();
-			ExcludeList = new FilterCollection();
-		}
+            IncludeList = new FilterCollection();
+            ExcludeList = new FilterCollection();
+        }
         private readonly SmartLogger log;
         private static int instanceCounter;
 
@@ -44,86 +44,86 @@ namespace SmartLogReader
         /// 
         /// </summary>
         public override string ToString()
-		{
-			return "LogControlVM[" + DisplayName + "]";
-		}
+        {
+            return "LogControlVM[" + DisplayName + "]";
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public LogControlVM Clone()
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public LogControlVM Clone()
+        {
             log.Smart();
             string xml = Utils.ToXML(this);
-			LogControlVM vm = Utils.FromXML<LogControlVM>(xml);
-			return vm;
-		}
+            LogControlVM vm = Utils.FromXML<LogControlVM>(xml);
+            return vm;
+        }
 
-		/// <summary>
-		/// There is only one active (or current) viewmodel.
-		/// </summary>
-		public static LogControlVM CurrentVM { get; protected set; }
+        /// <summary>
+        /// There is only one active (or current) viewmodel.
+        /// </summary>
+        public static LogControlVM CurrentVM { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void SetAsCurrentVM()
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetAsCurrentVM()
+        {
             log.Smart();
             if (CurrentVM != this)
-			{
-				CurrentVM = this;
-				FirePropertyChanged("CurrentVM");
-			}
-		}
+            {
+                CurrentVM = this;
+                FirePropertyChanged("CurrentVM");
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public RecordCollection Records
-		{
-			get { return records; }
-			set
-			{
-				if (records != null)
-				{
-					RecordsView.Filter = null;
-					RecordsView = null;
-				}
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public RecordCollection Records
+        {
+            get { return records; }
+            set
+            {
+                if (records != null)
+                {
+                    RecordsView.Filter = null;
+                    RecordsView = null;
+                }
 
-				records = value;
+                records = value;
 
-				if (records != null)
-				{
-					RecordsView = new ListCollectionView(records);
-					RecordsView.Filter = Test;
-				}
+                if (records != null)
+                {
+                    RecordsView = new ListCollectionView(records);
+                    RecordsView.Filter = Test;
+                }
 
-				CheckListEmptyReason();
-				FirePropertyChanged("RecordsView");
-			}
-		}
-		RecordCollection records;
+                CheckListEmptyReason();
+                FirePropertyChanged("RecordsView");
+            }
+        }
+        RecordCollection records;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public ListCollectionView RecordsView { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public ListCollectionView RecordsView { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[XmlIgnore]
-		public string ListEmptyReason { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlIgnore]
+        public string ListEmptyReason { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void CheckListEmptyReason()
-		{
-			string reason = "";
+        /// <summary>
+        /// 
+        /// </summary>
+        void CheckListEmptyReason()
+        {
+            string reason = "";
 
             if (Records == null)
                 reason = "Split is disabled";
@@ -132,20 +132,20 @@ namespace SmartLogReader
                 reason = "No records";
 
             else if (RecordsView.Count == 0 && Records.Count > 0)
-				reason = "No records passing filter";
+                reason = "No records passing filter";
 
-			if (ListEmptyReason != reason)
-			{
-				ListEmptyReason = reason;
-				FirePropertyChanged("ListEmptyReason");
-			}
-		}
-      
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Refresh()
-		{
+            if (ListEmptyReason != reason)
+            {
+                ListEmptyReason = reason;
+                FirePropertyChanged("ListEmptyReason");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Refresh()
+        {
             if (RecordsView != null)
             {
                 try
@@ -158,14 +158,14 @@ namespace SmartLogReader
                 }
             }
 
-			CheckListEmptyReason();
-		}
+            CheckListEmptyReason();
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void ScrollToBottom()
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ScrollToBottom()
+        {
             if (RecordsView != null)
             {
                 try
@@ -177,206 +177,206 @@ namespace SmartLogReader
                     log.Exception(e);
                 }
             }
-		}
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void ScrollCurrentIntoView()
-		{
-			FirePropertyChanged("ScrollSelectedIntoView");
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ScrollCurrentIntoView()
+        {
+            FirePropertyChanged("ScrollSelectedIntoView");
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void SetFocusOnSelected()
-		{
-			FirePropertyChanged("SetFocusOnSelected");
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetFocusOnSelected()
+        {
+            FirePropertyChanged("SetFocusOnSelected");
+        }
 
-		#region Filtering
+        #region Filtering
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsFilterEnabled
-		{
-			get { return isFilterEnabled; }
-			set
-			{
-				if (isFilterEnabled != value)
-				{
-					isFilterEnabled = value;
-					FirePropertyChanged("IsFilterEnabled");
-				}
-			}
-		}
-		bool isFilterEnabled = true;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsFilterEnabled
+        {
+            get { return isFilterEnabled; }
+            set
+            {
+                if (isFilterEnabled != value)
+                {
+                    isFilterEnabled = value;
+                    FirePropertyChanged("IsFilterEnabled");
+                }
+            }
+        }
+        bool isFilterEnabled = true;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void NotifyFilterChanged()
-		{
-			//--- Tell the SplitLogControlVM that IsFilterEnabled has been changed. This will trigger the correct action.
-			FirePropertyChanged("IsFilterEnabled");
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void NotifyFilterChanged()
+        {
+            //--- Tell the SplitLogControlVM that IsFilterEnabled has been changed. This will trigger the correct action.
+            FirePropertyChanged("IsFilterEnabled");
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public FilterCollection IncludeList { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public FilterCollection IncludeList { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public FilterCollection ExcludeList { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public FilterCollection ExcludeList { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void ReadFilterSettings(LogControlVM vm)
-		{
-			if (vm != null)
-			{
-				IncludeList = new FilterCollection(vm.IncludeList);
-				ExcludeList = new FilterCollection(vm.ExcludeList);
-				NotifyFilterChanged();
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ReadFilterSettings(LogControlVM vm)
+        {
+            if (vm != null)
+            {
+                IncludeList = new FilterCollection(vm.IncludeList);
+                ExcludeList = new FilterCollection(vm.ExcludeList);
+                NotifyFilterChanged();
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool Test(object obj)
-		{
-			Record record = obj as Record;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Test(object obj)
+        {
+            Record record = obj as Record;
 
-			if (!IsFilterEnabled || record == null)
-				return true;
+            if (!IsFilterEnabled || record == null)
+                return true;
 
-			if (IncludeList.Count != 0)
-			{
-				bool result = false;
+            if (IncludeList.Count != 0)
+            {
+                bool result = false;
 
-				IEnumerator<Filter> e = IncludeList.GetEnumerator();
-				while (e.MoveNext())
-				{
-					if (TestAllAnds(e, record))
-					{
-						result = true;
-						break;
-					}
-				}
+                IEnumerator<Filter> e = IncludeList.GetEnumerator();
+                while (e.MoveNext())
+                {
+                    if (TestAllAnds(e, record))
+                    {
+                        result = true;
+                        break;
+                    }
+                }
 
-				if (!result)
-					return false;
-			}
+                if (!result)
+                    return false;
+            }
 
-			if (ExcludeList.Count != 0)
-			{
-				IEnumerator<Filter> e = ExcludeList.GetEnumerator();
-				while (e.MoveNext())
-				{
-					if (TestAllAnds(e, record))
-						return false;
-				}
-			}
+            if (ExcludeList.Count != 0)
+            {
+                IEnumerator<Filter> e = ExcludeList.GetEnumerator();
+                while (e.MoveNext())
+                {
+                    if (TestAllAnds(e, record))
+                        return false;
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		bool TestAllAnds(IEnumerator<Filter> e, Record record)
-		{
-			Filter filter = e.Current;
-			bool result = filter.Test(record);
+        /// <summary>
+        /// 
+        /// </summary>
+        bool TestAllAnds(IEnumerator<Filter> e, Record record)
+        {
+            Filter filter = e.Current;
+            bool result = filter.Test(record);
 
-			while (filter.AndNext)
-			{
-				if (!e.MoveNext())
-					return result;
+            while (filter.AndNext)
+            {
+                if (!e.MoveNext())
+                    return result;
 
-				filter = e.Current;
-				result &= filter.Test(record);
-			}
+                filter = e.Current;
+                result &= filter.Test(record);
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		#endregion Filtering
+        #endregion Filtering
 
-		#region Searching
+        #region Searching
 
-		[XmlIgnore]
-		public string SearchText { get; protected set; }
+        [XmlIgnore]
+        public string SearchText { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Search(string text, bool forward)
-		{
-			if (string.IsNullOrEmpty(text) || RecordsView == null || RecordsView.Count == 0)
-				return;
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Search(string text, bool forward)
+        {
+            if (string.IsNullOrEmpty(text) || RecordsView == null || RecordsView.Count == 0)
+                return;
 
-			int index = -1;
-			SearchText = text;
+            int index = -1;
+            SearchText = text;
 
-			if (forward)
-			{
-				int start = Math.Max(RecordsView.CurrentPosition + 1, 0);
-				index = SearchBetween(start, RecordsView.Count);
-				if (index < 0)
-					index = SearchBetween(0, start);
-			}
-			else
-			{
-				int start = Math.Max(RecordsView.CurrentPosition - 1, 0);
-				index = SearchBetween(start, -1);
-				if (index < 0)
-					index = SearchBetween(RecordsView.Count - 1, start);
-			}
+            if (forward)
+            {
+                int start = Math.Max(RecordsView.CurrentPosition + 1, 0);
+                index = SearchBetween(start, RecordsView.Count);
+                if (index < 0)
+                    index = SearchBetween(0, start);
+            }
+            else
+            {
+                int start = Math.Max(RecordsView.CurrentPosition - 1, 0);
+                index = SearchBetween(start, -1);
+                if (index < 0)
+                    index = SearchBetween(RecordsView.Count - 1, start);
+            }
 
-			if (index < 0)
-			{
-				FirePropertyChanged("StringNotFound");
-			}
-			else
-			{
-				RecordsView.MoveCurrentToPosition(index);
-				SetFocusOnSelected();
-			}
-		}
+            if (index < 0)
+            {
+                FirePropertyChanged("StringNotFound");
+            }
+            else
+            {
+                RecordsView.MoveCurrentToPosition(index);
+                SetFocusOnSelected();
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		int SearchBetween(int start, int stop)
-		{
-			if (start < stop)
-			{
-				for (int i = start; i < stop; i++)
-				{
-					Record record = RecordsView.GetItemAt(i) as Record;
-					if (record.Contains(SearchText))
-						return i;
-				}
-			}
-			else
-			{
-				for (int i = start; i > stop; i--)
-				{
-					Record record = RecordsView.GetItemAt(i) as Record;
-					if (record.Contains(SearchText))
-						return i;
-				}
-			}
-			return -1;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        int SearchBetween(int start, int stop)
+        {
+            if (start < stop)
+            {
+                for (int i = start; i < stop; i++)
+                {
+                    Record record = RecordsView.GetItemAt(i) as Record;
+                    if (record.Contains(SearchText))
+                        return i;
+                }
+            }
+            else
+            {
+                for (int i = start; i > stop; i--)
+                {
+                    Record record = RecordsView.GetItemAt(i) as Record;
+                    if (record.Contains(SearchText))
+                        return i;
+                }
+            }
+            return -1;
+        }
 
-		#endregion Searching
-	}
+        #endregion Searching
+    }
 }

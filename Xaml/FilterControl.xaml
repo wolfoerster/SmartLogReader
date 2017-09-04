@@ -1,32 +1,36 @@
 ﻿<UserControl x:Class="SmartLogReader.FilterControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:my="clr-namespace:SmartLogReader"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition/>
-    </Grid.RowDefinitions>
-    <Button Content="Add" Click="OnButtonAdd" Width="50" HorizontalAlignment="Left"/>
-    <ListBox x:Name="listBox" Grid.Row="1">
-      <ListBox.ItemTemplate>
-        <DataTemplate>
-          <!-- Each row is showing a Filter-->
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="80"/>
-              <ColumnDefinition Width="90"/>
-              <ColumnDefinition Width="220"/>
-              <ColumnDefinition Width="20"/>
-              <ColumnDefinition Width="20"/>
-            </Grid.ColumnDefinitions>
-            <ComboBox ItemsSource="{Binding PropertyNames}" SelectedIndex="{Binding PropertyIndex}"/>
-            <ComboBox ItemsSource="{Binding OpCodes}" SelectedIndex="{Binding OpCodeIndex}" Grid.Column="1"/>
-            <TextBox Text="{Binding ExpectedValue}" ToolTip="Enter expected value (use * as wildcard)" Grid.Column="2"/>
-            <ToggleButton Content="&amp;" ToolTip="Link with AND to next filter" IsChecked="{Binding AndNext}" Grid.Column="3"/>
-            <Button Content="X" ToolTip="Remove filter" Click="OnButtonX" Grid.Column="4"/>
-          </Grid>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-  </Grid>
+    <UserControl.Resources>
+        <my:WidthConverter x:Key="myWidthConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button Content="Add" Click="OnButtonAdd" Width="50" HorizontalAlignment="Left"/>
+        <ListBox x:Name="listBox" Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <!-- Each row is showing a Filter-->
+                    <Grid Width="{Binding Path=ActualWidth, ElementName=listBox, Converter={StaticResource myWidthConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="20"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox ItemsSource="{Binding PropertyNames}" SelectedIndex="{Binding PropertyIndex}"/>
+                        <ComboBox ItemsSource="{Binding OpCodes}" SelectedIndex="{Binding OpCodeIndex}" Grid.Column="1"/>
+                        <TextBox Text="{Binding ExpectedValue}" ToolTip="Enter expected value (use * as wildcard)" Grid.Column="2"/>
+                        <ToggleButton Content="&amp;" ToolTip="Link with AND to next filter" IsChecked="{Binding AndNext}" Grid.Column="3"/>
+                        <Button Content="X" ToolTip="Remove filter" Click="OnButtonX" Grid.Column="4"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
 </UserControl>

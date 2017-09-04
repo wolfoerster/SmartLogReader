@@ -23,62 +23,62 @@ namespace SmartLogReader
     /// Interaction logic for DetailsWindow.xaml
     /// </summary>
     public partial class DetailsWindow : Dialog, INotifyPropertyChanged
-	{
-		#region INotifyPropertyChanged
+    {
+        #region INotifyPropertyChanged
 
-		public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
-		protected virtual void FirePropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
+        protected virtual void FirePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-		#endregion INotifyPropertyChanged
+        #endregion INotifyPropertyChanged
 
-		public DetailsWindow(string text)
-		{
-			InitializeComponent();
-			DataContext = this;
-			textBox.Text = text;
-			Closing += MeClosing;
-			Wrap = DoWrap;
-			if (LastSize.Width > 55 && LastSize.Height > 55)
-			{
-				Width = DetailsWindow.LastSize.Width;
-				Height = DetailsWindow.LastSize.Height;
-			}
-		}
+        public DetailsWindow(string text)
+        {
+            InitializeComponent();
+            DataContext = this;
+            textBox.Text = text;
+            Closing += MeClosing;
+            Wrap = DoWrap;
+            if (LastSize.Width > 55 && LastSize.Height > 55)
+            {
+                Width = LastSize.Width;
+                Height = LastSize.Height;
+            }
+        }
 
-		public static bool DoWrap;
+        public static bool DoWrap;
 
-		public static Size LastSize;
+        public static Size LastSize;
 
-		void MeClosing(object sender, CancelEventArgs e)
-		{
-			LastSize.Width = Width;
-			LastSize.Height = Height;
-		}
+        void MeClosing(object sender, CancelEventArgs e)
+        {
+            LastSize.Width = Width;
+            LastSize.Height = Height;
+        }
 
-		public bool Wrap
-		{
-			get { return DoWrap; }
-			set
-			{
-				DoWrap = value;
-				textBox.TextWrapping = DoWrap ? TextWrapping.WrapWithOverflow : TextWrapping.NoWrap;
-				FirePropertyChanged("Wrap");
-			}
-		}
-      
-		void OnButtonCopy(object sender, RoutedEventArgs e)
-		{
-			Clipboard.SetText(textBox.Text);
-		}
+        public bool Wrap
+        {
+            get { return DoWrap; }
+            set
+            {
+                DoWrap = value;
+                textBox.TextWrapping = DoWrap ? TextWrapping.WrapWithOverflow : TextWrapping.NoWrap;
+                FirePropertyChanged("Wrap");
+            }
+        }
 
-		void OnButtonClose(object sender, RoutedEventArgs e)
-		{
-			Close();
-		}
-	}
+        void OnButtonCopy(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(textBox.Text);
+        }
+
+        void OnButtonClose(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+    }
 }

@@ -18,19 +18,19 @@ using System.Windows.Controls;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for WaitControl.xaml
-	/// </summary>
-	public partial class WaitControl : UserControl
-	{
-		public WaitControl()
-		{
-			InitializeComponent();
-		}
+    /// <summary>
+    /// Interaction logic for WaitControl.xaml
+    /// </summary>
+    public partial class WaitControl : UserControl
+    {
+        public WaitControl()
+        {
+            InitializeComponent();
+        }
 
-		public double Progress
-		{
-			set { progressBar.Value = value * 1e3; }
-		}
-	}
+        public double Progress
+        {
+            set { progressBar.Value = value * 1e3; }
+        }
+    }
 }

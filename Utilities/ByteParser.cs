@@ -18,37 +18,37 @@
 namespace SmartLogReader
 {
     public enum LogFormats
-	{
-		Unknown,
+    {
+        Unknown,
         SmartLogger,
         LegacyLogger
-	}
+    }
 
-	public class ByteParser
-	{
-		private static readonly byte CR = 0x0D;//= '\r'
-		private static readonly byte LF = 0x0A;//= '\n'
-		private static readonly byte Space = 0x20;//= ' '
-		private static readonly byte Dash = 0x2D;//= '-'
-		private static readonly byte Colon = 0x3A;//= ':'
+    public class ByteParser
+    {
+        private static readonly byte CR = 0x0D;//= '\r'
+        private static readonly byte LF = 0x0A;//= '\n'
+        private static readonly byte Space = 0x20;//= ' '
+        private static readonly byte Dash = 0x2D;//= '-'
+        private static readonly byte Colon = 0x3A;//= ':'
         private static readonly byte Comma = 0x2C;//= ','
-		private static readonly byte FullStop = 0x2E;//= '.'
+        private static readonly byte FullStop = 0x2E;//= '.'
         private static readonly string LegacyKey = "novaSuite";
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public ByteParser(byte[] bytes)
-		{
-			Bytes = bytes;
-			CheckFormat();
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public ByteParser(byte[] bytes)
+        {
+            Bytes = bytes;
+            CheckFormat();
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void CheckFormat()
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        void CheckFormat()
+        {
             if (bytes.Length > LegacyKey.Length)
             {
                 string result = Utils.BytesToString(bytes, 0, LegacyKey.Length);
@@ -66,48 +66,48 @@ namespace SmartLogReader
                 return;
             }
 
-			//--- unknown format
-			Format = LogFormats.Unknown;
-		}
+            //--- unknown format
+            Format = LogFormats.Unknown;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public LogFormats Format { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public LogFormats Format { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public byte[] Bytes
-		{
-			get { return bytes; }
-			set 
-			{ 
-				bytes = value;
-				lastPos = 0;
-			}
-		}
-		byte[] bytes;
-		int lastPos;
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte[] Bytes
+        {
+            get { return bytes; }
+            set
+            {
+                bytes = value;
+                lastPos = 0;
+            }
+        }
+        byte[] bytes;
+        int lastPos;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public double CurrentPosition
-		{
-			get { return lastPos; }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public double CurrentPosition
+        {
+            get { return lastPos; }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public Record GetNextRecord()
-		{
-			int nRemain = bytes.Length - lastPos;
-			if (nRemain < 1)
-				return null;
+        /// <summary>
+        /// 
+        /// </summary>
+        public Record GetNextRecord()
+        {
+            int nRemain = bytes.Length - lastPos;
+            if (nRemain < 1)
+                return null;
 
-			Record record = new Record();
+            Record record = new Record();
 
             switch (Format)
             {
@@ -129,8 +129,8 @@ namespace SmartLogReader
                     break;
             }
 
-			return record;
-		}
+            return record;
+        }
 
         private void GetLegacyRecord(Record record)
         {
@@ -180,41 +180,41 @@ namespace SmartLogReader
         /// 
         /// </summary>
         string GetNextLine()
-		{
-			int i = GetIndexOfNext(LF, CR);
-			string result = GetString(i - lastPos);
-			lastPos = GetIndexOfNext(LF, CR, true);
-			return result;
-		}
+        {
+            int i = GetIndexOfNext(LF, CR);
+            string result = GetString(i - lastPos);
+            lastPos = GetIndexOfNext(LF, CR, true);
+            return result;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		string GetString(int numBytes)
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        string GetString(int numBytes)
+        {
             string result = Utils.BytesToString(bytes, lastPos, numBytes);
             lastPos += numBytes;
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		int GetIndexOfNext(byte b1, byte b2, bool invSearch = false)
-		{
-			int i = lastPos;
-			for (; i < bytes.Length; i++)
-			{
-				bool found = bytes[i] == b1 || bytes[i] == b2;
+        /// <summary>
+        /// 
+        /// </summary>
+        int GetIndexOfNext(byte b1, byte b2, bool invSearch = false)
+        {
+            int i = lastPos;
+            for (; i < bytes.Length; i++)
+            {
+                bool found = bytes[i] == b1 || bytes[i] == b2;
 
-				if (invSearch)
-					found = !found;
+                if (invSearch)
+                    found = !found;
 
-				if (found)
-					break;
-			}
-			return i;
-		}
+                if (found)
+                    break;
+            }
+            return i;
+        }
 
         string GetTime()
         {
@@ -228,99 +228,99 @@ namespace SmartLogReader
         }
         int minTimeLength = 19;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		bool CheckTime(int index)
-		{
+        /// <summary>
+        /// 
+        /// </summary>
+        bool CheckTime(int index)
+        {
             //--- string should at least look like "2017-07-23 16:48:18"
 
-			if (bytes.Length - index < minTimeLength)
-				return false;
+            if (bytes.Length - index < minTimeLength)
+                return false;
 
-			int i = index + 4;
-			if (bytes[i] != Dash)
-				return false;
+            int i = index + 4;
+            if (bytes[i] != Dash)
+                return false;
 
-			i += 3;
-			if (bytes[i] != Dash)
-				return false;
+            i += 3;
+            if (bytes[i] != Dash)
+                return false;
 
-			i += 3;
-			//if (bytes[i] != Space)
-			//	return false;
+            i += 3;
+            //if (bytes[i] != Space)
+            //	return false;
 
-			i += 3;
-			if (bytes[i] != Colon)
-				return false;
+            i += 3;
+            if (bytes[i] != Colon)
+                return false;
 
-			i += 3;
-			if (bytes[i] != Colon)
-				return false;
+            i += 3;
+            if (bytes[i] != Colon)
+                return false;
 
-			//i += 3;
+            //i += 3;
             //if (bytes[i] != FullStop && bytes[i] != Comma)
-			//	return false;
+            //	return false;
 
-			//i += 4;
-			//if (bytes[i] != Space)
-			//	return false;
+            //i += 4;
+            //if (bytes[i] != Space)
+            //	return false;
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		string GetNext(int numBytes = -1)
-		{
-			if (lastPos == bytes.Length)
-				return null;
+        /// <summary>
+        /// 
+        /// </summary>
+        string GetNext(int numBytes = -1)
+        {
+            if (lastPos == bytes.Length)
+                return null;
 
-			int i = numBytes < 0 ? GetIndexOfNext(Space, CR) : lastPos + numBytes;
-			string result = GetString(i - lastPos);
+            int i = numBytes < 0 ? GetIndexOfNext(Space, CR) : lastPos + numBytes;
+            string result = GetString(i - lastPos);
 
-			if (numBytes > 0)
-				result = result.Trim();
+            if (numBytes > 0)
+                result = result.Trim();
 
-			if (bytes[i] == CR)
-				lastPos = GetIndexOfNext(LF, CR, true);
-			else
-				lastPos = GetIndexOfNext(Space, Space, true);
+            if (bytes[i] == CR)
+                lastPos = GetIndexOfNext(LF, CR, true);
+            else
+                lastPos = GetIndexOfNext(Space, Space, true);
 
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		string GetText()
-		{
-			//--- look for CR followed by LF
-			int i = lastPos;
+        /// <summary>
+        /// 
+        /// </summary>
+        string GetText()
+        {
+            //--- look for CR followed by LF
+            int i = lastPos;
 
-			while (i < bytes.Length)
-			{
-				int prev_i = i - 1;
+            while (i < bytes.Length)
+            {
+                int prev_i = i - 1;
 
-				//--- are we in between CR and LF?
-				if (bytes[prev_i] == CR && bytes[i] == LF)
-				{
-					int next_i = i + 1;
+                //--- are we in between CR and LF?
+                if (bytes[prev_i] == CR && bytes[i] == LF)
+                {
+                    int next_i = i + 1;
 
-					//--- check for end of bytes or next time string
-					if (next_i == bytes.Length || CheckTime(next_i))
-					{
-						string result = GetString(prev_i - lastPos);
-						lastPos = next_i;
-						return result;
-					}
-				}
-				i++;
-			}
+                    //--- check for end of bytes or next time string
+                    if (next_i == bytes.Length || CheckTime(next_i))
+                    {
+                        string result = GetString(prev_i - lastPos);
+                        lastPos = next_i;
+                        return result;
+                    }
+                }
+                i++;
+            }
 
-			//--- no CR-LF found; just return whatever is there
-			return GetString(i - lastPos);
-		}
-	}
+            //--- no CR-LF found; just return whatever is there
+            return GetString(i - lastPos);
+        }
+    }
 }

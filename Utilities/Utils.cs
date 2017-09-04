@@ -33,169 +33,169 @@ using SmartLogging;
 namespace SmartLogReader
 {
     public class Screen
-	{
-		public Rect ScreenArea;
-		public Rect WorkArea;
-		public bool IsPrimary;
-		public string Name;
-	}
+    {
+        public Rect ScreenArea;
+        public Rect WorkArea;
+        public bool IsPrimary;
+        public string Name;
+    }
 
-	public static class Utils
-	{
+    public static class Utils
+    {
         private static readonly SmartLogger log = new SmartLogger();
-        
+
         /// <summary>
-		/// Gets a value indicating if Left-Shift or Right-Shift is down.
-		/// </summary>
-		public static bool IsShiftDown()
-		{
-			return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-		}
+        /// Gets a value indicating if Left-Shift or Right-Shift is down.
+        /// </summary>
+        public static bool IsShiftDown()
+        {
+            return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+        }
 
-		/// <summary>
-		/// Gets a value indicating if Left-Ctrl or Right-Ctrl is down.
-		/// </summary>
-		public static bool IsCtrlDown()
-		{
-			return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-		}
+        /// <summary>
+        /// Gets a value indicating if Left-Ctrl or Right-Ctrl is down.
+        /// </summary>
+        public static bool IsCtrlDown()
+        {
+            return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+        }
 
-		/// <summary>
-		/// Walks up the visual tree and finds the parent of desired type.
-		/// </summary>
-		public static T FindParent<T>(DependencyObject targetObject)
-			where T : DependencyObject
-		{
-			if (targetObject == null)
-				return null;
+        /// <summary>
+        /// Walks up the visual tree and finds the parent of desired type.
+        /// </summary>
+        public static T FindParent<T>(DependencyObject targetObject)
+            where T : DependencyObject
+        {
+            if (targetObject == null)
+                return null;
 
-			DependencyObject parent = VisualTreeHelper.GetParent(targetObject);
-			while (parent != null)
-			{
-				if (parent is T)
-					return parent as T;
-				parent = VisualTreeHelper.GetParent(parent);
-			}
+            DependencyObject parent = VisualTreeHelper.GetParent(targetObject);
+            while (parent != null)
+            {
+                if (parent is T)
+                    return parent as T;
+                parent = VisualTreeHelper.GetParent(parent);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		/// <summary>
-		/// Walks down the visual tree and finds the child of desired type.
-		/// </summary>
-		public static T FindChild<T>(DependencyObject targetObject, string name)
-			where T : DependencyObject
-		{
-			if (targetObject == null)
-				return null;
+        /// <summary>
+        /// Walks down the visual tree and finds the child of desired type.
+        /// </summary>
+        public static T FindChild<T>(DependencyObject targetObject, string name)
+            where T : DependencyObject
+        {
+            if (targetObject == null)
+                return null;
 
-			int noOfChildren = VisualTreeHelper.GetChildrenCount(targetObject);
-			for (int i = 0; i < noOfChildren; ++i)
-			{
-				DependencyObject child = VisualTreeHelper.GetChild(targetObject, i);
-				if (child is T)
-				{
-					if (string.IsNullOrWhiteSpace(name))
-					{
-						return child as T;
-					}
-					else if (child is FrameworkElement && (child as FrameworkElement).Name.Equals(name))
-					{
-						return child as T;
-					}
-				}
-				T result = FindChild<T>(child, name);
-				if (result != null)
-					return result;
-			}
-			return null;
-		}
+            int noOfChildren = VisualTreeHelper.GetChildrenCount(targetObject);
+            for (int i = 0; i < noOfChildren; ++i)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(targetObject, i);
+                if (child is T)
+                {
+                    if (string.IsNullOrWhiteSpace(name))
+                    {
+                        return child as T;
+                    }
+                    else if (child is FrameworkElement && (child as FrameworkElement).Name.Equals(name))
+                    {
+                        return child as T;
+                    }
+                }
+                T result = FindChild<T>(child, name);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static string ToXML<T>(T instance) where T : class
-		{
-			XmlSerializer serializer = new XmlSerializer(typeof(T));
-			StringWriter writer = new StringWriter();
-			serializer.Serialize(writer, instance);
-			string xml = writer.ToString();
-			return xml;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string ToXML<T>(T instance) where T : class
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            StringWriter writer = new StringWriter();
+            serializer.Serialize(writer, instance);
+            string xml = writer.ToString();
+            return xml;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static T FromXML<T>(string xml) where T : class
-		{
-			object obj = default(T);
-			if (!string.IsNullOrWhiteSpace(xml))
-			{
-				try
-				{
-					XmlSerializer serializer = new XmlSerializer(typeof(T));
-					using (StringReader reader = new StringReader(xml))
-					{
-						T data = serializer.Deserialize(reader) as T;
-						return data;
-					}
-				}
-				catch (Exception e)
-				{
+        /// <summary>
+        /// 
+        /// </summary>
+        public static T FromXML<T>(string xml) where T : class
+        {
+            object obj = default(T);
+            if (!string.IsNullOrWhiteSpace(xml))
+            {
+                try
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(T));
+                    using (StringReader reader = new StringReader(xml))
+                    {
+                        T data = serializer.Deserialize(reader) as T;
+                        return data;
+                    }
+                }
+                catch (Exception e)
+                {
                     log.Exception(e);
                 }
             }
-			return obj as T;
-		}
+            return obj as T;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static bool DeleteFile(string path)
-		{
-			if (!File.Exists(path))
-				return true;
+        /// <summary>
+        /// 
+        /// </summary>
+        public static bool DeleteFile(string path)
+        {
+            if (!File.Exists(path))
+                return true;
 
-			try
-			{
-				File.Delete(path);
-				return true;
-			}
-			catch (Exception e)
-			{
-				log.Exception(e);
-			}
-			return false;
-		}
+            try
+            {
+                File.Delete(path);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Exception(e);
+            }
+            return false;
+        }
 
         /// <summary>
         /// 
         /// </summary>
         public static bool CopyFile(string source, string dest)
-		{
-			try
-			{
-				File.Copy(source, dest, true);
-				return true;
-			}
-			catch (Exception e)
-			{
+        {
+            try
+            {
+                File.Copy(source, dest, true);
+                return true;
+            }
+            catch (Exception e)
+            {
                 log.Exception(e);
             }
-			return false;
-		}
+            return false;
+        }
 
-		/// <summary>
-		/// Clamps the specified x value to the given range.
-		/// </summary>
-		/// <param name="x">The x value.</param>
-		/// <param name="xMin">The minimum x value.</param>
-		/// <param name="xMax">The maximum x value.</param>
-		/// <returns></returns>
-		public static double Clamp(double x, double xMin, double xMax)
-		{
-			return Math.Min(Math.Max(x, xMin), xMax);
-		}
+        /// <summary>
+        /// Clamps the specified x value to the given range.
+        /// </summary>
+        /// <param name="x">The x value.</param>
+        /// <param name="xMin">The minimum x value.</param>
+        /// <param name="xMax">The maximum x value.</param>
+        /// <returns></returns>
+        public static double Clamp(double x, double xMin, double xMax)
+        {
+            return Math.Min(Math.Max(x, xMin), xMax);
+        }
 
         public static int Clamp(int x, int xMin, int xMax)
         {
@@ -205,282 +205,282 @@ namespace SmartLogReader
         #region ExtendFrameIntoClientArea
 
         public static bool ExtendFrameIntoClientArea(Window window, Thickness margin)
-		{
-			try
-			{
-				if (!DwmIsCompositionEnabled())
-					return false;
-			}
-			catch
-			{
-				return false;
-			}
+        {
+            try
+            {
+                if (!DwmIsCompositionEnabled())
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
 
-			IntPtr hwnd = new WindowInteropHelper(window).Handle;
-			if (hwnd == IntPtr.Zero)
-				//throw new InvalidOperationException("The Window must be shown before extending glass.");
-				return false;
+            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero)
+                //throw new InvalidOperationException("The Window must be shown before extending glass.");
+                return false;
 
-			// Set the background to transparent from both the WPF and Win32 perspectives
-			window.Background = Brushes.Transparent;
-			HwndSource.FromHwnd(hwnd).CompositionTarget.BackgroundColor = Colors.Transparent;
+            // Set the background to transparent from both the WPF and Win32 perspectives
+            window.Background = Brushes.Transparent;
+            HwndSource.FromHwnd(hwnd).CompositionTarget.BackgroundColor = Colors.Transparent;
 
-			MARGINS margins = new MARGINS(margin);
-			DwmExtendFrameIntoClientArea(hwnd, ref margins);
-			return true;
-		}
-		[DllImport("dwmapi.dll", PreserveSig = false)]
-		static extern void DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
+            MARGINS margins = new MARGINS(margin);
+            DwmExtendFrameIntoClientArea(hwnd, ref margins);
+            return true;
+        }
+        [DllImport("dwmapi.dll", PreserveSig = false)]
+        static extern void DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
 
-		[DllImport("dwmapi.dll", PreserveSig = false)]
-		static extern bool DwmIsCompositionEnabled();
+        [DllImport("dwmapi.dll", PreserveSig = false)]
+        static extern bool DwmIsCompositionEnabled();
 
-		struct MARGINS
-		{
-			public MARGINS(Thickness t)
-			{
-				Left = (int)t.Left;
-				Right = (int)t.Right;
-				Top = (int)t.Top;
-				Bottom = (int)t.Bottom;
-			}
-			public int Left;
-			public int Right;
-			public int Top;
-			public int Bottom;
-		}
+        struct MARGINS
+        {
+            public MARGINS(Thickness t)
+            {
+                Left = (int)t.Left;
+                Right = (int)t.Right;
+                Top = (int)t.Top;
+                Bottom = (int)t.Bottom;
+            }
+            public int Left;
+            public int Right;
+            public int Top;
+            public int Bottom;
+        }
 
-		#endregion ExtendFrameIntoClientArea
+        #endregion ExtendFrameIntoClientArea
 
-		#region GetAllScreens
+        #region GetAllScreens
 
-		[DllImport("user32.dll")]
-		static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip,
-		   MonitorEnumDelegate lpfnEnum, IntPtr dwData);
+        [DllImport("user32.dll")]
+        static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip,
+           MonitorEnumDelegate lpfnEnum, IntPtr dwData);
 
-		delegate bool MonitorEnumDelegate(IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData);
+        delegate bool MonitorEnumDelegate(IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData);
 
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx lpmi);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx lpmi);
 
-		// size of a device name string
-		const int CCHDEVICENAME = 32;
+        // size of a device name string
+        const int CCHDEVICENAME = 32;
 
-		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-		public struct MonitorInfoEx
-		{
-			public int Size;
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct MonitorInfoEx
+        {
+            public int Size;
 
-			public RectStruct Monitor;
+            public RectStruct Monitor;
 
-			public RectStruct WorkArea;
+            public RectStruct WorkArea;
 
-			public uint Flags;//--- first bit = MONITORINFOF_PRIMARY
+            public uint Flags;//--- first bit = MONITORINFOF_PRIMARY
 
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME)]
-			public string DeviceName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME)]
+            public string DeviceName;
 
-			public void Init()
-			{
-				this.Size = 40 + 2 * CCHDEVICENAME;
-				this.DeviceName = string.Empty;
-			}
-		}
+            public void Init()
+            {
+                this.Size = 40 + 2 * CCHDEVICENAME;
+                this.DeviceName = string.Empty;
+            }
+        }
 
-		[StructLayout(LayoutKind.Sequential)]
-		public struct RectStruct
-		{
-			public int Left;
-			public int Top;
-			public int Right;
-			public int Bottom;
-		}
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RectStruct
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
 
-		static public List<Screen> GetAllScreens()
-		{
-			List<Screen> screens = new List<Screen>();
+        static public List<Screen> GetAllScreens()
+        {
+            List<Screen> screens = new List<Screen>();
 
-			EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
-					delegate(IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData)
-					{
-						MonitorInfoEx mi = new MonitorInfoEx();
-						mi.Size = (int)Marshal.SizeOf(mi);
-						bool success = GetMonitorInfo(hMonitor, ref mi);
-						if (success)
-						{
-							Screen screen = new Screen()
-							{
-								ScreenArea = new Rect(mi.Monitor.Left, mi.Monitor.Top, mi.Monitor.Right - mi.Monitor.Left, mi.Monitor.Bottom - mi.Monitor.Top),
-								WorkArea = new Rect(mi.WorkArea.Left, mi.WorkArea.Top, mi.WorkArea.Right - mi.WorkArea.Left, mi.WorkArea.Bottom - mi.WorkArea.Top),
-								IsPrimary = (mi.Flags & 1) == 1,
-								Name = mi.DeviceName
-							};
-							screens.Add(screen);
-						}
-						return true;
-					}, IntPtr.Zero);
+            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
+                    delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData)
+                    {
+                        MonitorInfoEx mi = new MonitorInfoEx();
+                        mi.Size = (int)Marshal.SizeOf(mi);
+                        bool success = GetMonitorInfo(hMonitor, ref mi);
+                        if (success)
+                        {
+                            Screen screen = new Screen()
+                            {
+                                ScreenArea = new Rect(mi.Monitor.Left, mi.Monitor.Top, mi.Monitor.Right - mi.Monitor.Left, mi.Monitor.Bottom - mi.Monitor.Top),
+                                WorkArea = new Rect(mi.WorkArea.Left, mi.WorkArea.Top, mi.WorkArea.Right - mi.WorkArea.Left, mi.WorkArea.Bottom - mi.WorkArea.Top),
+                                IsPrimary = (mi.Flags & 1) == 1,
+                                Name = mi.DeviceName
+                            };
+                            screens.Add(screen);
+                        }
+                        return true;
+                    }, IntPtr.Zero);
 
-			return screens;
-		}
+            return screens;
+        }
 
-		static public Screen GetScreenByName(string name)
-		{
+        static public Screen GetScreenByName(string name)
+        {
             log.Smart($"name = {name}");
-			if (string.IsNullOrWhiteSpace(name))
-				return null;
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
 
-			List<Screen> screens = GetAllScreens();
-			foreach (var screen in screens)
-			{
+            List<Screen> screens = GetAllScreens();
+            foreach (var screen in screens)
+            {
                 log.Smart($"screen.Name = {screen.Name}");
                 if (screen.Name == name)
-					return screen;
-			}
+                    return screen;
+            }
             log.Smart("not found");
             return null;
-		}
+        }
 
-		static public Screen GetScreenByPixel(Point pt)
-		{
+        static public Screen GetScreenByPixel(Point pt)
+        {
             log.Smart($"pt = {pt}");
             List<Screen> screens = GetAllScreens();
-			foreach (var screen in screens)
-			{
+            foreach (var screen in screens)
+            {
                 log.Smart($"{screen.Name}.WorkArea = {screen.WorkArea}");
                 if (screen.WorkArea.Contains(pt))
-					return screen;
-			}
+                    return screen;
+            }
             log.Smart("not found");
-			return null;
-		}
+            return null;
+        }
 
-		static public Screen GetScreenByPixel(double x, double y)
-		{
-			return GetScreenByPixel(new Point(x, y));
-		}
+        static public Screen GetScreenByPixel(double x, double y)
+        {
+            return GetScreenByPixel(new Point(x, y));
+        }
 
-		static public Screen GetPrimaryScreen()
-		{
-			List<Screen> screens = GetAllScreens();
-			foreach (var screen in screens)
-			{
-				if (screen.IsPrimary)
-					return screen;
-			}
-			return null;
-		}
+        static public Screen GetPrimaryScreen()
+        {
+            List<Screen> screens = GetAllScreens();
+            foreach (var screen in screens)
+            {
+                if (screen.IsPrimary)
+                    return screen;
+            }
+            return null;
+        }
 
-		#endregion GetAllScreens
+        #endregion GetAllScreens
 
-		#region GetObjectId
+        #region GetObjectId
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static public string GetObjectIdString(object obj)
-		{
-			int id = GetObjectId(obj);
-			return "Object#" + id.ToString();
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        static public string GetObjectIdString(object obj)
+        {
+            int id = GetObjectId(obj);
+            return "Object#" + id.ToString();
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static public int GetObjectId(object obj)
-		{
-			int code = obj.GetHashCode();
-			if (IDs.ContainsKey(code))
-				return IDs[code];
+        /// <summary>
+        /// 
+        /// </summary>
+        static public int GetObjectId(object obj)
+        {
+            int code = obj.GetHashCode();
+            if (IDs.ContainsKey(code))
+                return IDs[code];
 
-			return IDs[code] = ++count;
-		}
-		static int count;
+            return IDs[code] = ++count;
+        }
+        static int count;
 
-		static Dictionary<int, int> IDs = new Dictionary<int, int>();
+        static Dictionary<int, int> IDs = new Dictionary<int, int>();
 
         #endregion GetObjectId
 
         #region ScrollIntoCenter
 
         public static void ScrollIntoCenter(this ListBox listBox, object item, int index)
-		{
-			//--- 1. do it immediately if possible
-			if (TryScrollIntoCenter(listBox, item, index))
-				return;
+        {
+            //--- 1. do it immediately if possible
+            if (TryScrollIntoCenter(listBox, item, index))
+                return;
 
-			//--- 2. scroll into view
-			listBox.ScrollIntoView(item);
+            //--- 2. scroll into view
+            listBox.ScrollIntoView(item);
 
             //--- 3. do it delayed
             listBox.Dispatch(() => TryScrollIntoCenter(listBox, item, index));
-		}
+        }
 
-		private static bool TryScrollIntoCenter(this ListBox listBox, object item, int index)
-		{
-			// Find the container
-			var listBoxItem = listBox.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
-			if (listBoxItem == null) 
-				return false;
+        private static bool TryScrollIntoCenter(this ListBox listBox, object item, int index)
+        {
+            // Find the container
+            var listBoxItem = listBox.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
+            if (listBoxItem == null)
+                return false;
 
-			// Find the ScrollContentPresenter
-			ScrollContentPresenter presenter = null;
-			for (Visual vis = listBoxItem; vis != null && vis != listBox; vis = VisualTreeHelper.GetParent(vis) as Visual)
-				if ((presenter = vis as ScrollContentPresenter) != null)
-					break;
-			if (presenter == null) 
-				return false;
+            // Find the ScrollContentPresenter
+            ScrollContentPresenter presenter = null;
+            for (Visual vis = listBoxItem; vis != null && vis != listBox; vis = VisualTreeHelper.GetParent(vis) as Visual)
+                if ((presenter = vis as ScrollContentPresenter) != null)
+                    break;
+            if (presenter == null)
+                return false;
 
-			// Find the IScrollInfo
-			var scrollInfo =
-				!presenter.CanContentScroll ? presenter :
-				presenter.Content as IScrollInfo ??
-				FirstVisualChild(presenter.Content as ItemsPresenter) as IScrollInfo ??
-				presenter;
+            // Find the IScrollInfo
+            var scrollInfo =
+                !presenter.CanContentScroll ? presenter :
+                presenter.Content as IScrollInfo ??
+                FirstVisualChild(presenter.Content as ItemsPresenter) as IScrollInfo ??
+                presenter;
 
-			//--- is item already visible?
-			int firstVisibleIndex = (int)scrollInfo.VerticalOffset;
-			int numVisibleItems = (int)scrollInfo.ViewportHeight;
-			if (index >= firstVisibleIndex && index < firstVisibleIndex + numVisibleItems)
-				return true;
+            //--- is item already visible?
+            int firstVisibleIndex = (int)scrollInfo.VerticalOffset;
+            int numVisibleItems = (int)scrollInfo.ViewportHeight;
+            if (index >= firstVisibleIndex && index < firstVisibleIndex + numVisibleItems)
+                return true;
 
-			// Compute the center point of the container relative to the scrollInfo 
-			Size size = listBoxItem.RenderSize;
-			Point center = listBoxItem.TransformToVisual((UIElement)scrollInfo).Transform(new Point(size.Width / 2, size.Height / 2));
-			center.Y += scrollInfo.VerticalOffset;
-			center.X += scrollInfo.HorizontalOffset;
+            // Compute the center point of the container relative to the scrollInfo 
+            Size size = listBoxItem.RenderSize;
+            Point center = listBoxItem.TransformToVisual((UIElement)scrollInfo).Transform(new Point(size.Width / 2, size.Height / 2));
+            center.Y += scrollInfo.VerticalOffset;
+            center.X += scrollInfo.HorizontalOffset;
 
-			// Adjust for logical scrolling 
-			if (scrollInfo is StackPanel || scrollInfo is VirtualizingStackPanel)
-			{
-				double logicalCenter = listBox.ItemContainerGenerator.IndexFromContainer(listBoxItem) + 0.5;
-				Orientation orientation = scrollInfo is StackPanel ? ((StackPanel)scrollInfo).Orientation : ((VirtualizingStackPanel)scrollInfo).Orientation;
-				if (orientation == Orientation.Horizontal)
-					center.X = logicalCenter;
-				else
-					center.Y = logicalCenter;
-			}
+            // Adjust for logical scrolling 
+            if (scrollInfo is StackPanel || scrollInfo is VirtualizingStackPanel)
+            {
+                double logicalCenter = listBox.ItemContainerGenerator.IndexFromContainer(listBoxItem) + 0.5;
+                Orientation orientation = scrollInfo is StackPanel ? ((StackPanel)scrollInfo).Orientation : ((VirtualizingStackPanel)scrollInfo).Orientation;
+                if (orientation == Orientation.Horizontal)
+                    center.X = logicalCenter;
+                else
+                    center.Y = logicalCenter;
+            }
 
-			// Scroll the center of the container to the center of the viewport 
-			if (scrollInfo.CanVerticallyScroll)
-			{
-				double offset = CenteringOffset(center.Y, scrollInfo.ViewportHeight, scrollInfo.ExtentHeight);
-				scrollInfo.SetVerticalOffset(offset);
-			}
+            // Scroll the center of the container to the center of the viewport 
+            if (scrollInfo.CanVerticallyScroll)
+            {
+                double offset = CenteringOffset(center.Y, scrollInfo.ViewportHeight, scrollInfo.ExtentHeight);
+                scrollInfo.SetVerticalOffset(offset);
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		private static double CenteringOffset(double center, double viewport, double extent)
-		{
-			return Math.Min(extent - viewport, Math.Max(0, center - viewport / 2));
-		}
+        private static double CenteringOffset(double center, double viewport, double extent)
+        {
+            return Math.Min(extent - viewport, Math.Max(0, center - viewport / 2));
+        }
 
-		private static DependencyObject FirstVisualChild(UIElement visual)
-		{
-			if (visual == null) return null;
-			if (VisualTreeHelper.GetChildrenCount(visual) == 0) return null;
-			return VisualTreeHelper.GetChild(visual, 0);
-		}
+        private static DependencyObject FirstVisualChild(UIElement visual)
+        {
+            if (visual == null) return null;
+            if (VisualTreeHelper.GetChildrenCount(visual) == 0) return null;
+            return VisualTreeHelper.GetChild(visual, 0);
+        }
 
 #if OriginalCode
 
@@ -571,97 +571,97 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// 
         /// </summary>
         public static void MoveToMouse(Window win, string title, bool useLastTopLeft = false)
-		{
-			Point pt = topLeft;
-			if (!useLastTopLeft)
-			{
-				Window mainWindow = Application.Current.MainWindow;
-				pt = Mouse.GetPosition(mainWindow);
+        {
+            Point pt = topLeft;
+            if (!useLastTopLeft)
+            {
+                Window mainWindow = Application.Current.MainWindow;
+                pt = Mouse.GetPosition(mainWindow);
                 log.Smart($"Mouse.GetPosition(mainWindow) returned {pt}");
-				pt = mainWindow.PointToScreen(pt);
+                pt = mainWindow.PointToScreen(pt);
                 log.Smart($"mainWindow.PointToScreen(pt) returned {pt}");
                 topLeft = pt;
-			}
+            }
 
-			Screen screen = GetScreenByPixel(pt);
+            Screen screen = GetScreenByPixel(pt);
             log.Smart($"screen.ScreenArea = {screen.ScreenArea}");
 
-			double top = pt.Y - 80;
-			if (top < screen.ScreenArea.Top)
-				top = screen.ScreenArea.Top;
+            double top = pt.Y - 80;
+            if (top < screen.ScreenArea.Top)
+                top = screen.ScreenArea.Top;
 
-			double exceed = top + win.Height - screen.ScreenArea.Bottom + 40;
-			if (exceed > 0)
-				top -= exceed;
+            double exceed = top + win.Height - screen.ScreenArea.Bottom + 40;
+            if (exceed > 0)
+                top -= exceed;
 
-			double left = pt.X - 80;
-			if (left < screen.ScreenArea.Left)
-				left = screen.ScreenArea.Left;
+            double left = pt.X - 80;
+            if (left < screen.ScreenArea.Left)
+                left = screen.ScreenArea.Left;
 
-			exceed = left + win.Width - screen.ScreenArea.Right;
-			if (exceed > 0)
-				left -= exceed;
+            exceed = left + win.Width - screen.ScreenArea.Right;
+            if (exceed > 0)
+                left -= exceed;
 
-			win.Top = top;
-			win.Left = left;
-			win.Title = title + "   (right click or Esc to cancel)";
-		}
-		static Point topLeft;
+            win.Top = top;
+            win.Left = left;
+            win.Title = title + "   (right click or Esc to cancel)";
+        }
+        static Point topLeft;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static public FileInfo GetFileInfo(string name)
-		{
-			if (!File.Exists(name))
-			{
-				log.Smart($"File >{name}< does not exist");
-				return null;
-			}
-			try
-			{
-				return new FileInfo(name);
-			}
-			catch (Exception e)
-			{
-				log.Exception(e);
-			}
-			return null;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        static public FileInfo GetFileInfo(string name)
+        {
+            if (!File.Exists(name))
+            {
+                log.Smart($"File >{name}< does not exist");
+                return null;
+            }
+            try
+            {
+                return new FileInfo(name);
+            }
+            catch (Exception e)
+            {
+                log.Exception(e);
+            }
+            return null;
+        }
 
-		/// <summary>
-		/// Performs a case insensitive Equals().
-		/// </summary>
-		static public bool equals(this string str, string value)
-		{
-			return str.Equals(value, StringComparison.InvariantCultureIgnoreCase);
-		}
+        /// <summary>
+        /// Performs a case insensitive Equals().
+        /// </summary>
+        static public bool equals(this string str, string value)
+        {
+            return str.Equals(value, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-		/// <summary>
-		/// Performs a case insensitive StartsWith().
-		/// </summary>
-		static public bool startsWith(this string str, string value)
-		{
-			return str.StartsWith(value, StringComparison.InvariantCultureIgnoreCase);
-		}
+        /// <summary>
+        /// Performs a case insensitive StartsWith().
+        /// </summary>
+        static public bool startsWith(this string str, string value)
+        {
+            return str.StartsWith(value, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-		/// <summary>
-		/// Performs a case insensitive Contains().
-		/// </summary>
-		static public bool contains(this string str, string value)
-		{
-			int index = str.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
-			return index > -1;
-		}
+        /// <summary>
+        /// Performs a case insensitive Contains().
+        /// </summary>
+        static public bool contains(this string str, string value)
+        {
+            int index = str.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+            return index > -1;
+        }
 
-		internal static void OnlyOnce(object field, object value)
-		{
-			if (field != null)
-				throw new Exception("Field must be null!");
+        internal static void OnlyOnce(object field, object value)
+        {
+            if (field != null)
+                throw new Exception("Field must be null!");
 
-			if (value == null)
-				throw new Exception("Value must not be null!");
-		}
+            if (value == null)
+                throw new Exception("Value must not be null!");
+        }
 
         /// <summary>
         /// Rounds a double using the specified number of significant figures.

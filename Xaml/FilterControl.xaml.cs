@@ -19,60 +19,60 @@ using System.Windows.Controls;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for FilterControl.xaml
-	/// </summary>
-	public partial class FilterControl : UserControl
-	{
-		public FilterControl()
-		{
-			InitializeComponent();
-		}
+    /// <summary>
+    /// Interaction logic for FilterControl.xaml
+    /// </summary>
+    public partial class FilterControl : UserControl
+    {
+        public FilterControl()
+        {
+            InitializeComponent();
+        }
 
-		public FilterCollection ItemsSource
-		{
-			get { return (FilterCollection)GetValue(ItemsSourceProperty); }
-			set { SetValue(ItemsSourceProperty, value); }
-		}
+        public FilterCollection ItemsSource
+        {
+            get { return (FilterCollection)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
+        }
 
-		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register("ItemsSource", typeof(FilterCollection), typeof(FilterControl),
-			new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register("ItemsSource", typeof(FilterCollection), typeof(FilterControl),
+            new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
 
-		static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-		{
-			FilterControl filterControl = obj as FilterControl;
-			if (filterControl != null)
-			{
-				filterControl.MyItemsSourceChanged();
-			}
-		}
+        static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            FilterControl filterControl = obj as FilterControl;
+            if (filterControl != null)
+            {
+                filterControl.MyItemsSourceChanged();
+            }
+        }
 
-		public void MyItemsSourceChanged()
-		{
-			listBox.ItemsSource = ItemsSource;
-		}
+        public void MyItemsSourceChanged()
+        {
+            listBox.ItemsSource = ItemsSource;
+        }
 
-		void OnButtonAdd(object sender, RoutedEventArgs e)
-		{
-			FilterCollection data = listBox.ItemsSource as FilterCollection;
-			Filter filter = new Filter(6, 0, "*");
-			data.Add(filter);
-		}
+        void OnButtonAdd(object sender, RoutedEventArgs e)
+        {
+            FilterCollection data = listBox.ItemsSource as FilterCollection;
+            Filter filter = new Filter(6, 0, "*");
+            data.Add(filter);
+        }
 
-		void OnButtonX(object sender, RoutedEventArgs e)
-		{
-			ListBoxItem lbItem = Utils.FindParent<ListBoxItem>(sender as Button);
-			if (lbItem != null)
-			{
-				Filter filter = lbItem.Content as Filter;
-				if (filter != null)
-				{
-					FilterCollection filterList = ItemsSource as FilterCollection;
-					if (filterList != null)
-						filterList.Remove(filter);
-				}
-			}
-		}
-	}
+        void OnButtonX(object sender, RoutedEventArgs e)
+        {
+            ListBoxItem lbItem = Utils.FindParent<ListBoxItem>(sender as Button);
+            if (lbItem != null)
+            {
+                Filter filter = lbItem.Content as Filter;
+                if (filter != null)
+                {
+                    FilterCollection filterList = ItemsSource as FilterCollection;
+                    if (filterList != null)
+                        filterList.Remove(filter);
+                }
+            }
+        }
+    }
 }

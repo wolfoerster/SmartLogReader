@@ -20,41 +20,41 @@ using System.Windows.Controls;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// Interaction logic for SearchControl.xaml
-	/// </summary>
-	public partial class SearchControl : UserControl
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public SearchControl()
-		{
-			InitializeComponent();
-			DataContextChanged += MeDataContextChanged;
-		}
+    /// <summary>
+    /// Interaction logic for SearchControl.xaml
+    /// </summary>
+    public partial class SearchControl : UserControl
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public SearchControl()
+        {
+            InitializeComponent();
+            DataContextChanged += MeDataContextChanged;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void MeDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-		{
-			Utils.OnlyOnce(viewModel, e.NewValue);
-			viewModel = e.NewValue as SmartLogControlVM;
-			viewModel.PropertyChanged += ViewModelPropertyChanged;
-		}
-		SmartLogControlVM viewModel;
+        /// <summary>
+        /// 
+        /// </summary>
+        void MeDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Utils.OnlyOnce(viewModel, e.NewValue);
+            viewModel = e.NewValue as SmartLogControlVM;
+            viewModel.PropertyChanged += ViewModelPropertyChanged;
+        }
+        SmartLogControlVM viewModel;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == "SetFocusOnSearchBox")
-			{
-				textBox.Focus();
-				textBox.SelectAll();
-			}
-		}
-	}
+        /// <summary>
+        /// 
+        /// </summary>
+        void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SetFocusOnSearchBox")
+            {
+                textBox.Focus();
+                textBox.SelectAll();
+            }
+        }
+    }
 }

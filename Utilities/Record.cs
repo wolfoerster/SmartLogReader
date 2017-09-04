@@ -22,25 +22,25 @@ using SmartLogging;
 
 namespace SmartLogReader
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public class Record : Notifier
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public Record()
-		{
-			RecordNum = ++count;
-			Level = LogLevel.None;
-		}
-		static ulong count;
+    /// <summary>
+    /// 
+    /// </summary>
+    public class Record : Notifier
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public Record()
+        {
+            RecordNum = ++count;
+            Level = LogLevel.None;
+        }
+        static ulong count;
 
-		/// <summary>
-		/// The record time in UTC.
-		/// </summary>
-		public DateTime UtcTime { get; protected set; }
+        /// <summary>
+        /// The record time in UTC.
+        /// </summary>
+        public DateTime UtcTime { get; protected set; }
 
         /// <summary>
         /// 
@@ -57,40 +57,40 @@ namespace SmartLogReader
 		/// </summary>
 		public LogLevel Level { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int ProcessId { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ProcessId { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int AppDomainId { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AppDomainId { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int ThreadId { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ThreadId { get; protected set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string Message { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Message { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public ulong RecordNum { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public ulong RecordNum { get; set; }
 
-		/// <summary>
-		/// On set, the string is assumed to hold the time in UTC.
+        /// <summary>
+        /// On set, the string is assumed to hold the time in UTC.
         /// On get, it will return the local time.
-		/// </summary>
-		public string TimeString
-		{
-			get { return timeString; }
-			set 
-			{
+        /// </summary>
+        public string TimeString
+        {
+            get { return timeString; }
+            set
+            {
                 timeString = value.Replace(',', '.');
                 timeString = timeString.Replace('T', ' ');
                 timeString = timeString.Replace('Z', ' ');
@@ -103,46 +103,46 @@ namespace SmartLogReader
                     //--- the resolution will not be higher than a millisecond!!!
                     timeString = time.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 }
-			}
-		}
-		string timeString;
+            }
+        }
+        string timeString;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string ThreadIds
-		{
-			get { return threadIds; }
-			set 
-			{ 
-				threadIds = value;
-				string[] s = threadIds.Split(new char[] { '/' });
-				if (s.Length == 3)
-				{
-					int id;
-					if (int.TryParse(s[0], out id)) ProcessId = id;
-					if (int.TryParse(s[1], out id)) AppDomainId = id;
-					if (int.TryParse(s[2], out id)) ThreadId = id;
-				}
-			}
-		}
-		string threadIds;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ThreadIds
+        {
+            get { return threadIds; }
+            set
+            {
+                threadIds = value;
+                string[] s = threadIds.Split(new char[] { '/' });
+                if (s.Length == 3)
+                {
+                    int id;
+                    if (int.TryParse(s[0], out id)) ProcessId = id;
+                    if (int.TryParse(s[1], out id)) AppDomainId = id;
+                    if (int.TryParse(s[2], out id)) ThreadId = id;
+                }
+            }
+        }
+        string threadIds;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string LevelString
-		{
-			get { return levelString; }
-			set 
-			{
-				levelString = value;
-				LogLevel level;
-				if (Enum.TryParse(value, true, out level))
-					Level = level;
-			}
-		}
-		string levelString;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LevelString
+        {
+            get { return levelString; }
+            set
+            {
+                levelString = value;
+                LogLevel level;
+                if (Enum.TryParse(value, true, out level))
+                    Level = level;
+            }
+        }
+        string levelString;
 
         /// <summary>
         /// Shows up in QuickFilterDialog.
@@ -164,28 +164,28 @@ namespace SmartLogReader
         /// Shows up in the main list.
         /// </summary>
         public string ShortString
-		{
-			get { return GetPrefix(false) + FirstLine(Message); }
-		}
+        {
+            get { return GetPrefix(false) + FirstLine(Message); }
+        }
 
-		/// <summary>
-		/// Shows up in the DetailsWindow and the clipboard.
-		/// </summary>
-		public string LongString
-		{
-			get
-			{
-				string result = GetPrefix(true) + Message;
-				return result;
-			}
-		}
+        /// <summary>
+        /// Shows up in the DetailsWindow and the clipboard.
+        /// </summary>
+        public string LongString
+        {
+            get
+            {
+                string result = GetPrefix(true) + Message;
+                return result;
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		private string GetPrefix(bool showAll)
-		{
-			StringBuilder sb = new StringBuilder();
+        /// <summary>
+        /// 
+        /// </summary>
+        private string GetPrefix(bool showAll)
+        {
+            StringBuilder sb = new StringBuilder();
 
             if (showAll || ShowTime)
                 sb.Append(Align(TimeString, AmountOfTime, showAll));
@@ -203,7 +203,7 @@ namespace SmartLogReader
                 sb.Append(Align(Method, AmountOfMethod, showAll));
 
             return sb.ToString();
-		}
+        }
 
         public static bool ShowTime = true;
         public static bool ShowLogger = true;
@@ -250,145 +250,145 @@ namespace SmartLogReader
             return str + "  ";
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public override string ToString()
-		{
-			return ShortString;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public override string ToString()
+        {
+            return ShortString;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		string FirstLine(string str)
-		{
-			int cr = str.IndexOf('\r');
-			int lf = str.IndexOf('\n');
-			int limit = 240;
+        /// <summary>
+        /// 
+        /// </summary>
+        string FirstLine(string str)
+        {
+            int cr = str.IndexOf('\r');
+            int lf = str.IndexOf('\n');
+            int limit = 240;
 
-			//--- index not found?
-			if (cr < 0 && lf < 0)
-			{
-				if (str.Length > limit)
-					return str.Substring(0, limit);
+            //--- index not found?
+            if (cr < 0 && lf < 0)
+            {
+                if (str.Length > limit)
+                    return str.Substring(0, limit);
 
-				return str;
-			}
+                return str;
+            }
 
-			//--- take the smaller index
-			int index = cr < lf ? cr : lf;
+            //--- take the smaller index
+            int index = cr < lf ? cr : lf;
 
-			//--- if this is invalid, take the other
-			if (index < 0)
-				index = cr < 0 ? lf : cr;
+            //--- if this is invalid, take the other
+            if (index < 0)
+                index = cr < 0 ? lf : cr;
 
-			return str.Substring(0, Math.Min(limit, index));
-		}
+            return str.Substring(0, Math.Min(limit, index));
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool Contains(string text)
-		{
-			if (Message != null && Message.contains(text))
-				return true;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Contains(string text)
+        {
+            if (Message != null && Message.contains(text))
+                return true;
 
-			if (timeString != null && timeString.contains(text))
-				return true;
+            if (timeString != null && timeString.contains(text))
+                return true;
 
-			if (Logger != null && Logger != null && Logger.contains(text))
-				return true;
+            if (Logger != null && Logger != null && Logger.contains(text))
+                return true;
 
-			if (levelString != null && levelString.contains(text))
-				return true;
+            if (levelString != null && levelString.contains(text))
+                return true;
 
-			if (threadIds != null && threadIds.contains(text))
-				return true;
+            if (threadIds != null && threadIds.contains(text))
+                return true;
 
-			return false;
-		}
+            return false;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public Brush Background
-		{
-			get
-			{
-				Brush brush = Brushes.Transparent;
-				if (!IsSelected && ColorSpecs != null)
-				{
-					foreach (var colorSpec in ColorSpecs)
-					{
-						if (colorSpec.Test(this))
-						{
-							brush = ColorBox.GetBrush(colorSpec.ColorIndex);
-							break;
-						}
-					}
-				}
-				return brush;
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public Brush Background
+        {
+            get
+            {
+                Brush brush = Brushes.Transparent;
+                if (!IsSelected && ColorSpecs != null)
+                {
+                    foreach (var colorSpec in ColorSpecs)
+                    {
+                        if (colorSpec.Test(this))
+                        {
+                            brush = ColorBox.GetBrush(colorSpec.ColorIndex);
+                            break;
+                        }
+                    }
+                }
+                return brush;
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsSelected
-		{
-			get { return isSelected; }
-			set
-			{
-				if (isSelected != value)
-				{
-					isSelected = value;
-					FirePropertyChanged("IsSelected");
-					FirePropertyChanged("Background");
-				}
-			}
-		}
-		private bool isSelected;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsSelected
+        {
+            get { return isSelected; }
+            set
+            {
+                if (isSelected != value)
+                {
+                    isSelected = value;
+                    FirePropertyChanged("IsSelected");
+                    FirePropertyChanged("Background");
+                }
+            }
+        }
+        private bool isSelected;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static public ColorSpecCollection ColorSpecs { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        static public ColorSpecCollection ColorSpecs { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static public ColorSpecCollection GetDefaultColorSpecs()
-		{
-			ColorSpecCollection colorSpecs = new ColorSpecCollection();
-			colorSpecs.Add(NewLevelColorSpec("Info", 0));
-			colorSpecs.Add(NewLevelColorSpec("Warn", 3));
-			colorSpecs.Add(NewLevelColorSpec("Error", 2));
-			colorSpecs.Add(NewLevelColorSpec("Fatal", 11));
-			return colorSpecs;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        static public ColorSpecCollection GetDefaultColorSpecs()
+        {
+            ColorSpecCollection colorSpecs = new ColorSpecCollection();
+            colorSpecs.Add(NewLevelColorSpec("Info", 0));
+            colorSpecs.Add(NewLevelColorSpec("Warn", 3));
+            colorSpecs.Add(NewLevelColorSpec("Error", 2));
+            colorSpecs.Add(NewLevelColorSpec("Fatal", 11));
+            return colorSpecs;
+        }
 
-		static ColorSpec NewLevelColorSpec(string logLevel, int colorIndex)
-		{
-			ColorSpec colorSpec = new ColorSpec() { PropertyIndex = 1, OpCodeIndex = 0, ExpectedValue = logLevel, ColorIndex = colorIndex };
-			return colorSpec;
-		}
-	}
+        static ColorSpec NewLevelColorSpec(string logLevel, int colorIndex)
+        {
+            ColorSpec colorSpec = new ColorSpec() { PropertyIndex = 1, OpCodeIndex = 0, ExpectedValue = logLevel, ColorIndex = colorIndex };
+            return colorSpec;
+        }
+    }
 
-	public class RecordCollection : List<Record>
-	{
-		public RecordCollection()
-		{
-		}
+    public class RecordCollection : List<Record>
+    {
+        public RecordCollection()
+        {
+        }
 
-		public RecordCollection(IEnumerable<Record> collection)
-			: base(collection)
-		{
-		}
+        public RecordCollection(IEnumerable<Record> collection)
+            : base(collection)
+        {
+        }
 
-		public RecordCollection(List<Record> collection)
-			: base(collection)
-		{
-		}
-	}
+        public RecordCollection(List<Record> collection)
+            : base(collection)
+        {
+        }
+    }
 }
