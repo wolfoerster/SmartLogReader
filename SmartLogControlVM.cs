@@ -677,6 +677,8 @@ namespace SmartLogReader
 
         #region Workspaces
 
+#warning TODO: read workspaces on startup from disk (i.e. do not store them in the viemodel's xml, i.e. XmlIgnore them)
+
         /// <summary>
         /// 
         /// </summary>
