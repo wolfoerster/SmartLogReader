@@ -55,32 +55,6 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        private static string GetWorkspaceFile(string workspace)
-        {
-            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartLogReader");
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            return Path.Combine(dir, workspace + ".xml");
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static SmartLogControlVM FromWorkspace(string path)
-        {
-            if (!File.Exists(path))
-                path = GetWorkspaceFile(DefaultWorkspace);
-
-            string xml = File.Exists(path) ? File.ReadAllText(path) : null;
-            return SmartLogControlVM.FromXML(xml);
-        }
-
-        private static string DefaultWorkspace = "Default workspace";
-
-        /// <summary>
         /// A flag indicating that the main view model is initialized.
         /// </summary>
         public static bool IsInitialized { get; protected set; }
@@ -88,14 +62,17 @@ namespace SmartLogReader
         /// <summary>
         /// Deserialize from XML.
         /// </summary>
-        static SmartLogControlVM FromXML(string xml)
+        public static SmartLogControlVM FromWorkspace(string path)
         {
+            if (!File.Exists(path))
+                path = GetWorkspaceFile(DefaultWorkspace);
+
+            string xml = File.Exists(path) ? File.ReadAllText(path) : null;
             log.Smart($"Create viewmodel from the following settings: {xml}");
 
             //--- There are property setters which call ReloadFiles() during XML deserialization. 
             //--- To prevent this, we use this static boolean value:
             IsInitialized = false;
-
             SmartLogControlVM viewModel = Utils.FromXML<SmartLogControlVM>(xml);
 
             if (viewModel == null)
@@ -110,15 +87,12 @@ namespace SmartLogReader
             if (viewModel.ColorSpecs == null)
                 viewModel.ColorSpecs = Record.GetDefaultColorSpecs();
 
-            if (viewModel.Workspaces.Count == 0)
-            {
-                viewModel.Workspaces.Add(DefaultWorkspace);
-                viewModel.SelectedWorkspace = 0;
-            }
+            viewModel.SelectWorkspace(Path.GetFileNameWithoutExtension(path));
 
             IsInitialized = true;
             return viewModel;
         }
+        private static string DefaultWorkspace = "Default workspace";
 
         /// <summary>
         /// Create a new sub viewmodel with subsub viewmodels.
@@ -182,6 +156,8 @@ namespace SmartLogReader
             RecordDetails.Add("Level");
             RecordDetails.Add("ThreadIds");
             RecordDetails.Add("Method");
+
+            InitWorkspaces();
         }
         static public List<string> Fonts { get; set; }
         static public List<string> ReadModes { get; set; }
@@ -565,21 +541,6 @@ namespace SmartLogReader
             myServerControlVM.LoadFile(path);
         }
 
-        private bool SelectWorkspace(string value)
-        {
-            for (int i = 0; i < workspaces.Count; i++)
-            {
-                if (workspaces[i].equals(value))
-                {
-                    SelectedWorkspace = i;
-                    return true;
-                }
-            }
-
-            NewWorkspace = value;
-            return false;
-        }
-
         #region Commands
 
         void InitCommands()
@@ -677,20 +638,67 @@ namespace SmartLogReader
 
         #region Workspaces
 
-#warning TODO: read workspaces on startup from disk (i.e. do not store them in the viemodel's xml, i.e. XmlIgnore them)
-
         /// <summary>
         /// 
         /// </summary>
-        public ObservableCollection<string> Workspaces
+        public static ObservableCollection<string> Workspaces
         {
             get { return workspaces; }
         }
-        private ObservableCollection<string> workspaces = new ObservableCollection<string>();
+        private static ObservableCollection<string> workspaces = new ObservableCollection<string>();
 
         /// <summary>
         /// 
         /// </summary>
+        private static string GetWorkspaceFile(string workspace)
+        {
+            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartLogReader");
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            return Path.Combine(dir, workspace + ".xml");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void InitWorkspaces()
+        {
+            workspaces.Add(DefaultWorkspace);
+
+            var path = GetWorkspaceFile(DefaultWorkspace);
+            var dir = Path.GetDirectoryName(path);
+            string[] files = Directory.GetFiles(dir, "*.xml");
+            foreach (var file in files)
+            {
+                var name = Path.GetFileNameWithoutExtension(file);
+                if (!name.equals(DefaultWorkspace))
+                    workspaces.Add(name);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private bool SelectWorkspace(string value)
+        {
+            for (int i = 0; i < workspaces.Count; i++)
+            {
+                if (workspaces[i].equals(value))
+                {
+                    SelectedWorkspace = i;
+                    return true;
+                }
+            }
+
+            NewWorkspace = value;
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+		[XmlIgnore]
         public int SelectedWorkspace
         {
             get { return selectedWorkspace; }
@@ -706,7 +714,7 @@ namespace SmartLogReader
                 }
             }
         }
-        int selectedWorkspace = -1;
+        int selectedWorkspace = 0;
 
         /// <summary>
         /// 
