@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -28,8 +29,22 @@ namespace SmartLogReader
         {
             InitializeComponent();
             DataContext = ColorSpecs = colorSpecs;
+            Closing += MeClosing;
+            if (LastSize.Width > 55 && LastSize.Height > 55)
+            {
+                Width = LastSize.Width;
+                Height = LastSize.Height;
+            }
         }
         ColorSpecCollection ColorSpecs;
+
+        public static Size LastSize;
+
+        void MeClosing(object sender, CancelEventArgs e)
+        {
+            LastSize.Width = Width;
+            LastSize.Height = Height;
+        }
 
         void OnButtonNew(object sender, RoutedEventArgs e)
         {

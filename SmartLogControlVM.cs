@@ -475,6 +475,15 @@ namespace SmartLogReader
             set { FilterDialog.LastSize = value; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Size HighLightingDialogSize
+        {
+            get { return HighLightingDialog.LastSize; }
+            set { HighLightingDialog.LastSize = value; }
+        }
+
         #endregion Public Properties
 
         /// <summary>
