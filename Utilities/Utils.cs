@@ -646,6 +646,14 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         }
 
         /// <summary>
+        /// Performs a case insensitive EndsWith().
+        /// </summary>
+        static public bool endsWith(this string str, string value)
+        {
+            return str.EndsWith(value, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
         /// Performs a case insensitive Contains().
         /// </summary>
         static public bool contains(this string str, string value)

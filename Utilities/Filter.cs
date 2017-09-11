@@ -125,35 +125,23 @@ namespace SmartLogReader
             if (string.IsNullOrEmpty(value))
                 return false;
 
-            int mode = 0;
-            int lastIndex = value.Length - 1;
+            bool wildBegin = value[0] == '*';
+            bool wildEnd = value[value.Length - 1] == '*';
 
-            //--- if there is a * at the end...
-            if (value[lastIndex] == '*')
-            {
-                mode = 2;
-                value = value.Substring(0, lastIndex);
-                if (value.Length == 0)
-                    return true;
-            }
+            value = value.Trim(new char[] { '*' });
+            if (string.IsNullOrEmpty(value))
+                return true;
 
-            //--- if there is a * at the begin...
-            if (value[0] == '*')
-            {
-                mode = 1;
-                value = value.Substring(1);
-                if (value.Length == 0)
-                    return true;
-            }
+            if (wildBegin && wildEnd)
+                return actualValue.contains(value);
 
-            switch (mode)
-            {
-                case 0: return actualValue.equals(value);
-                case 1: return actualValue.contains(value);
-                case 2: return actualValue.startsWith(value);
-            }
+            if (wildBegin)
+                return actualValue.endsWith(value);
 
-            return false;
+            if (wildEnd)
+                return actualValue.startsWith(value);
+
+            return actualValue.equals(value);
         }
 
         /// <summary>
