@@ -71,17 +71,17 @@ namespace SmartLogReader
             //--- need ColumnDefinitions for the rest of this method
             else if (splitGrid.ColumnDefinitions.Count > 4)
             {
-                if (e.PropertyName == "GridLengthsRequired")
+                if (e.PropertyName == "GetGridLengths")
                 {
                     GetGridLengths();
+                }
+                else if (e.PropertyName == "SetGridLengths")
+                {
+                    SetGridLengths();
                 }
                 else if (e.PropertyName == "NoLastFile")
                 {
                     ApplyNoLastFile();
-                }
-                else if (e.PropertyName == "ApplyGridLengths")
-                {
-                    ApplyGridLengths();
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        private void ApplyGridLengths()
+        private void SetGridLengths()
         {
             splitGrid.ColumnDefinitions[0].Width = new GridLength(viewModel.GridLength0, GridUnitType.Star);
             splitGrid.ColumnDefinitions[2].Width = new GridLength(viewModel.GridLength2, GridUnitType.Star);

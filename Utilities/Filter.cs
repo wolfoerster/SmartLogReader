@@ -208,7 +208,7 @@ namespace SmartLogReader
                 if (andNext != value)
                 {
                     andNext = value;
-                    FirePropertyChanged("AndNext");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -276,7 +276,7 @@ namespace SmartLogReader
                 if (colorIndex != value)
                 {
                     colorIndex = value;
-                    FirePropertyChanged("ColorIndex");
+                    OnPropertyChanged();
                 }
             }
         }

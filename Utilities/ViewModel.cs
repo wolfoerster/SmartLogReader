@@ -51,7 +51,7 @@ namespace SmartLogReader
                 if (displayName != value)
                 {
                     displayName = value;
-                    FirePropertyChanged("DisplayName");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace SmartLogReader
                 if (gridLength0 != value)
                 {
                     gridLength0 = value;
-                    FirePropertyChanged("GridLength0");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -125,7 +125,7 @@ namespace SmartLogReader
                 if (gridLength2 != value)
                 {
                     gridLength2 = value;
-                    FirePropertyChanged("GridLength2");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace SmartLogReader
         /// </summary>
         public virtual void GetGridLengths()
         {
-            FirePropertyChanged("GridLengthsRequired");
+            OnPropertyChanged();
         }
     }
 
@@ -157,7 +157,7 @@ namespace SmartLogReader
                 if (gridLength4 != value)
                 {
                     gridLength4 = value;
-                    FirePropertyChanged("GridLength4");
+                    OnPropertyChanged();
                 }
             }
         }

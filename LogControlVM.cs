@@ -73,7 +73,7 @@ namespace SmartLogReader
             if (CurrentVM != this)
             {
                 CurrentVM = this;
-                FirePropertyChanged("CurrentVM");
+                OnPropertyChanged("CurrentVM");
             }
         }
 
@@ -101,7 +101,7 @@ namespace SmartLogReader
                 }
 
                 CheckListEmptyReason();
-                FirePropertyChanged("RecordsView");
+                OnPropertyChanged("RecordsView");
             }
         }
         RecordCollection records;
@@ -137,7 +137,7 @@ namespace SmartLogReader
             if (ListEmptyReason != reason)
             {
                 ListEmptyReason = reason;
-                FirePropertyChanged("ListEmptyReason");
+                OnPropertyChanged("ListEmptyReason");
             }
         }
 
@@ -184,7 +184,7 @@ namespace SmartLogReader
         /// </summary>
         public void ScrollCurrentIntoView()
         {
-            FirePropertyChanged("ScrollSelectedIntoView");
+            OnPropertyChanged("ScrollSelectedIntoView");
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SmartLogReader
         /// </summary>
         public void SetFocusOnSelected()
         {
-            FirePropertyChanged("SetFocusOnSelected");
+            OnPropertyChanged();
         }
 
         #region Filtering
@@ -208,7 +208,7 @@ namespace SmartLogReader
                 if (isFilterEnabled != value)
                 {
                     isFilterEnabled = value;
-                    FirePropertyChanged("IsFilterEnabled");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -220,7 +220,7 @@ namespace SmartLogReader
         public void NotifyFilterChanged()
         {
             //--- Tell the SplitLogControlVM that IsFilterEnabled has been changed. This will trigger the correct action.
-            FirePropertyChanged("IsFilterEnabled");
+            OnPropertyChanged("IsFilterEnabled");
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace SmartLogReader
 
             if (index < 0)
             {
-                FirePropertyChanged("StringNotFound");
+                OnPropertyChanged("StringNotFound");
             }
             else
             {

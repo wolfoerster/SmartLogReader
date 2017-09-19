@@ -113,7 +113,7 @@ namespace SmartLogReader
             get { return includedFilter != null; }
             set
             {
-                FirePropertyChanged("IsIncluded");
+                OnPropertyChanged();
                 ModifyList(ViewModel.IncludeList, ref includedFilter, ref FirstIncluded, value);
             }
         }
@@ -128,7 +128,7 @@ namespace SmartLogReader
             get { return excludedFilter != null; }
             set
             {
-                FirePropertyChanged("IsExcluded");
+                OnPropertyChanged();
                 ModifyList(ViewModel.ExcludeList, ref excludedFilter, ref FirstExcluded, value);
             }
         }

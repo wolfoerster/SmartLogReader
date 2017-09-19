@@ -239,7 +239,7 @@ namespace SmartLogReader
             else if (e.PropertyName == "NoLastFile")
             {
                 ColumnIndex = vm == myClientControlVM ? 0 : vm == myServerControlVM ? 2 : 4;
-                FirePropertyChanged(e.PropertyName);
+                OnPropertyChanged(e.PropertyName);
             }
         }
 
@@ -261,7 +261,7 @@ namespace SmartLogReader
                 if (selectedFont != value)
                 {
                     selectedFont = value;
-                    FirePropertyChanged("SelectedFont");
+                    OnPropertyChanged();
                     SelectedFamily = new FontFamily(Fonts[value]);
                 }
             }
@@ -280,7 +280,7 @@ namespace SmartLogReader
                 if (selectedFamily != value)
                 {
                     selectedFamily = value;
-                    FirePropertyChanged("SelectedFamily");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -297,7 +297,7 @@ namespace SmartLogReader
                 if (selectedSize != value)
                 {
                     selectedSize = value;
-                    FirePropertyChanged("SelectedSize");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -314,7 +314,7 @@ namespace SmartLogReader
                 if (SelectedLogLevel != value)
                 {
                     LogReader.Level = (LogLevel)value;
-                    FirePropertyChanged("SelectedLogLevel");
+                    OnPropertyChanged();
                     ReloadFiles();
                 }
             }
@@ -331,7 +331,7 @@ namespace SmartLogReader
                 if (SelectedReadMode != value)
                 {
                     LogReader.ReadMode = (LogReadMode)value;
-                    FirePropertyChanged("SelectedReadMode");
+                    OnPropertyChanged();
                     ReloadFiles();
                 }
             }
@@ -353,7 +353,7 @@ namespace SmartLogReader
                 if (Record.ColorSpecs != value)
                 {
                     Record.ColorSpecs = value;
-                    FirePropertyChanged("ColorSpecs");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -545,7 +545,7 @@ namespace SmartLogReader
 
             GridLength2 = 1;
             GridLength0 = GridLength4 = 0;
-            FirePropertyChanged("ApplyGridLengths");
+            OnPropertyChanged("SetGridLengths");
 
             myServerControlVM.LoadFile(path);
         }
@@ -573,7 +573,7 @@ namespace SmartLogReader
 
         void ExecuteFindCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            FirePropertyChanged("SetFocusOnSearchBox");
+            OnPropertyChanged("SetFocusOnSearchBox");
         }
 
         /// <summary>
@@ -870,7 +870,7 @@ namespace SmartLogReader
             ReloadFiles();
         }
 
-        private void CopyValues(SplitLogControlVM source, SplitLogControlVM target, bool applyGridLengths = false)
+        private void CopyValues(SplitLogControlVM source, SplitLogControlVM target, bool setGridLengths = false)
         {
             target.GridLength0 = source.GridLength0;
             target.GridLength2 = source.GridLength2;
@@ -879,8 +879,8 @@ namespace SmartLogReader
             target.IsSyncSelection = source.IsSyncSelection;
             CopyValues(source.MyLogControlVM1, target.MyLogControlVM1);
             CopyValues(source.MyLogControlVM2, target.MyLogControlVM2);
-            if (applyGridLengths)
-                target.ApplyGridLengths();
+            if (setGridLengths)
+                target.SetGridLengths();
         }
 
         private void CopyValues(LogControlVM source, LogControlVM target)
@@ -895,13 +895,13 @@ namespace SmartLogReader
             GridLength0 = vm.GridLength0;
             GridLength2 = vm.GridLength2;
             GridLength4 = vm.GridLength4;
-            FirePropertyChanged("ApplyGridLengths");
+            OnPropertyChanged("SetGridLengths");
 
             string[] props = new string[] { "Time", "Logger", "Level", "ThreadIds", "Method" };
             foreach (var prop in props)
             {
-                FirePropertyChanged("Show" + prop);
-                FirePropertyChanged("AmountOf" + prop);
+                OnPropertyChanged("Show" + prop);
+                OnPropertyChanged("AmountOf" + prop);
             }
         }
 

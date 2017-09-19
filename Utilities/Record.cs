@@ -343,8 +343,8 @@ namespace SmartLogReader
                 if (isSelected != value)
                 {
                     isSelected = value;
-                    FirePropertyChanged("IsSelected");
-                    FirePropertyChanged("Background");
+                    OnPropertyChanged();
+                    OnPropertyChanged("Background");
                 }
             }
         }

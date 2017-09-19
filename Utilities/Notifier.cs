@@ -32,21 +32,6 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        protected virtual void FirePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                //StackTrace stackTrace = new StackTrace();
-                //string methodName = stackTrace.GetFrame(1).GetMethod().Name;
-                //var log = new SmartLogger();
-                //log.Smart($"methodName = {0}, propertyName = {1}", methodName, propertyName));
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -89,12 +89,12 @@ namespace SmartLogReader
             //--- need RowDefinitions for the rest of this method
             else if (splitGrid.RowDefinitions.Count > 2)
             {
-                if (e.PropertyName == "GridLengthsRequired")
+                if (e.PropertyName == "GetGridLengths")
                 {
                     viewModel.GridLength0 = splitGrid.RowDefinitions[0].Height.Value;
                     viewModel.GridLength2 = splitGrid.RowDefinitions[2].Height.Value;
                 }
-                else if (e.PropertyName == "ApplyGridLengths")
+                else if (e.PropertyName == "SetGridLengths")
                 {
                     splitGrid.RowDefinitions[0].Height = new GridLength(viewModel.GridLength0, GridUnitType.Star);
                     splitGrid.RowDefinitions[2].Height = new GridLength(viewModel.GridLength2, GridUnitType.Star);

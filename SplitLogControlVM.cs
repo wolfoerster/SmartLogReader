@@ -88,7 +88,7 @@ namespace SmartLogReader
             else if (e.PropertyName == "CurrentVM")
             {
                 myCurrentVM = LogControlVM.CurrentVM;
-                FirePropertyChanged("IsFilterEnabled");//--- to update the [E] button in the UI
+                OnPropertyChanged("IsFilterEnabled");//--- to update the [E] button in the UI
             }
         }
         LogControlVM myCurrentVM;
@@ -109,7 +109,7 @@ namespace SmartLogReader
                 {
                     isSplitLog = value;
                     InitializeSubViewModel(2, value);
-                    FirePropertyChanged("IsSplitLog");
+                    OnPropertyChanged();
                     if (value)
                         ApplySyncAndSplit();
                 }
@@ -128,7 +128,7 @@ namespace SmartLogReader
                 if (isSyncSelection != value)
                 {
                     isSyncSelection = value;
-                    FirePropertyChanged("IsSyncSelection");
+                    OnPropertyChanged();
                     if (value)
                         ApplySyncAndSplit();
                 }
@@ -211,7 +211,7 @@ namespace SmartLogReader
             }
 
             LastFile = fileName;
-            FirePropertyChanged("ShowWaitControl");
+            OnPropertyChanged("ShowWaitControl");
 
             if (reader.IsBusy)
                 reader.Stop("LoadFile");
@@ -275,9 +275,9 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public void ApplyGridLengths()
+        public void SetGridLengths()
         {
-            FirePropertyChanged("ApplyGridLengths");
+            OnPropertyChanged();
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace SmartLogReader
                 FindMatchingInternal(myLogControlVM2.RecordsView, false);
 
                 //--- find the matching record in external views:
-                FirePropertyChanged("FindMatchingExternal");
+                OnPropertyChanged("FindMatchingExternal");
             }
 
             if (isSplitLog)
@@ -317,8 +317,8 @@ namespace SmartLogReader
                     HandleReaderFileNameChanged();
                     break;
                 case ReaderStatus.ProgressChanged:
-                    FirePropertyChanged("ShowProgress");
-                    FirePropertyChanged("ReaderFileInfo");
+                    OnPropertyChanged("ShowProgress");
+                    OnPropertyChanged("ReaderFileInfo");
                     break;
                 case ReaderStatus.RecordsChanged:
                     HandleRecordsChanged();
@@ -352,8 +352,8 @@ namespace SmartLogReader
             DisplayName = Path.GetFileName(reader.FileName);
             myLogControlVM1.DisplayName = DisplayName + "-1";
             myLogControlVM2.DisplayName = DisplayName + "-2";
-            FirePropertyChanged("ReaderFileName");
-            FirePropertyChanged("ReaderFileInfo");
+            OnPropertyChanged("ReaderFileName");
+            OnPropertyChanged("ReaderFileInfo");
         }
 
         /// <summary>
@@ -369,8 +369,8 @@ namespace SmartLogReader
 
             if (mode)
             {
-                FirePropertyChanged("ReaderFileInfo");
-                FirePropertyChanged("HideWaitControl");
+                OnPropertyChanged("ReaderFileInfo");
+                OnPropertyChanged("HideWaitControl");
             }
 
             if (!done)
@@ -417,7 +417,7 @@ namespace SmartLogReader
                 if (IsSyncSelection)
                 {
                     FindMatchingInternal(view, true);
-                    FirePropertyChanged("FindMatchingExternal");
+                    OnPropertyChanged("FindMatchingExternal");
                 }
             }
         }
@@ -523,7 +523,7 @@ namespace SmartLogReader
                 if (followTail != value)
                 {
                     followTail = value;
-                    FirePropertyChanged("FollowTail");
+                    OnPropertyChanged();
                     CheckScrolling();
                 }
             }
@@ -571,7 +571,7 @@ namespace SmartLogReader
                 if (myCurrentVM.IsFilterEnabled != value)
                 {
                     myCurrentVM.IsFilterEnabled = value;
-                    FirePropertyChanged("IsFilterEnabled");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -615,7 +615,7 @@ namespace SmartLogReader
         void ExecuteCloseCmd(object sender, ExecutedRoutedEventArgs e)
         {
             reader.Stop("NoLastFile");
-            FirePropertyChanged("NoLastFile");
+            OnPropertyChanged("NoLastFile");
         }
 
         /// <summary>
