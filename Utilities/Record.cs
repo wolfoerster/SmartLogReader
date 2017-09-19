@@ -53,9 +53,9 @@ namespace SmartLogReader
         public string Method { get; set; }
 
         /// <summary>
-		/// 
-		/// </summary>
-		public LogLevel Level { get; protected set; }
+        /// 
+        /// </summary>
+        public LogLevel Level { get; protected set; }
 
         /// <summary>
         /// 
@@ -297,7 +297,7 @@ namespace SmartLogReader
             if (timeString != null && timeString.contains(text))
                 return true;
 
-            if (Logger != null && Logger != null && Logger.contains(text))
+            if (Logger != null && Logger.contains(text))
                 return true;
 
             if (levelString != null && levelString.contains(text))
