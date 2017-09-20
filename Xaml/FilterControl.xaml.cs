@@ -29,6 +29,8 @@ namespace SmartLogReader
             InitializeComponent();
         }
 
+        public string ButtonText { get; set; }
+
         public FilterCollection ItemsSource
         {
             get { return (FilterCollection)GetValue(ItemsSourceProperty); }
@@ -42,21 +44,19 @@ namespace SmartLogReader
         static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             FilterControl filterControl = obj as FilterControl;
-            if (filterControl != null)
-            {
-                filterControl.MyItemsSourceChanged();
-            }
+            filterControl?.MyItemsSourceChanged();
         }
 
         public void MyItemsSourceChanged()
         {
+            buttonAdd.Content = ButtonText;
             listBox.ItemsSource = ItemsSource;
         }
 
         void OnButtonAdd(object sender, RoutedEventArgs e)
         {
             FilterCollection data = listBox.ItemsSource as FilterCollection;
-            Filter filter = new Filter(6, 0, "*");
+            Filter filter = new Filter(7, 0, "*");
             data.Add(filter);
         }
 
@@ -69,8 +69,7 @@ namespace SmartLogReader
                 if (filter != null)
                 {
                     FilterCollection filterList = ItemsSource as FilterCollection;
-                    if (filterList != null)
-                        filterList.Remove(filter);
+                    filterList?.Remove(filter);
                 }
             }
         }

@@ -24,8 +24,8 @@ namespace SmartLogReader
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double width = (double)value;
-            return width - 9;
+            double width = (double)value - 9;
+            return width > 0 ? width : 0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

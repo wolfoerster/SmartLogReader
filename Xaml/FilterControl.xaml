@@ -10,11 +10,11 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Content="Add" Click="OnButtonAdd" Width="50" HorizontalAlignment="Left"/>
+        <Button x:Name="buttonAdd" Click="OnButtonAdd" HorizontalAlignment="Left" Margin="0,0,0,4"/>
         <ListBox x:Name="listBox" Grid.Row="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <!-- Each row is showing a Filter-->
+                    <!-- Each row is showing a Filter -->
                     <Grid Width="{Binding Path=ActualWidth, ElementName=listBox, Converter={StaticResource myWidthConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80"/>
