@@ -168,6 +168,14 @@ namespace SmartLogReader
                 }
             }
 
+            // naechste zeile kann datum sein oder naechster log eintrag
+            if (bytes.Length - lastPos < LegacyKey.Length)
+                return;
+
+            string test = Utils.BytesToString(bytes, lastPos, LegacyKey.Length);
+            if (test == LegacyKey)
+                return;
+
             token = GetNextLine();
             int i = token.IndexOf('=');
             if (i != 12)
