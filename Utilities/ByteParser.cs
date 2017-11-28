@@ -15,6 +15,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+
 namespace SmartLogReader
 {
     public enum LogFormats
@@ -33,6 +35,8 @@ namespace SmartLogReader
         private static readonly byte Colon = 0x3A;//= ':'
         private static readonly byte Comma = 0x2C;//= ','
         private static readonly byte FullStop = 0x2E;//= '.'
+        private static readonly byte Plus = 43;//= '+'
+        private static readonly byte Minus = 45;//= '-'
         private static readonly string LegacyKey = "novaSuite";
 
         /// <summary>
@@ -226,15 +230,22 @@ namespace SmartLogReader
 
         string GetTime()
         {
-            string s1 = GetNext(minTimeLength);
-            if (bytes[lastPos] == Comma || bytes[lastPos] == FullStop)
+            string s = GetNext(timeLength);
+            if (isLocalTime)
             {
-                string s2 = GetNext();//--- because we don't know the number of digits for the seconds
-                return s1 + s2;
+                DateTime t;
+                if (DateTime.TryParse(s, out t))
+                {
+                    t = DateTime.SpecifyKind(t, DateTimeKind.Local);
+                    t = t.ToUniversalTime();
+                    s = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                }
             }
-            return s1;
+            return s;
         }
         int minTimeLength = 19;
+        int timeLength;
+        bool isLocalTime;
 
         /// <summary>
         /// 
@@ -266,13 +277,38 @@ namespace SmartLogReader
             if (bytes[i] != Colon)
                 return false;
 
-            //i += 3;
-            //if (bytes[i] != FullStop && bytes[i] != Comma)
-            //	return false;
+            timeLength = minTimeLength;
+            isLocalTime = false;
 
-            //i += 4;
-            //if (bytes[i] != Space)
-            //	return false;
+            i += 3;
+            if (bytes[i] == FullStop || bytes[i] == Comma)
+            {
+                while (++i < bytes.Length)
+                {
+                    if (bytes[i] == Space)
+                        break;
+                }
+
+                timeLength = i - index;
+
+                if (i < bytes.Length)
+                {
+                    i += 1;
+                    if (bytes[i] == Plus || bytes[i] == Minus)
+                    {
+                        i += 3;
+                        if (bytes[i] == Colon)
+                        {
+                            i += 3;
+                            if (bytes[i] == Space)
+                            {
+                                timeLength = i - index;
+                                isLocalTime = true;
+                            }
+                        }
+                    }
+                }
+            }
 
             return true;
         }
