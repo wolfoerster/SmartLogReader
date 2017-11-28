@@ -31,12 +31,11 @@ namespace SmartLogReader
         private static readonly byte CR = 0x0D;//= '\r'
         private static readonly byte LF = 0x0A;//= '\n'
         private static readonly byte Space = 0x20;//= ' '
+        private static readonly byte Plus = 0x2B;//= '+'
         private static readonly byte Dash = 0x2D;//= '-'
         private static readonly byte Colon = 0x3A;//= ':'
         private static readonly byte Comma = 0x2C;//= ','
         private static readonly byte FullStop = 0x2E;//= '.'
-        private static readonly byte Plus = 43;//= '+'
-        private static readonly byte Minus = 45;//= '-'
         private static readonly string LegacyKey = "novaSuite";
 
         /// <summary>
@@ -280,34 +279,32 @@ namespace SmartLogReader
             timeLength = minTimeLength;
             isLocalTime = false;
 
-            i += 3;
-            if (bytes[i] == FullStop || bytes[i] == Comma)
+            try
             {
-                while (++i < bytes.Length)
+                //--- "2017-07-23 16:48:18.123" ?
+                i += 3;
+                if (bytes[i] == FullStop || bytes[i] == Comma)
                 {
-                    if (bytes[i] == Space)
-                        break;
-                }
+                    //--- move on to next space
+                    while (bytes[++i] != Space) ;
+                    timeLength = i - index;
 
-                timeLength = i - index;
-
-                if (i < bytes.Length)
-                {
-                    i += 1;
-                    if (bytes[i] == Plus || bytes[i] == Minus)
+                    //--- "2017-07-23 16:48:18.123 +01:00" ?
+                    if (bytes[i + 1] == Plus || bytes[i + 1] == Dash)
                     {
-                        i += 3;
-                        if (bytes[i] == Colon)
+                        if (bytes[i + 4] == Colon)
                         {
-                            i += 3;
-                            if (bytes[i] == Space)
+                            if (bytes[i + 7] == Space)
                             {
-                                timeLength = i - index;
+                                timeLength = i - index + 7;
                                 isLocalTime = true;
                             }
                         }
                     }
                 }
+            }
+            catch
+            {
             }
 
             return true;
