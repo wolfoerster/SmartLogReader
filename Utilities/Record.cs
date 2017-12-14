@@ -140,8 +140,31 @@ namespace SmartLogReader
                 LogLevel level;
                 if (Enum.TryParse(value, true, out level))
                     Level = level;
+                else
+                    Level = TryParseLevel(value);
             }
         }
+
+        private LogLevel TryParseLevel(string value)
+        {
+            if (value.contains("dbg") || value.contains("debug"))
+                return LogLevel.Debug;
+
+            if (value.contains("inf") || value.contains("info"))
+                return LogLevel.Info;
+
+            if (value.contains("wrn") || value.contains("warn"))
+                return LogLevel.Warn;
+
+            if (value.contains("err"))
+                return LogLevel.Error;
+
+            if (value.contains("ftl") || value.contains("fatal"))
+                return LogLevel.Fatal;
+
+            return LogLevel.None;
+        }
+
         string levelString;
 
         /// <summary>

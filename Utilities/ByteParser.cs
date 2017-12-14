@@ -22,6 +22,7 @@ namespace SmartLogReader
     public enum LogFormats
     {
         Unknown,
+        Serilog,
         SmartLogger,
         LegacyLogger
     }
@@ -65,7 +66,8 @@ namespace SmartLogReader
             //--- SmartLogger format
             if (CheckTime(0))
             {
-                Format = LogFormats.SmartLogger;
+                //--- this is bad:
+                Format = isLocalTime ? LogFormats.Serilog : LogFormats.SmartLogger;
                 return;
             }
 
@@ -120,6 +122,12 @@ namespace SmartLogReader
                     record.Logger = GetNext();
                     record.ThreadIds = GetNext();
                     record.Method = GetNext();
+                    record.Message = GetText();
+                    break;
+
+                case LogFormats.Serilog:
+                    record.TimeString = GetTime();
+                    record.LevelString = GetNext();
                     record.Message = GetText();
                     break;
 
