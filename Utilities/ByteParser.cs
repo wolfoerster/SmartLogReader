@@ -16,6 +16,8 @@
 //******************************************************************************************
 
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SmartLogReader
 {
@@ -24,6 +26,7 @@ namespace SmartLogReader
         Unknown,
         Serilog,
         SmartLogger,
+        JsonLogger,
         LegacyLogger
     }
 
@@ -63,11 +66,9 @@ namespace SmartLogReader
                 }
             }
 
-            //--- SmartLogger format
             if (CheckTime(0))
             {
-                //--- this is bad:
-                Format = isLocalTime ? LogFormats.Serilog : LogFormats.SmartLogger;
+                Format = isJson ? LogFormats.JsonLogger : isLocalTime ? LogFormats.Serilog : LogFormats.SmartLogger;
                 return;
             }
 
@@ -135,12 +136,46 @@ namespace SmartLogReader
                     GetLegacyRecord(record);
                     break;
 
+                case LogFormats.JsonLogger:
+                    GetJsonRecord(record);
+                    break;
+
                 default:
                     record.Message = GetNextLine();
                     break;
             }
 
             return record;
+        }
+
+        private class LogEntry
+        {
+            public string Time { get; set; }
+            public string Level { get; set; }
+            public string Class { get; set; }
+            public string Method { get; set; }
+            public string Message { get; set; }
+        }
+
+        private void GetJsonRecord(Record record)
+        {
+            try
+            {
+                var json = GetText();
+                var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
+
+                DateTime t = DateTime.Parse(logEntry.Time);
+                t = t.ToUniversalTime();
+                record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+                record.LevelString = logEntry.Level;
+                record.Logger = logEntry.Class;
+                record.Method = logEntry.Method;
+                record.Message = logEntry.Message;
+            }
+            catch
+            {
+            }
         }
 
         private void GetLegacyRecord(Record record)
@@ -254,11 +289,25 @@ namespace SmartLogReader
         int timeLength;
         bool isLocalTime;
 
+        const string jsonTime = "{\"time";
+        int jsonLength = jsonTime.Length;
+        bool isJson;
+
         /// <summary>
         /// 
         /// </summary>
         bool CheckTime(int index)
         {
+            if (bytes.Length - index > jsonLength)
+            {
+                string str = Utils.BytesToString(bytes, index, jsonLength);
+                if (str == jsonTime)
+                {
+                    isJson = true;
+                    return true;
+                }
+            }
+
             //--- string should at least look like "2017-07-23 16:48:18"
 
             if (bytes.Length - index < minTimeLength)
@@ -353,7 +402,7 @@ namespace SmartLogReader
                 int prev_i = i - 1;
 
                 //--- are we in between CR and LF?
-                if (bytes[prev_i] == CR && bytes[i] == LF)
+                if (i > 0 && bytes[prev_i] == CR && bytes[i] == LF)
                 {
                     int next_i = i + 1;
 
