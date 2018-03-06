@@ -148,47 +148,33 @@ namespace SmartLogReader
             return record;
         }
 
-        private class MessageRecord
-        {
-            public string _typeTag { get; set; }
-            public string Message { get; set; }
-            public string Method { get; set; }
-        }
-
-        private class MessageProperties
-        {
-            public MessageRecord MessageRecord { get; set; }
-            public string SourceContext { get; set; }
-        }
-
         private class LogEntry
         {
-            public string Timestamp { get; set; }
+            public string Time { get; set; }
             public string Level { get; set; }
-            public string MessageTemplate { get; set; }
-            public MessageProperties Properties { get; set; }
+            public string Class { get; set; }
+            public string Method { get; set; }
+            public string Message { get; set; }
         }
 
         private void GetJsonRecord(Record record)
         {
-            string json = null;
             try
             {
-                json = GetText();
+                var json = GetText();
                 var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
-                DateTime t = DateTime.Parse(logEntry.Timestamp);
+                DateTime t = DateTime.Parse(logEntry.Time);
                 t = t.ToUniversalTime();
                 record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
                 record.LevelString = logEntry.Level;
-                record.Logger = logEntry.Properties.SourceContext;
-                record.Message = logEntry.Properties.MessageRecord.Message;
-                record.Method = logEntry.Properties.MessageRecord.Method;
+                record.Logger = logEntry.Class;
+                record.Method = logEntry.Method;
+                record.Message = logEntry.Message ?? string.Empty;
             }
-            catch (Exception ex)
+            catch
             {
-                var s = ex.Message;
             }
         }
 
@@ -303,7 +289,7 @@ namespace SmartLogReader
         int timeLength;
         bool isLocalTime;
 
-        const string jsonTime = "{\"timestamp";
+        const string jsonTime = "{\"time";
         int jsonLength = jsonTime.Length;
         bool isJson;
 

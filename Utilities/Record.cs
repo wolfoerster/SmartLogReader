@@ -286,6 +286,9 @@ namespace SmartLogReader
         /// </summary>
         string FirstLine(string str)
         {
+            if (str == null)
+                return string.Empty;
+
             int cr = str.IndexOf('\r');
             int lf = str.IndexOf('\n');
             int limit = 240;
