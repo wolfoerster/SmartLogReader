@@ -19,6 +19,9 @@ using System.Text;
 using System.Windows.Media;
 using System.Collections.Generic;
 using SmartLogging;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SmartLogReader
 {
@@ -198,10 +201,27 @@ namespace SmartLogReader
         {
             get
             {
-                string result = GetPrefix(true) + Message;
-                return result;
+                if (Message.StartsWith("{"))
+                {
+                    try
+                    {
+                        var jobj = JObject.Parse(Message);
+                        var json = JsonConvert.SerializeObject(jobj, jsonSettings);
+                        return GetPrefix(true) + json;
+                    }
+                    catch
+                    {
+                    }
+                }
+                return GetPrefix(true) + Message;
             }
         }
+
+        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
 
         /// <summary>
         /// 

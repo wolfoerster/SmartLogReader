@@ -18,6 +18,7 @@
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace SmartLogReader
 {
@@ -26,7 +27,8 @@ namespace SmartLogReader
         Unknown,
         Serilog,
         SmartLogger,
-        JsonLogger,
+        JsonLogger1,
+        JsonLogger2,
         LegacyLogger
     }
 
@@ -68,7 +70,10 @@ namespace SmartLogReader
 
             if (CheckTime(0))
             {
-                Format = isJson ? LogFormats.JsonLogger : isLocalTime ? LogFormats.Serilog : LogFormats.SmartLogger;
+                Format = 
+                    isJson1 ? LogFormats.JsonLogger1 : 
+                    isJson2 ? LogFormats.JsonLogger2 : 
+                    isLocalTime ? LogFormats.Serilog : LogFormats.SmartLogger;
                 return;
             }
 
@@ -136,8 +141,12 @@ namespace SmartLogReader
                     GetLegacyRecord(record);
                     break;
 
-                case LogFormats.JsonLogger:
-                    GetJsonRecord(record);
+                case LogFormats.JsonLogger1:
+                    GetJsonRecord1(record);
+                    break;
+
+                case LogFormats.JsonLogger2:
+                    GetJsonRecord2(record);
                     break;
 
                 default:
@@ -157,7 +166,7 @@ namespace SmartLogReader
             public string Message { get; set; }
         }
 
-        private void GetJsonRecord(Record record)
+        private void GetJsonRecord1(Record record)
         {
             try
             {
@@ -175,6 +184,47 @@ namespace SmartLogReader
             }
             catch
             {
+            }
+        }
+
+        private class Props
+        {
+            public string Class { get; set; }
+            public string Method { get; set; }
+            public object Message { get; set; }
+        }
+
+        private class LogEntry2
+        {
+            public string Timestamp { get; set; }
+            public string Level { get; set; }
+            public string MessageTemplate { get; set; }
+            public Props Properties { get; set; }
+        }
+
+        private void GetJsonRecord2(Record record)
+        {
+            try
+            {
+                var json = GetText();
+                var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
+
+                DateTime t = DateTime.Parse(logEntry.Timestamp);
+                t = t.ToUniversalTime();
+                record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+                record.LevelString = logEntry.Level;
+                record.Logger = logEntry.Properties.Class;
+                record.Method = logEntry.Properties.Method;
+
+                if (logEntry.Properties.Message is string message)
+                    record.Message = message;
+                else
+                    record.Message = JsonConvert.SerializeObject(logEntry.Properties.Message);
+            }
+            catch (Exception ex)
+            {
+                var str = ex.Message;
             }
         }
 
@@ -291,7 +341,7 @@ namespace SmartLogReader
 
         const string jsonTime = "{\"time";
         int jsonLength = jsonTime.Length;
-        bool isJson;
+        bool isJson1, isJson2;
 
         /// <summary>
         /// 
@@ -301,9 +351,14 @@ namespace SmartLogReader
             if (bytes.Length - index > jsonLength)
             {
                 string str = Utils.BytesToString(bytes, index, jsonLength);
+                if (str.Equals(jsonTime))
+                {
+                    isJson1 = true;
+                    return true;
+                }
                 if (str.equals(jsonTime))
                 {
-                    isJson = true;
+                    isJson2 = true;
                     return true;
                 }
             }
