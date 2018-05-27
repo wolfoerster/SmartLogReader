@@ -14,7 +14,7 @@
         <DataTemplate>
           <TextBlock Text="{Binding ShortString}" Background="{Binding Background}">
             <TextBlock.ToolTip>
-              <TextBlock Text="{Binding MessageToolTip}" MaxWidth="600" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding MessageToolTip}" MaxWidth="600" TextWrapping="NoWrap"/>
             </TextBlock.ToolTip>
           </TextBlock>
         </DataTemplate>

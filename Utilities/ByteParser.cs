@@ -325,8 +325,7 @@ namespace SmartLogReader
             string s = GetNext(timeLength);
             if (isLocalTime)
             {
-                DateTime t;
-                if (DateTime.TryParse(s, out t))
+                if (DateTime.TryParse(s, out DateTime t))
                 {
                     t = DateTime.SpecifyKind(t, DateTimeKind.Local);
                     t = t.ToUniversalTime();
@@ -351,14 +350,13 @@ namespace SmartLogReader
             if (bytes.Length - index > jsonLength)
             {
                 string str = Utils.BytesToString(bytes, index, jsonLength);
-                if (str.Equals(jsonTime))
-                {
-                    isJson1 = true;
-                    return true;
-                }
                 if (str.equals(jsonTime))
                 {
-                    isJson2 = true;
+                    if (str[2] == 'T')
+                        isJson2 = true;
+                    else
+                        isJson1 = true;
+
                     return true;
                 }
             }

@@ -183,7 +183,7 @@ namespace SmartLogReader
         /// </summary>
         public string MessageToolTip
         {
-            get { return string.IsNullOrEmpty(Message) ? "no message" : Message; }
+            get { return string.IsNullOrEmpty(Message) ? "no message" : JsonMessage; }
         }
 
         /// <summary>
@@ -201,19 +201,27 @@ namespace SmartLogReader
         {
             get
             {
+                return GetPrefix(true) + JsonMessage;
+            }
+        }
+
+        private string JsonMessage
+        {
+            get
+            {
                 if (Message.StartsWith("{"))
                 {
                     try
                     {
                         var jobj = JObject.Parse(Message);
                         var json = JsonConvert.SerializeObject(jobj, jsonSettings);
-                        return GetPrefix(true) + json;
+                        return json;
                     }
                     catch
                     {
                     }
                 }
-                return GetPrefix(true) + Message;
+                return Message;
             }
         }
 
