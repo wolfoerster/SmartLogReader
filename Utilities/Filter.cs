@@ -80,7 +80,7 @@ namespace SmartLogReader
         /// <summary>
         /// Perform a test on a certain property of a record.
         /// </summary>
-        public bool Test(Record record)
+        public virtual bool Test(Record record)
         {
             switch (PropertyIndex)
             {
@@ -99,7 +99,7 @@ namespace SmartLogReader
         /// <summary>
         /// Perform a test on a string property of a record.
         /// </summary>
-        bool Test(string actualValue)
+        protected virtual bool Test(string actualValue)
         {
             if (string.IsNullOrEmpty(actualValue) || string.IsNullOrEmpty(expectedValue))
                 return false;
@@ -281,6 +281,18 @@ namespace SmartLogReader
             }
         }
         private int colorIndex;
+
+        protected override bool Test(string actualValue)
+        {
+            if (OpCodeIndex == 0)
+            {
+                var s1 = actualValue.Substring(0, 2);
+                var s2 = ExpectedValue.Substring(0, 2);
+                return s1.equals(s2);
+            }
+
+            return base.Test(actualValue);
+        }
     }
 
     /// <summary>

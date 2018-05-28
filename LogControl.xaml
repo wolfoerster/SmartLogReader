@@ -5,6 +5,7 @@
   <Grid>
     <!-- -->
     <ListBox x:Name="myListBox"
+         Background="LightGray"
          ItemsSource="{Binding RecordsView}"
          IsSynchronizedWithCurrentItem="True"
          HorizontalContentAlignment="Stretch"
