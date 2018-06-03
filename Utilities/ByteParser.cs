@@ -223,8 +223,11 @@ namespace SmartLogReader
                 }
                 else
                 {
-                    logEntry.Properties["MessageTemplate"] = logEntry.MessageTemplate;
-                    record.Message = JsonConvert.SerializeObject(logEntry.Properties);
+                    var properties = new Dictionary<string, object>();
+                    properties.Add("MessageTemplate", logEntry.MessageTemplate);
+                    foreach (var key in logEntry.Properties.Keys)
+                        properties.Add(key, logEntry.Properties[key]);
+                    record.Message = JsonConvert.SerializeObject(properties);
                     record.Method = string.Empty;
                     if (logEntry.Properties.ContainsKey("SourceContext"))
                         record.Logger = logEntry.Properties["SourceContext"].ToString();
