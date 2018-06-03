@@ -41,9 +41,10 @@ namespace SmartLogReader
             PropertyNames.Add("Message");
 
             OpCodes = new List<string>();
-            OpCodes.Add("equals");
-            OpCodes.Add("lessThan");
-            OpCodes.Add("greaterThan");
+            OpCodes.Add("=");
+            OpCodes.Add("≠");
+            OpCodes.Add("<");
+            OpCodes.Add(">");
         }
         static public List<string> PropertyNames { get; set; }
         static public List<string> OpCodes { get; set; }
@@ -107,17 +108,19 @@ namespace SmartLogReader
             switch (OpCodeIndex)
             {
                 case 0: return IsEqual(actualValue, expectedValue);
-                case 1: return actualValue.CompareTo(expectedValue) < 0;
-                case 2: return actualValue.CompareTo(expectedValue) > 0;
+                case 1: return !IsEqual(actualValue, expectedValue);
+                case 2: return actualValue.CompareTo(expectedValue) < 0;
+                case 3: return actualValue.CompareTo(expectedValue) > 0;
             }
             return false;
         }
 
         /// <summary>
         /// Perform a test on a string property of a record. 
-        /// '*Bla' means string contains 'Bla', 
-        /// 'Bla*' means string starts with 'Bla' and 
-        /// 'Bla' means string equals 'Bla'.
+        /// 'bla*' means string starts with 'bla', 
+        /// '*bla' means string ends with 'bla', 
+        /// '*bla*' means string contains 'bla', 
+        /// 'bla' means string equals 'bla'.
         /// </summary>
         bool IsEqual(string actualValue, string expectedValue)
         {

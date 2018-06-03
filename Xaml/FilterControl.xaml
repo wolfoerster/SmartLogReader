@@ -18,7 +18,7 @@
                     <Grid Width="{Binding Path=ActualWidth, ElementName=listBox, Converter={StaticResource myWidthConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="35"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="20"/>
                             <ColumnDefinition Width="20"/>

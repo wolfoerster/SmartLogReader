@@ -16,6 +16,7 @@
 //******************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -187,19 +188,12 @@ namespace SmartLogReader
             }
         }
 
-        private class Props
-        {
-            public string Class { get; set; }
-            public string Method { get; set; }
-            public object Message { get; set; }
-        }
-
         private class LogEntry2
         {
             public string Timestamp { get; set; }
             public string Level { get; set; }
             public string MessageTemplate { get; set; }
-            public Props Properties { get; set; }
+            public Dictionary<string, object> Properties { get; set; }
         }
 
         private void GetJsonRecord2(Record record)
@@ -212,15 +206,31 @@ namespace SmartLogReader
                 DateTime t = DateTime.Parse(logEntry.Timestamp);
                 t = t.ToUniversalTime();
                 record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
-
                 record.LevelString = logEntry.Level;
-                record.Logger = logEntry.Properties.Class;
-                record.Method = logEntry.Properties.Method;
 
-                if (logEntry.Properties.Message is string message)
-                    record.Message = message;
+                if (logEntry.MessageTemplate.StartsWith("{Class} {Method} {"))
+                {
+                    record.Logger = logEntry.Properties["Class"].ToString();
+                    record.Method = logEntry.Properties["Method"].ToString();
+
+                    var message = logEntry.Properties["Message"];
+                    if (message is null)
+                        record.Message = string.Empty;
+                    else if (message is string msg)
+                        record.Message = msg;
+                    else
+                        record.Message = JsonConvert.SerializeObject(message);
+                }
                 else
-                    record.Message = JsonConvert.SerializeObject(logEntry.Properties.Message);
+                {
+                    logEntry.Properties["MessageTemplate"] = logEntry.MessageTemplate;
+                    record.Message = JsonConvert.SerializeObject(logEntry.Properties);
+                    record.Method = string.Empty;
+                    if (logEntry.Properties.ContainsKey("SourceContext"))
+                        record.Logger = logEntry.Properties["SourceContext"].ToString();
+                    else
+                        record.Logger = string.Empty;
+                }
             }
             catch (Exception ex)
             {
