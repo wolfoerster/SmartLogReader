@@ -208,25 +208,34 @@ namespace SmartLogReader
                 record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 record.LevelString = logEntry.Level;
 
-                if (logEntry.MessageTemplate.StartsWith("{Class} {Method} {"))
+                if (logEntry.MessageTemplate.StartsWith("{Class} {Method}"))
                 {
                     record.Logger = logEntry.Properties["Class"].ToString();
                     record.Method = logEntry.Properties["Method"].ToString();
 
-                    var message = logEntry.Properties["Message"];
-                    if (message is null)
-                        record.Message = string.Empty;
-                    else if (message is string msg)
-                        record.Message = msg;
+                    if (logEntry.Properties.ContainsKey("Message"))
+                    {
+                        var message = logEntry.Properties["Message"];
+                        if (message is null)
+                            record.Message = string.Empty;
+                        else if (message is string msg)
+                            record.Message = msg;
+                        else
+                            record.Message = JsonConvert.SerializeObject(message);
+                    }
                     else
-                        record.Message = JsonConvert.SerializeObject(message);
+                    {
+                        record.Message = string.Empty;
+                    }
                 }
                 else
                 {
+                    // copy logEntry.Properties and insert "MessageTemplate"
                     var properties = new Dictionary<string, object>();
                     properties.Add("MessageTemplate", logEntry.MessageTemplate);
                     foreach (var key in logEntry.Properties.Keys)
                         properties.Add(key, logEntry.Properties[key]);
+
                     record.Message = JsonConvert.SerializeObject(properties);
                     record.Method = string.Empty;
                     if (logEntry.Properties.ContainsKey("SourceContext"))
