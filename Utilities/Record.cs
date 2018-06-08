@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using SmartLogging;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace SmartLogReader
 {
@@ -39,6 +38,8 @@ namespace SmartLogReader
             Level = LogLevel.None;
         }
         static ulong count;
+
+        public string Json { get; set; }
 
         /// <summary>
         /// The record time in UTC.
@@ -201,6 +202,9 @@ namespace SmartLogReader
         {
             get
             {
+                if (Json != null)
+                    return Beautify(Json);
+
                 return GetPrefix(true) + JsonMessage;
             }
         }
@@ -210,26 +214,24 @@ namespace SmartLogReader
             get
             {
                 if (Message.StartsWith("{"))
-                {
-                    try
-                    {
-                        var jobj = JObject.Parse(Message);
-                        var json = JsonConvert.SerializeObject(jobj, jsonSettings);
-                        return json;
-                    }
-                    catch
-                    {
-                    }
-                }
+                    return Beautify(Message);
+
                 return Message;
             }
         }
 
-        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        private static string Beautify(string json)
         {
-            Formatting = Formatting.Indented,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
+            try
+            {
+                return JValue.Parse(json).ToString(Formatting.Indented);
+            }
+            catch
+            {
+            }
+
+            return json;
+        }
 
         /// <summary>
         /// 

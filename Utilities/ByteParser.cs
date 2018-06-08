@@ -16,10 +16,14 @@
 //******************************************************************************************
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using MessageTemplates.Core;
+using MessageTemplates.Parsing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using MessageTemplates.Structure;
 
 namespace SmartLogReader
 {
@@ -193,7 +197,68 @@ namespace SmartLogReader
             public string Timestamp { get; set; }
             public string Level { get; set; }
             public string MessageTemplate { get; set; }
-            public Dictionary<string, object> Properties { get; set; }
+            public JObject Properties { get; set; }
+
+            public string GetProperty(string name)
+            {
+                if (Properties.TryGetValue(name, out JToken value))
+                    return value.ToString();
+
+                return "";
+            }
+
+            public string GetMessage()
+            {
+                if (MessageTemplate.Equals("{@Message}")) // JsonLogger
+                {
+                    var obj = Properties["JsonObject"];
+                    return JsonConvert.SerializeObject(obj);
+                }
+
+                if (MessageTemplate.StartsWith("Message: {")) // Chimera Logging Middleware
+                {
+                    var json = MessageTemplate.Substring(9);
+                    var jobj = JObject.Parse(json);
+                    return JsonConvert.SerializeObject(jobj);
+                }
+
+                var parser = new MessageTemplateParser();
+                var parsed = parser.Parse(MessageTemplate);
+
+                var templateProperties = new TemplatePropertyValueDictionary(new TemplatePropertyList(
+                    Properties.Properties().Select(p => CreateProperty(p.Name, p.Value)).ToArray()));
+
+                var rendered = parsed.Render(templateProperties);
+                return rendered;
+            }
+
+            static TemplateProperty CreateProperty(string name, JToken value)
+            {
+                return new TemplateProperty(name, CreatePropertyValue(value));
+            }
+
+            static TemplatePropertyValue CreatePropertyValue(JToken value)
+            {
+                if (value.Type == JTokenType.Null)
+                    return new ScalarValue(null);
+
+                var obj = value as JObject;
+                if (obj != null)
+                {
+                    var properties = obj.Properties()
+                        .Select(kvp => CreateProperty(kvp.Name, kvp.Value));
+
+                    return new StructureValue(properties);
+                }
+
+                var arr = value as JArray;
+                if (arr != null)
+                {
+                    return new SequenceValue(arr.Select(CreatePropertyValue));
+                }
+
+                return new ScalarValue(value.Value<object>());
+            }
         }
 
         private void GetJsonRecord2(Record record)
@@ -208,45 +273,15 @@ namespace SmartLogReader
                 record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 record.LevelString = logEntry.Level;
 
-                if (logEntry.MessageTemplate.StartsWith("{Class} {Method}"))
-                {
-                    record.Logger = logEntry.Properties["Class"].ToString();
-                    record.Method = logEntry.Properties["Method"].ToString();
-
-                    if (logEntry.Properties.ContainsKey("Message"))
-                    {
-                        var message = logEntry.Properties["Message"];
-                        if (message is null)
-                            record.Message = string.Empty;
-                        else if (message is string msg)
-                            record.Message = msg;
-                        else
-                            record.Message = JsonConvert.SerializeObject(message);
-                    }
-                    else
-                    {
-                        record.Message = string.Empty;
-                    }
-                }
-                else
-                {
-                    // copy logEntry.Properties and insert "MessageTemplate"
-                    var properties = new Dictionary<string, object>();
-                    properties.Add("MessageTemplate", logEntry.MessageTemplate);
-                    foreach (var key in logEntry.Properties.Keys)
-                        properties.Add(key, logEntry.Properties[key]);
-
-                    record.Message = JsonConvert.SerializeObject(properties);
-                    record.Method = string.Empty;
-                    if (logEntry.Properties.ContainsKey("SourceContext"))
-                        record.Logger = logEntry.Properties["SourceContext"].ToString();
-                    else
-                        record.Logger = string.Empty;
-                }
+                record.Logger = logEntry.GetProperty("SourceContext");
+                record.Method = logEntry.GetProperty("MethodName");
+                record.Message = logEntry.GetMessage();
+                record.Json = json;
             }
             catch (Exception ex)
             {
                 var str = ex.Message;
+                throw;
             }
         }
 
