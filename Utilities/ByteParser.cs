@@ -211,7 +211,7 @@ namespace SmartLogReader
             {
                 if (MessageTemplate.Equals("{@Message}")) // JsonLogger
                 {
-                    var obj = Properties["JsonObject"];
+                    var obj = Properties["Message"];
                     return JsonConvert.SerializeObject(obj);
                 }
 
