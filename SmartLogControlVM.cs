@@ -851,9 +851,11 @@ namespace SmartLogReader
 
             string xml = File.ReadAllText(path);
 
+            var quickHack = SelectedReadMode;
             IsInitialized = false;
             ColorSpecs.Clear();
             var vm = Utils.FromXML<SmartLogControlVM>(xml);
+            SelectedReadMode = quickHack;
 
             if (vm == null)
             {
