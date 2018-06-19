@@ -201,6 +201,9 @@ namespace SmartLogReader
 
             public string GetProperty(string name)
             {
+                if (Properties == null)
+                    return "";
+
                 if (Properties.TryGetValue(name, out JToken value))
                     return value.ToString();
 
@@ -221,6 +224,9 @@ namespace SmartLogReader
                     var jobj = JObject.Parse(json);
                     return JsonConvert.SerializeObject(jobj);
                 }
+
+                if (Properties == null)
+                    return MessageTemplate;
 
                 var parser = new MessageTemplateParser();
                 var parsed = parser.Parse(MessageTemplate);
