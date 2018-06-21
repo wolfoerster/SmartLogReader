@@ -34,6 +34,7 @@ namespace SmartLogReader
         SmartLogger,
         JsonLogger1,
         JsonLogger2,
+        JsonLogger3,
         LegacyLogger
     }
 
@@ -69,6 +70,12 @@ namespace SmartLogReader
                 if (result == LegacyKey)
                 {
                     Format = LogFormats.LegacyLogger;
+                    return;
+                }
+                else if (result == "\"_message")
+                {
+                    Format = LogFormats.JsonLogger3;
+                    var dummy = GetText();
                     return;
                 }
             }
@@ -151,7 +158,11 @@ namespace SmartLogReader
                     break;
 
                 case LogFormats.JsonLogger2:
-                    GetJsonRecord2(record);
+                    GetJsonRecord2(record, GetText());
+                    break;
+
+                case LogFormats.JsonLogger3:
+                    GetJsonRecord3(record, GetText());
                     break;
 
                 default:
@@ -267,11 +278,10 @@ namespace SmartLogReader
             }
         }
 
-        private void GetJsonRecord2(Record record)
+        private void GetJsonRecord2(Record record, string json)
         {
             try
             {
-                var json = GetText();
                 var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
 
                 DateTime t = DateTime.Parse(logEntry.Timestamp);
@@ -286,9 +296,30 @@ namespace SmartLogReader
             }
             catch (Exception ex)
             {
-                var str = ex.Message;
-                throw;
+                CreateErrorRecord(record, ex.Message);
             }
+        }
+
+        private void GetJsonRecord3(Record record, string json)
+        {
+            try
+            {
+                var i1 = json.IndexOf("{");
+                var i2 = json.IndexOf("falcon_log_collector");
+                json = json.Substring(i1, i2 - i1 - 3);
+                json = json.Replace("\"\"", "\"");
+                GetJsonRecord2(record, json);
+            }
+            catch (Exception ex)
+            {
+                CreateErrorRecord(record, ex.Message);
+            }
+        }
+
+        void CreateErrorRecord(Record record, string msg)
+        {
+            record.Message = msg;
+            record.LevelString = "Error";
         }
 
         private void GetLegacyRecord(Record record)
@@ -517,6 +548,13 @@ namespace SmartLogReader
             {
                 int prev_i = i - 1;
 
+                if (Format == LogFormats.JsonLogger3 && bytes[i] == LF) // no CR!!!
+                {
+                    string result = GetString(prev_i - lastPos);
+                    lastPos = i + 1;
+                    return result;
+                }
+
                 //--- are we in between CR and LF?
                 if (i > 0 && bytes[prev_i] == CR && bytes[i] == LF)
                 {
@@ -530,6 +568,7 @@ namespace SmartLogReader
                         return result;
                     }
                 }
+
                 i++;
             }
 
