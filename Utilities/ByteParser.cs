@@ -306,7 +306,10 @@ namespace SmartLogReader
             {
                 var i1 = json.IndexOf("{");
                 var i2 = json.IndexOf("falcon_log_collector");
-                json = json.Substring(i1, i2 - i1 - 3);
+                if (i2 < 0)
+                    json = json.Substring(i1);
+                else
+                    json = json.Substring(i1, i2 - i1 - 3);
                 json = json.Replace("\"\"", "\"");
                 GetJsonRecord2(record, json);
             }

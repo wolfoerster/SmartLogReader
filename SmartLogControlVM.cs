@@ -296,12 +296,14 @@ namespace SmartLogReader
             {
                 if (selectedSize != value)
                 {
-                    selectedSize = value;
+                    FontSizeHack = selectedSize = value;
                     OnPropertyChanged();
                 }
             }
         }
         int selectedSize = 12;
+
+        public static int FontSizeHack = 12;
 
         /// <summary>
         /// 

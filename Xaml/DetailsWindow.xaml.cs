@@ -40,6 +40,7 @@ namespace SmartLogReader
         {
             InitializeComponent();
             DataContext = this;
+            textBox.FontSize = SmartLogControlVM.FontSizeHack;
             textBox.Text = text;
             Closing += MeClosing;
             Wrap = DoWrap;

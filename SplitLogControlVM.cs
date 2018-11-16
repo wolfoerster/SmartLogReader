@@ -596,9 +596,9 @@ namespace SmartLogReader
 
         void ExecuteOpenCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "Log Files|*.log";
-            dlg.Title = "Select a file";
+            OpenFileDialog dlg = new OpenFileDialog { Filter = "Log Files|*.log|All Files|*.*", Title = "Select a file" };
+            if (File.Exists(LastFile))
+                dlg.InitialDirectory = Path.GetDirectoryName(LastFile);
 
             if (dlg.ShowDialog() == true)
                 LoadFile(dlg.FileName);
