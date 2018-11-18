@@ -72,7 +72,7 @@ namespace SmartLogReader
             FindCmd = new UICommand("Find record", "Find", Key.F, ModifierKeys.Control, "Ctrl+F");
             SearchUpCmd = new UICommand("Search records up (Shift+Enter, Shift+F3, F4)", "Search up", Key.Return, ModifierKeys.Shift, "Shift+Return");
             SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
-            SaveWorkspaceCmd = new UICommand("Save workspace (Ctrl+Enter)", "Save", Key.Return, ModifierKeys.Control, "Ctrl+Return");
+            NewWorkspaceCmd = new UICommand("New workspace (Ctrl+Enter)", "New", Key.Return, ModifierKeys.Control, "Ctrl+Return");
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
         }
 
@@ -86,7 +86,7 @@ namespace SmartLogReader
         static public UICommand SearchUpCmd { get; set; }
         static public UICommand FindCmd { get; set; }
         static public UICommand SearchDownCmd { get; set; }
-        static public UICommand SaveWorkspaceCmd { get; set; }
+        static public UICommand NewWorkspaceCmd { get; set; }
         static public UICommand DeleteWorkspaceCmd { get; set; }
     }
 

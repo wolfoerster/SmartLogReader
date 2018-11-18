@@ -86,6 +86,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
+      <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\ColorBox.cs" />
     <Compile Include="Utilities\RollingFileReader.cs" />
@@ -140,6 +143,10 @@
     <Compile Include="Xaml\WaitControl.xaml.cs">
       <DependentUpon>WaitControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Xaml\NewWorkspaceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Xaml\DetailsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

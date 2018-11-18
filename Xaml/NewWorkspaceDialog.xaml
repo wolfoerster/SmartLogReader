@@ -1,0 +1,8 @@
+﻿<my:Dialog x:Class="SmartLogReader.NewWorkspaceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:SmartLogReader"
+        Height="70" Width="160" WindowStyle="ToolWindow"
+        FocusManager.FocusedElement="{Binding ElementName=textBox}">
+  <TextBox Name="textBox" Text="{Binding Workspace}" Margin="4"/>
+</my:Dialog>

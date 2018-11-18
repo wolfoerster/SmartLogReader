@@ -23,8 +23,8 @@
       <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding Fonts}" SelectedIndex="{Binding SelectedFont}" ToolTip="Select display font"/>
       <my:NumberBox Width="44" Number="{Binding SelectedSize}" Minimum="4" Maximum="48" Margin="4,0,0,0" ToolTip="Select font size"/>
       <my:SearchControl Margin="12,0,0,0" ToolTip="Search records"/>
-      <ComboBox Width="160" Margin="12,0,0,0" ToolTip="Enter or select a workspace name" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="True" Text="{Binding NewWorkspace, UpdateSourceTrigger=LostFocus}"/>
-      <Button Content="S" ToolTip="{Binding SaveWorkspaceCmd.Text}" Command="{Binding SaveWorkspaceCmd}" Width="20"/>
+      <ComboBox Width="160" Margin="12,0,0,0" ToolTip="Select a workspace name" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="False" IsReadOnly="True"/>
+      <Button Content="N" ToolTip="{Binding NewWorkspaceCmd.Text}" Command="{Binding NewWorkspaceCmd}" Width="20"/>
       <Button Content="D" ToolTip="{Binding DeleteWorkspaceCmd.Text}" Command="{Binding DeleteWorkspaceCmd}" Width="20"/>
     </StackPanel>
     <!-- -->

@@ -94,7 +94,7 @@ namespace SmartLogReader
             else
             {
                 smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(null);
-                smartLogControl.ViewModel.LoadFile(App.OpenFileName);
+                smartLogControl.ViewModel.LoadFileFromCommandLine(App.OpenFileName);
             }
         }
 

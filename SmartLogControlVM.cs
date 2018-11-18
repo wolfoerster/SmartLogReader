@@ -539,7 +539,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public void LoadFile(string path)
+        public void LoadFileFromCommandLine(string path)
         {
             var workspace = Path.GetFileNameWithoutExtension(path);
             if (SelectWorkspace(workspace))
@@ -561,7 +561,7 @@ namespace SmartLogReader
             CommandBindings.Add(new CommandBinding(SearchUpCmd, ExecuteSearchUpCmd, CanExecuteSearchUpCmd));
             CommandBindings.Add(new CommandBinding(SearchDownCmd, ExecuteSearchDownCmd, CanExecuteSearchDownCmd));
             CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
-            CommandBindings.Add(new CommandBinding(SaveWorkspaceCmd, ExecuteSaveWorkspaceCmd, CanExecuteSaveWorkspaceCmd));
+            CommandBindings.Add(new CommandBinding(NewWorkspaceCmd, ExecuteNewWorkspaceCmd, CanExecuteNewWorkspaceCmd));
             CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteDeleteWorkspaceCmd));
         }
 
@@ -693,6 +693,7 @@ namespace SmartLogReader
         /// </summary>
         private bool SelectWorkspace(string value)
         {
+            // if the workspace exist, just select it
             for (int i = 0; i < workspaces.Count; i++)
             {
                 if (workspaces[i].equals(value))
@@ -702,7 +703,7 @@ namespace SmartLogReader
                 }
             }
 
-            NewWorkspace = value;
+            AddAndSelectNewWorkspace(value);
             return false;
         }
 
@@ -718,8 +719,12 @@ namespace SmartLogReader
                 log.Smart($"old = {selectedWorkspace}, new = {value}");
                 if (selectedWorkspace != value)
                 {
+                    if (IsInitialized)
+                        SaveWorkspace();
+
                     selectedWorkspace = value;
                     OnPropertyChanged();
+
                     if (IsInitialized && value > -1)
                         LoadWorkspace();
                 }
@@ -730,26 +735,21 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-		[XmlIgnore]
-        public string NewWorkspace
+        private void AddAndSelectNewWorkspace(string value)
         {
-            get
+            // find the insertion index
+            int i = 1;
+            for (; i < workspaces.Count; i++)
             {
-                if (selectedWorkspace >= 0 && selectedWorkspace < workspaces.Count)
-                    return workspaces[selectedWorkspace];
+                if (workspaces[i].CompareTo(value) > 0)
+                    break;
+            }
 
-                return null;
-            }
-            set
-            {
-                if (IsNewWorkspace(value))
-                {
-                    workspaces.Add(value);
-                    IsInitialized = false;
-                    SelectedWorkspace = workspaces.Count - 1;
-                    IsInitialized = true;
-                }
-            }
+            SelectedWorkspace = -1;
+            workspaces.Insert(i, value);
+            IsInitialized = false;
+            SelectedWorkspace = i;
+            IsInitialized = true;
         }
 
         /// <summary>
@@ -772,14 +772,27 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void CanExecuteSaveWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
+        void CanExecuteNewWorkspaceCmd(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
 
-        void ExecuteSaveWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
+        void ExecuteNewWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            SaveWorkspace();
+            NewWorkspaceDialog dlg = new NewWorkspaceDialog();
+            Utils.MoveToMouse(dlg, "Workspace Name:");
+
+            if (dlg.ShowDialog() == true)
+            {
+                var value = dlg.Workspace;
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                if (IsNewWorkspace(value))
+                    AddAndSelectNewWorkspace(value);
+                else
+                    SelectWorkspace(value);
+            }
         }
 
         /// <summary>
@@ -833,7 +846,7 @@ namespace SmartLogReader
                 {
                     Utils.DeleteFile(path);
                     workspaces.RemoveAt(selectedWorkspace);
-                    SelectedWorkspace = -1;
+                    SelectedWorkspace = 0;
                 }
             }
         }
@@ -909,6 +922,6 @@ namespace SmartLogReader
             }
         }
 
-        #endregion Workspaces
+#endregion Workspaces
     }
 }
