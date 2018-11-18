@@ -361,20 +361,28 @@ namespace SmartLogReader
                 }
             }
 
-            // naechste zeile kann datum sein oder naechster log eintrag
-            if (bytes.Length - lastPos < LegacyKey.Length)
-                return;
+            while (true)
+            {
+                // is there a next line?
+                if (bytes.Length - lastPos < LegacyKey.Length)
+                    return;
 
-            string test = Utils.BytesToString(bytes, lastPos, LegacyKey.Length);
-            if (test == LegacyKey)
-                return;
+                // is it a new log entry?
+                string test = Utils.BytesToString(bytes, lastPos, LegacyKey.Length);
+                if (test == LegacyKey)
+                    return;
 
-            token = GetNextLine();
-            int i = token.IndexOf('=');
-            if (i != 12)
-                return;
+                // read the line
+                var line = GetNextLine();
 
-            record.TimeString = token.Substring(i + 1);
+                // is it the log entry time record?
+                var str = "    DateTime=";
+                if (line.StartsWith(str))
+                {
+                    record.TimeString = line.Substring(str.Length);
+                    return;
+                }
+            }
         }
 
         /// <summary>

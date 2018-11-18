@@ -287,6 +287,9 @@ namespace SmartLogReader
 
         protected override bool Test(string actualValue)
         {
+            if (string.IsNullOrEmpty(actualValue) || string.IsNullOrEmpty(ExpectedValue))
+                return false;
+
             if (OpCodeIndex == 0)
             {
                 var s1 = actualValue.Substring(0, 2);
