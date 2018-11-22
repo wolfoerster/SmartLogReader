@@ -90,6 +90,10 @@ namespace SmartLogReader
                 myCurrentVM = LogControlVM.CurrentVM;
                 OnPropertyChanged("IsFilterEnabled");//--- to update the [E] button in the UI
             }
+            else if (e.PropertyName == "RefreshAll")
+            {
+                OnPropertyChanged(e.PropertyName);
+            }
         }
         LogControlVM myCurrentVM;
 

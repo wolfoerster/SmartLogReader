@@ -241,6 +241,10 @@ namespace SmartLogReader
                 ColumnIndex = vm == myClientControlVM ? 0 : vm == myServerControlVM ? 2 : 4;
                 OnPropertyChanged(e.PropertyName);
             }
+            else if (e.PropertyName == "RefreshAll")
+            {
+                UpdateUI();
+            }
         }
 
         [XmlIgnore]

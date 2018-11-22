@@ -174,6 +174,14 @@ namespace SmartLogReader
             Record record = SelectedRecord();
             if (record != null)
             {
+                var pt = e.GetPosition(this);
+                if (pt.X < 150)
+                {
+                    Record.UtcTime0 = record.UtcTime;
+                    viewModel.RefreshAll();
+                    return;
+                }
+
                 DetailsWindow win = new DetailsWindow(record.LongString);
                 win.Owner = Application.Current.MainWindow;
                 Utils.MoveToMouse(win, "Details Window");

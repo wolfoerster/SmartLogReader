@@ -195,6 +195,14 @@ namespace SmartLogReader
             OnPropertyChanged();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void RefreshAll()
+        {
+            OnPropertyChanged("RefreshAll");
+        }
+
         #region Filtering
 
         /// <summary>
