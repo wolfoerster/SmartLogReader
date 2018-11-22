@@ -279,7 +279,7 @@ namespace SmartLogReader
         public static bool ShowMethod = true;
 
         public static int AmountOfTime = 12;
-        public static int AmountOfTimeDiff = 8;
+        public static int AmountOfTimeDiff = 6;
         public static int AmountOfLogger = 23;
         public static int AmountOfLevel = 5;
         public static int AmountOfThreadIds = 9;

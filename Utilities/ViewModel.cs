@@ -74,7 +74,7 @@ namespace SmartLogReader
             SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
             NewWorkspaceCmd = new UICommand("New workspace (Ctrl+Enter)", "New", Key.Return, ModifierKeys.Control, "Ctrl+Return");
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
-            TimeReferenceCmd = new UICommand("Set as reference time", "Time ref.", Key.R, ModifierKeys.Control, "Ctrl+R");
+            TimeReferenceCmd = new UICommand("Set selected record time as reference time", "Time ref.", Key.R, ModifierKeys.Control, "Ctrl+R");
         }
 
         static public UICommand CopyCmd { get; set; }

@@ -390,6 +390,15 @@ namespace SmartLogReader
         /// <summary>
         ///
         /// </summary>
+        public bool ShowTimeDiff
+        {
+            get { return Record.ShowTimeDiff; }
+            set { Record.ShowTimeDiff = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool ShowLogger
         {
             get { return Record.ShowLogger; }
@@ -430,6 +439,15 @@ namespace SmartLogReader
         {
             get { return Record.AmountOfTime; }
             set { Record.AmountOfTime = value; UpdateUI(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int AmountOfTimeDiff
+        {
+            get { return Record.AmountOfTimeDiff; }
+            set { Record.AmountOfTimeDiff = value; UpdateUI(); }
         }
 
         /// <summary>
