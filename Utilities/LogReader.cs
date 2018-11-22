@@ -140,8 +140,14 @@ namespace SmartLogReader
             }
 
             //--- if this is the first call and there are no changes, report RecordsChanged anyway
-            if (firstCall && !hasChanges)
-                ReportStatus(ReaderStatus.RecordsChanged);
+            if (firstCall)
+            {
+                if (Records.Count > 0)
+                    Record.UtcTime0 = Records[0].UtcTime;
+
+                if (!hasChanges)
+                    ReportStatus(ReaderStatus.RecordsChanged);
+            }
 
             firstCall = false;
         }
