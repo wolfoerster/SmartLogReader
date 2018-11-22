@@ -559,11 +559,11 @@ namespace SmartLogReader
             {
                 int prev_i = i - 1;
 
-                if (Format == LogFormats.JsonLogger3 && bytes[i] == LF) // no CR!!!
+                if (Format == LogFormats.JsonLogger3 && bytes[i] == LF) // no CR???
                 {
                     string result = GetString(prev_i - lastPos);
                     lastPos = i + 1;
-                    return result;
+                    return bytes[prev_i] == CR ? result.Substring(0, result.Length - 1) : result;
                 }
 
                 //--- are we in between CR and LF?

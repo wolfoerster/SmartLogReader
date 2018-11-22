@@ -114,6 +114,16 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
+        public string TimeDiffString => (this.UtcTime - UtcTime0).TotalMilliseconds.ToString("F0");
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static DateTime UtcTime0;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string ThreadIds
         {
             get { return threadIds; }
@@ -243,6 +253,9 @@ namespace SmartLogReader
             if (showAll || ShowTime)
                 sb.Append(Align(TimeString, AmountOfTime, showAll));
 
+            if (ShowTimeDiff)
+                sb.Append(Align(TimeDiffString, AmountOfTimeDiff, showAll));
+
             if (showAll || ShowLevel)
                 sb.Append(Align(LevelString, AmountOfLevel, showAll, true));
 
@@ -259,12 +272,14 @@ namespace SmartLogReader
         }
 
         public static bool ShowTime = true;
+        public static bool ShowTimeDiff = true;
         public static bool ShowLogger = true;
         public static bool ShowLevel = false;
         public static bool ShowThreadIds = false;
         public static bool ShowMethod = true;
 
         public static int AmountOfTime = 12;
+        public static int AmountOfTimeDiff = 8;
         public static int AmountOfLogger = 23;
         public static int AmountOfLevel = 5;
         public static int AmountOfThreadIds = 9;

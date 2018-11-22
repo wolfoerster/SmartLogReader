@@ -17,6 +17,7 @@
       <ComboBox Width="120" Margin="4,0,0,0" ItemsSource="{Binding ReadModes}" SelectedIndex="{Binding SelectedReadMode}" ToolTip="Select amount to read by time"/>
       <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding LogLevels}" SelectedIndex="{Binding SelectedLogLevel}" ToolTip="Select amount to read by log level"/>
       <my:DetailsControl Width="120" Margin="12,0,0,0" ToolTip="Select how much of a record is shown"/>
+      <Button Content="R" ToolTip="{Binding TimeReferenceCmd.Text}" Command="{Binding TimeReferenceCmd}" Width="20" Margin="12,0,0,0"/>
       <Button Width="120" Margin="12,0,0,0" ToolTip="{Binding HighlightingCmd.Text}" Command="{Binding HighlightingCmd}" HorizontalContentAlignment="Left">
         <TextBlock Text="{Binding HighlightingCmd.Name}" Margin="4,0,4,0"/>
       </Button>

@@ -563,6 +563,7 @@ namespace SmartLogReader
             CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
             CommandBindings.Add(new CommandBinding(NewWorkspaceCmd, ExecuteNewWorkspaceCmd, CanExecuteNewWorkspaceCmd));
             CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteDeleteWorkspaceCmd));
+            CommandBindings.Add(new CommandBinding(TimeReferenceCmd, ExecuteTimeReferenceCmd, CanExecuteTimeReferenceCmd));
         }
 
         /// <summary>
@@ -642,6 +643,24 @@ namespace SmartLogReader
                 myClientControlVM.HandleRecordsChanged();
                 myServerControlVM.HandleRecordsChanged();
                 myAdditionalControlVM.HandleRecordsChanged();
+            }
+        }
+
+        /// <summary>
+        /// TimeReferenceCmd
+        /// </summary>
+        void CanExecuteTimeReferenceCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void ExecuteTimeReferenceCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            var record = LogControlVM.CurrentVM?.RecordsView?.CurrentItem as Record;
+            if (record != null)
+            {
+                Record.UtcTime0 = record.UtcTime;
+                UpdateUI();
             }
         }
 
