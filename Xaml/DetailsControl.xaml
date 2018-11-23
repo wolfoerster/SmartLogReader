@@ -17,7 +17,7 @@
         </Grid>
       </ToggleButton.Content>
     </ToggleButton>
-    <Popup x:Name="popup" Width="120" Height="120" StaysOpen="false">
+    <Popup x:Name="popup" Width="120" Height="142" StaysOpen="false">
       <Border BorderThickness="1,1,1,1" MouseLeave="PopupMouseLeave" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
         <Grid Margin="4">
           <Grid.Resources>

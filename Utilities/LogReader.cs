@@ -18,6 +18,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using SmartLogging;
 
@@ -213,7 +214,53 @@ namespace SmartLogReader
             fileExists = File.Exists(path);
             firstCall = true;
             Reset(path);
-            worker.RunWorkerAsync();
+
+            //--- check if this is an extracted SumoLogic csv-file
+            var tempFile = FileIsExtractedFromSumoLogic();
+            if (tempFile == null)
+            {
+                worker.RunWorkerAsync();
+            }
+            else
+            {
+                byte[] bytes = ReadBytes(tempFile);
+                ExtractRecords(bytes);
+                File.Delete(tempFile);
+            }
+        }
+
+        /// <summary>
+        /// SumoLogic files have log entries in reverse order (last first)
+        /// </summary>
+        string FileIsExtractedFromSumoLogic()
+        {
+            var ext = Path.GetExtension(fileName);
+            if (!File.Exists(fileName) || !ext.equals(".csv"))
+                return null;
+
+            try
+            {
+                var lines = File.ReadAllLines(fileName);
+                if (lines.Length < 2)
+                    return null;
+
+                if (!lines[0].startsWith("\"_messagetimems"))
+                    return null;
+
+                var newFile = Path.GetTempFileName();
+                var list = lines.Reverse().ToList();
+                int i = list.Count - 1;
+                string line = list[i];
+                list.RemoveAt(i);
+                list.Insert(0, line);
+                File.WriteAllLines(newFile, list);
+                return newFile;
+            }
+            catch
+            {
+            }
+
+            return null;
         }
 
         /// <summary>
