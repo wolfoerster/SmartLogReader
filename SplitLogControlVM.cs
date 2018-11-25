@@ -588,6 +588,7 @@ namespace SmartLogReader
             CommandBindings.Add(new CommandBinding(CloseCmd, ExecuteCloseCmd, CanExecuteCloseCmd));
             CommandBindings.Add(new CommandBinding(SplitCmd, ExecuteSplitCmd, CanExecuteSplitCmd));
             CommandBindings.Add(new CommandBinding(ConfigureCmd, ExecuteConfigureCmd, CanExecuteConfigureCmd));
+            CommandBindings.Add(new CommandBinding(TimeReferenceCmd, ExecuteTimeReferenceCmd, CanExecuteTimeReferenceCmd));
         }
 
         /// <summary>
@@ -653,6 +654,25 @@ namespace SmartLogReader
             {
                 myCurrentVM.ReadFilterSettings(clone);
                 myCurrentVM.SetFocusOnSelected();
+            }
+        }
+
+        /// <summary>
+        /// TimeReferenceCmd
+        /// </summary>
+        void CanExecuteTimeReferenceCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void ExecuteTimeReferenceCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            var record = LogControlVM.CurrentVM?.RecordsView?.CurrentItem as Record;
+            if (record != null)
+            {
+                Record.UtcTime0 = record.UtcTime;
+                //UpdateUI();
+                OnPropertyChanged("RefreshAll");
             }
         }
 
