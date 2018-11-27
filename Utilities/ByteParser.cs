@@ -48,7 +48,8 @@ namespace SmartLogReader
         private static readonly byte Colon = 0x3A;//= ':'
         private static readonly byte Comma = 0x2C;//= ','
         private static readonly byte FullStop = 0x2E;//= '.'
-        private static readonly string LegacyKey = "novaSuite";
+        private static readonly string LegacyKey1 = "novaSuite";
+        private static readonly string LegacyKey2 = "MEPdesign";
 
         /// <summary>
         /// 
@@ -64,10 +65,10 @@ namespace SmartLogReader
         /// </summary>
         void CheckFormat()
         {
-            if (bytes.Length > LegacyKey.Length)
+            if (bytes.Length > LegacyKey1.Length)
             {
-                string result = Utils.BytesToString(bytes, 0, LegacyKey.Length);
-                if (result == LegacyKey)
+                string result = Utils.BytesToString(bytes, 0, LegacyKey1.Length);
+                if (result == LegacyKey1 || result == LegacyKey2)
                 {
                     Format = LogFormats.LegacyLogger;
                     return;
@@ -328,7 +329,7 @@ namespace SmartLogReader
         private void GetLegacyRecord(Record record)
         {
             string token = GetNext();
-            if (!token.StartsWith(LegacyKey))
+            if (!token.StartsWith(LegacyKey1) && !token.StartsWith(LegacyKey2))
             {
                 record.Message = GetNextLine();
                 return;
@@ -364,12 +365,12 @@ namespace SmartLogReader
             while (true)
             {
                 // is there a next line?
-                if (bytes.Length - lastPos < LegacyKey.Length)
+                if (bytes.Length - lastPos < LegacyKey1.Length)
                     return;
 
                 // is it a new log entry?
-                string test = Utils.BytesToString(bytes, lastPos, LegacyKey.Length);
-                if (test == LegacyKey)
+                string test = Utils.BytesToString(bytes, lastPos, LegacyKey1.Length);
+                if (test == LegacyKey1 || test == LegacyKey2)
                     return;
 
                 // read the line
