@@ -49,7 +49,7 @@ namespace SmartLogReader
         private static readonly byte Comma = 0x2C;//= ','
         private static readonly byte FullStop = 0x2E;//= '.'
         private static readonly string LegacyKey1 = "novaSuite";
-        private static readonly string LegacyKey2 = "MEPdesign";
+        private static readonly string LegacyKey2 = "TrimbleNo";
 
         /// <summary>
         /// 
@@ -382,6 +382,10 @@ namespace SmartLogReader
                 {
                     record.TimeString = line.Substring(str.Length);
                     return;
+                }
+                else
+                {
+                    record.Message += "\r\n" + line;
                 }
             }
         }
