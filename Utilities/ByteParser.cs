@@ -448,8 +448,6 @@ namespace SmartLogReader
         int timeLength;
         bool isLocalTime;
 
-        const string jsonTime = "{\"time";
-        int jsonLength = jsonTime.Length;
         bool isJson1, isJson2;
 
         /// <summary>
@@ -457,16 +455,18 @@ namespace SmartLogReader
         /// </summary>
         bool CheckTime(int index)
         {
-            if (bytes.Length - index > jsonLength)
+            if (bytes.Length - index > 12)
             {
-                string str = Utils.BytesToString(bytes, index, jsonLength);
-                if (str.equals(jsonTime))
+                string str = Utils.BytesToString(bytes, index, 12);
+                if (str.startsWith("{\"time\""))
                 {
-                    if (str[2] == 'T')
-                        isJson2 = true;
-                    else
-                        isJson1 = true;
+                    isJson1 = true;
+                    return true;
+                }
 
+                if (str.startsWith("{\"timestamp\""))
+                {
+                    isJson2 = true;
                     return true;
                 }
             }
