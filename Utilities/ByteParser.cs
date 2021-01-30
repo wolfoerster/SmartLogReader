@@ -122,6 +122,8 @@ namespace SmartLogReader
             get { return lastPos; }
         }
 
+        private string conversionError;
+
         /// <summary>
         /// 
         /// </summary>
@@ -132,6 +134,7 @@ namespace SmartLogReader
                 return null;
 
             Record record = new Record();
+            conversionError = null;
 
             switch (Format)
             {
@@ -171,7 +174,7 @@ namespace SmartLogReader
                     break;
             }
 
-            return record;
+            return conversionError == null ? record : null;
         }
 
         private class LogEntry
@@ -185,9 +188,10 @@ namespace SmartLogReader
 
         private void GetJsonRecord1(Record record)
         {
+            string json = string.Empty;
             try
             {
-                var json = GetText();
+                json = GetText();
                 var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
                 DateTime t = DateTime.Parse(logEntry.Time);
@@ -199,8 +203,9 @@ namespace SmartLogReader
                 record.Method = logEntry.Method;
                 record.Message = logEntry.Message ?? string.Empty;
             }
-            catch
+            catch (Exception ex)
             {
+                conversionError = ex.Message;
             }
         }
 

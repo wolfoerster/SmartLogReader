@@ -234,10 +234,12 @@ namespace SmartLogReader
         {
             try
             {
-                return JValue.Parse(json).ToString(Formatting.Indented);
+                var jToken = JValue.Parse(json);
+                return jToken.ToString(Formatting.Indented);
             }
-            catch
+            catch (Exception ex)
             {
+                var msg = ex.Message;
             }
 
             return json;
