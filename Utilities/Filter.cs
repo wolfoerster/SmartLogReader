@@ -102,7 +102,7 @@ namespace SmartLogReader
         /// </summary>
         protected virtual bool Test(string actualValue)
         {
-            if (string.IsNullOrEmpty(actualValue) || string.IsNullOrEmpty(expectedValue))
+            if (actualValue == null || expectedValue == null)
                 return false;
 
             switch (OpCodeIndex)
@@ -124,10 +124,10 @@ namespace SmartLogReader
         /// </summary>
         bool IsEqual(string actualValue, string expectedValue)
         {
-            string value = expectedValue;
-            if (string.IsNullOrEmpty(value))
-                return false;
+            if (expectedValue.Length == 0)
+                return actualValue.Length == 0;
 
+            string value = expectedValue;
             bool wildBegin = value[0] == '*';
             bool wildEnd = value[value.Length - 1] == '*';
 
