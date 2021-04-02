@@ -38,7 +38,7 @@ namespace SmartLogReader
         LegacyLogger
     }
 
-    public class ByteParser
+    public class xByteParser
     {
         private static readonly byte CR = 0x0D;//= '\r'
         private static readonly byte LF = 0x0A;//= '\n'
@@ -54,7 +54,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public ByteParser(byte[] bytes)
+        public xByteParser(byte[] bytes)
         {
             Bytes = bytes;
             CheckFormat();
@@ -65,6 +65,7 @@ namespace SmartLogReader
         /// </summary>
         void CheckFormat()
         {
+#if !false
             if (bytes.Length > LegacyKey1.Length)
             {
                 string result = Utils.BytesToString(bytes, 0, LegacyKey1.Length);
@@ -89,7 +90,7 @@ namespace SmartLogReader
                     isLocalTime ? LogFormats.Serilog : LogFormats.SmartLogger;
                 return;
             }
-
+#endif
             //--- unknown format
             Format = LogFormats.Unknown;
         }

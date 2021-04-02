@@ -107,7 +107,8 @@ namespace SmartLogReader
                 Stopwatch watch = Stopwatch.StartNew();
 
                 if (byteParser == null)
-                    byteParser = new ByteParser(bytes);
+                    byteParser = ByteParser.CreateParser(bytes);
+                    //byteParser = new xByteParser(bytes);
                 else
                     byteParser.Bytes = bytes;
 

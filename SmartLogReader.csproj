@@ -86,6 +86,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ByteParser\ByteParser.cs" />
+    <Compile Include="ByteParser\ByteParserJson1.cs" />
+    <Compile Include="ByteParser\ByteParserJson2.cs" />
+    <Compile Include="ByteParser\ByteParserJson3.cs" />
+    <Compile Include="ByteParser\ByteParserLegacy.cs" />
+    <Compile Include="ByteParser\ByteParserSerilog.cs" />
+    <Compile Include="ByteParser\ByteParserSmartlog.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
@@ -127,7 +134,7 @@
       <DependentUpon>SmartLogControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SmartLogControlVM.cs" />
-    <Compile Include="Utilities\ByteParser.cs" />
+    <Compile Include="Utilities\xByteParser.cs" />
     <Compile Include="Utilities\Filter.cs" />
     <Compile Include="Utilities\LogReader.cs" />
     <Compile Include="Utilities\Record.cs" />
