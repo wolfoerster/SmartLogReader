@@ -572,38 +572,38 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// </summary>
         public static void MoveToMouse(Window win, string title, bool useLastTopLeft = false)
         {
-            Point pt = topLeft;
             if (!useLastTopLeft)
             {
-                Window mainWindow = Application.Current.MainWindow;
-                pt = Mouse.GetPosition(mainWindow);
-                log.Smart($"Mouse.GetPosition(mainWindow) returned {pt}");
-                pt = mainWindow.PointToScreen(pt);
-                log.Smart($"mainWindow.PointToScreen(pt) returned {pt}");
-                topLeft = pt;
+                var uiElement = Application.Current.MainWindow;
+                var mousePos = Mouse.GetPosition(uiElement);
+                var screenPos = uiElement.PointToScreen(mousePos);
+
+                var workArea = GetScreenByPixel(screenPos).WorkArea;
+                var source = PresentationSource.FromVisual(uiElement);
+                var target = source.CompositionTarget;
+                var winSize = target.TransformToDevice.Transform(new Point(win.Width, win.Height));
+
+                var top = screenPos.Y - 80;
+                if (top < workArea.Top)
+                    top = workArea.Top;
+
+                var exceed = top + winSize.Y - workArea.Bottom;
+                if (exceed > 0)
+                    top -= exceed;
+
+                var left = screenPos.X - 80;
+                if (left < workArea.Left)
+                    left = workArea.Left;
+
+                exceed = left + winSize.X - workArea.Right;
+                if (exceed > 0)
+                    left -= exceed;
+
+                topLeft = target.TransformFromDevice.Transform(new Point(left, top));
             }
 
-            Screen screen = GetScreenByPixel(pt);
-            log.Smart($"screen.ScreenArea = {screen.ScreenArea}");
-
-            double top = pt.Y - 80;
-            if (top < screen.ScreenArea.Top)
-                top = screen.ScreenArea.Top;
-
-            double exceed = top + win.Height - screen.ScreenArea.Bottom + 40;
-            if (exceed > 0)
-                top -= exceed;
-
-            double left = pt.X - 80;
-            if (left < screen.ScreenArea.Left)
-                left = screen.ScreenArea.Left;
-
-            exceed = left + win.Width - screen.ScreenArea.Right;
-            if (exceed > 0)
-                left -= exceed;
-
-            win.Top = top;
-            win.Left = left;
+            win.Top = topLeft.Y;
+            win.Left = topLeft.X;
             win.Title = title + "   (right click or Esc to cancel)";
         }
         static Point topLeft;
@@ -742,7 +742,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 
             if (format[0] == 's' || format[0] == 'S')
             {
-                #region Significant figures
+#region Significant figures
 
                 // If you round '0.002' to 3 significant figures, the resulting string should be '0.00200'.
                 int sigFigures;
@@ -766,7 +766,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 
                 return roundedValue.ToString("F0", currentInfo);
 
-                #endregion Significant figures
+#endregion Significant figures
             }
 
             //--- Convert to string using format
@@ -777,7 +777,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             if (e < 0)
                 return text;
 
-            #region Optimize scientific notation
+#region Optimize scientific notation
 
             //--- Remove trailing zeros and possibly decimal separator from the mantissa
             char sep = currentInfo.NumberDecimalSeparator[0];
@@ -804,7 +804,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 
             return mantissa + text[e] + exponent;
 
-            #endregion Optimise scientific notation
+#endregion Optimise scientific notation
         }
 
         public static string GetFileSizeString(double fileSize)
