@@ -18,9 +18,12 @@
 namespace SmartLogReader
 {
     using System;
+    using SmartLogging;
 
     public class ByteParser
     {
+        private static readonly SmartLogger log = new SmartLogger();
+
         protected static readonly byte CR = 0x0D;//= '\r'
         protected static readonly byte LF = 0x0A;//= '\n'
         protected static readonly byte Space = 0x20;//= ' '
@@ -107,17 +110,24 @@ namespace SmartLogReader
                 return null;
 
             Record record = new Record();
-            var error = FillRecord(record);
-            return error == null ? record : null;
+            try
+            {
+                FillRecord(record);
+                return record;
+            }
+            catch (Exception ex)
+            {
+                log.Smart(ex.Message, LogLevel.Error, ex);
+                return null;
+            }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        protected virtual string FillRecord(Record record)
+        protected virtual void FillRecord(Record record)
         {
             record.Message = GetNextLine();
-            return null;
         }
 
         /// <summary>

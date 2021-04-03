@@ -23,12 +23,11 @@ namespace SmartLogReader
         {
         }
 
-        protected override string FillRecord(Record record)
+        protected override void FillRecord(Record record)
         {
             record.TimeString = GetTime();
             record.LevelString = GetNext();
             record.Message = GetText();
-            return null;
         }
     }
 }

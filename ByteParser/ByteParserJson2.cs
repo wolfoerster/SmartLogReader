@@ -31,31 +31,24 @@ namespace SmartLogReader
         {
         }
 
-        protected override string FillRecord(Record record)
+        protected override void FillRecord(Record record)
         {
-            return GetJsonRecord2(record, GetText());
+            GetJsonRecord2(record, GetText());
         }
 
-        protected string GetJsonRecord2(Record record, string json)
+        protected void GetJsonRecord2(Record record, string json)
         {
-            try
-            {
-                var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
+            var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
 
-                DateTime t = DateTime.Parse(logEntry.Timestamp);
-                t = t.ToUniversalTime();
-                record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                record.LevelString = logEntry.Level;
+            DateTime t = DateTime.Parse(logEntry.Timestamp);
+            t = t.ToUniversalTime();
+            record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            record.LevelString = logEntry.Level;
 
-                record.Logger = logEntry.GetProperty("SourceContext");
-                record.Method = logEntry.GetProperty("MethodName");
-                record.Message = logEntry.GetMessage();
-                record.Json = json;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            record.Logger = logEntry.GetProperty("SourceContext");
+            record.Method = logEntry.GetProperty("MethodName");
+            record.Message = logEntry.GetMessage();
+            record.Json = json;
         }
 
         private class LogEntry2

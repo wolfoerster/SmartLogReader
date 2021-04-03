@@ -23,13 +23,18 @@ namespace SmartLogReader
         {
         }
 
-        protected override string FillRecord(Record record)
+        protected override void FillRecord(Record record)
+        {
+            GetLegacyRecord(record);
+        }
+
+        private void GetLegacyRecord(Record record)
         {
             string token = GetNext();
             if (!token.StartsWith(LegacyKey1) && !token.StartsWith(LegacyKey2))
             {
                 record.Message = GetNextLine();
-                return null;
+                return;
             }
 
             token = GetNext();
@@ -63,12 +68,12 @@ namespace SmartLogReader
             {
                 // is there a next line?
                 if (bytes.Length - lastPos < LegacyKey1.Length)
-                    return null;
+                    return;
 
                 // is it a new log entry?
                 string test = Utils.BytesToString(bytes, lastPos, LegacyKey1.Length);
                 if (test == LegacyKey1 || test == LegacyKey2)
-                    return null;
+                    return;
 
                 // read the line
                 var line = GetNextLine();
@@ -78,7 +83,7 @@ namespace SmartLogReader
                 if (line.StartsWith(str))
                 {
                     record.TimeString = line.Substring(str.Length);
-                    return null;
+                    return;
                 }
                 else
                 {

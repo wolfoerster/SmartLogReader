@@ -25,10 +25,23 @@ namespace SmartLogReader
             var dummy = GetText();
         }
 
-        protected override string FillRecord(Record record)
+        protected override void FillRecord(Record record)
         {
-            record.Message = GetNextLine();
-            return null;
+            GetJsonRecord3(record, GetText());
+        }
+
+        private void GetJsonRecord3(Record record, string json)
+        {
+            var i1 = json.IndexOf("{");
+            var i2 = json.IndexOf("falcon_log_collector");
+
+            if (i2 < 0)
+                json = json.Substring(i1);
+            else
+                json = json.Substring(i1, i2 - i1 - 3);
+
+            json = json.Replace("\"\"", "\"");
+            GetJsonRecord2(record, json);
         }
     }
 }
