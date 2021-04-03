@@ -19,7 +19,7 @@ namespace SmartLogReader
 {
     public class ByteParserLegacy : ByteParser
     {
-        public ByteParserLegacy(byte[] bytes) : base(bytes)
+        internal ByteParserLegacy(byte[] bytes) : base(bytes)
         {
         }
 

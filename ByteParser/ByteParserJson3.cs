@@ -19,7 +19,7 @@ namespace SmartLogReader
 {
     public class ByteParserJson3 : ByteParserJson2
     {
-        public ByteParserJson3(byte[] bytes) : base(bytes)
+        internal ByteParserJson3(byte[] bytes) : base(bytes)
         {
             noCR = true;
             var dummy = GetText();

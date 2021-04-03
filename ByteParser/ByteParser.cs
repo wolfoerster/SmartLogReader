@@ -35,11 +35,12 @@ namespace SmartLogReader
         protected static readonly string LegacyKey1 = "novaSuite";
         protected static readonly string LegacyKey2 = "TrimbleNo";
         protected static readonly string FalconKey3 = "\"_message";
+        protected static readonly string DockerKey4 = "Attaching";
 
         /// <summary>
         /// 
         /// </summary>
-        protected ByteParser(byte[] bytes)
+        internal ByteParser(byte[] bytes)
         {
             Bytes = bytes;
         }
@@ -62,6 +63,11 @@ namespace SmartLogReader
                 if (result == FalconKey3)
                 {
                     return new ByteParserJson3(bytes);
+                }
+
+                if (result == DockerKey4)
+                {
+                    return new ByteParserDocker(bytes);
                 }
             }
 
@@ -211,7 +217,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        protected bool CheckTime(int index)
+        protected virtual bool CheckTime(int index)
         {
             if (bytes.Length - index > 12)
             {

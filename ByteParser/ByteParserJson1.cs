@@ -20,9 +20,12 @@ namespace SmartLogReader
     using System;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// A byte parser for JSON based logger (e.g. the SmartLogger found in WFTools).
+    /// </summary>
     public class ByteParserJson1 : ByteParser
     {
-        public ByteParserJson1(byte[] bytes) : base(bytes)
+        internal ByteParserJson1(byte[] bytes) : base(bytes)
         {
         }
 

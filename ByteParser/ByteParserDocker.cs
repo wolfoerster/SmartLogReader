@@ -17,17 +17,36 @@
 
 namespace SmartLogReader
 {
-    public class ByteParserSerilog : ByteParser
+    public class ByteParserDocker : ByteParserJson2
     {
-        internal ByteParserSerilog(byte[] bytes) : base(bytes)
+        private readonly byte bracket = (byte)'{';
+
+        internal ByteParserDocker(byte[] bytes) : base(bytes)
         {
+            noCR = true;
+            var firstLine = GetText();
+            noCR = false;
+
+            //MoveToTimestamp();
+            //CheckTime(lastPos);
         }
 
         protected override void FillRecord(Record record)
         {
-            record.TimeString = GetTime();
-            record.LevelString = GetNext();
-            record.Message = GetText();
+            lastPos = GetIndexOfNext(bracket, bracket);
+            base.FillRecord(record);
+        }
+
+        protected override bool CheckTime(int index)
+        {
+            var savedPos = lastPos;
+            lastPos = index;
+            var index2 = GetIndexOfNext(bracket, bracket);
+
+            bool result = base.CheckTime(index2);
+
+            lastPos = savedPos;
+            return result;
         }
     }
 }

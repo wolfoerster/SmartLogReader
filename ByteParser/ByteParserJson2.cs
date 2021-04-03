@@ -25,9 +25,12 @@ namespace SmartLogReader
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// A byte parser for JSON based logger (e.g. JsonLogger)
+    /// </summary>
     public class ByteParserJson2 : ByteParser
     {
-        public ByteParserJson2(byte[] bytes) : base(bytes)
+        internal ByteParserJson2(byte[] bytes) : base(bytes)
         {
         }
 

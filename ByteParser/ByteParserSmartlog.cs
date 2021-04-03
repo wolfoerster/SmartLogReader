@@ -17,9 +17,12 @@
 
 namespace SmartLogReader
 {
+    /// <summary>
+    /// A byte parser for the SmartLogger found in my github repository.
+    /// </summary>
     public class ByteParserSmartlog : ByteParser
     {
-        public ByteParserSmartlog(byte[] bytes) : base(bytes)
+        internal ByteParserSmartlog(byte[] bytes) : base(bytes)
         {
         }
 
