@@ -24,21 +24,22 @@ namespace SmartLogReader
     {
         private static readonly SmartLogger log = new SmartLogger();
 
-        protected static readonly byte CR = 0x0D;//= '\r'
-        protected static readonly byte LF = 0x0A;//= '\n'
-        protected static readonly byte Space = 0x20;//= ' '
-        protected static readonly byte Plus = 0x2B;//= '+'
-        protected static readonly byte Dash = 0x2D;//= '-'
-        protected static readonly byte Colon = 0x3A;//= ':'
-        protected static readonly byte Comma = 0x2C;//= ','
-        protected static readonly byte FullStop = 0x2E;//= '.'
+        protected static readonly byte CR = 0x0D; // = '\r'
+        protected static readonly byte LF = 0x0A; // = '\n'
+        protected static readonly byte Space = 0x20; // = ' '
+        protected static readonly byte Plus = 0x2B; // = '+'
+        protected static readonly byte Dash = 0x2D; // = '-'
+        protected static readonly byte Colon = 0x3A; // = ':'
+        protected static readonly byte Comma = 0x2C; // = ','
+        protected static readonly byte FullStop = 0x2E; // = '.'
         protected static readonly string LegacyKey1 = "novaSuite";
         protected static readonly string LegacyKey2 = "TrimbleNo";
+        protected static readonly string FalconKey3 = "\"_message";
 
         /// <summary>
         /// 
         /// </summary>
-        public ByteParser(byte[] bytes)
+        protected ByteParser(byte[] bytes)
         {
             Bytes = bytes;
         }
@@ -50,34 +51,52 @@ namespace SmartLogReader
         {
             if (bytes.Length > LegacyKey1.Length)
             {
+                // NOTE: all keys must have the same length!
                 string result = Utils.BytesToString(bytes, 0, LegacyKey1.Length);
+
                 if (result == LegacyKey1 || result == LegacyKey2)
                 {
                     return new ByteParserLegacy(bytes);
                 }
-                else if (result == "\"_message")
+
+                if (result == FalconKey3)
                 {
                     return new ByteParserJson3(bytes);
                 }
             }
 
-            var parser = new ByteParser(bytes);
-            if (parser.CheckTime(0))
+            var testParser = new ByteParser(bytes);
+
+            if (testParser.CheckTime(0))
             {
-                if (parser.isJson1)
-                    return new ByteParserJson1(bytes);
+                ByteParser parser;
 
-                if (parser.isJson2)
-                    return new ByteParserJson2(bytes);
+                if (testParser.isJson1)
+                {
+                    parser = new ByteParserJson1(bytes);
+                }
+                else if (testParser.isJson2)
+                {
+                    parser = new ByteParserJson2(bytes);
+                }
+                else if (testParser.isLocalTime)
+                {
+                    parser = new ByteParserSerilog(bytes);
+                }
+                else
+                {
+                    parser = new ByteParserSmartlog(bytes);
+                }
 
-                if (parser.isLocalTime)
-                    return new ByteParserSerilog(bytes);
-
-                return new ByteParserSmartlog(bytes);
+                parser.isJson1 = testParser.isJson1;
+                parser.isJson2 = testParser.isJson2;
+                parser.timeLength = testParser.timeLength;
+                parser.isLocalTime = testParser.isLocalTime;
+                return parser;
             }
 
             //--- unknown format
-            return parser;
+            return testParser;
         }
 
         /// <summary>
@@ -185,7 +204,7 @@ namespace SmartLogReader
             return s;
         }
         int minTimeLength = 19;
-        int timeLength;
+        protected int timeLength;
         protected bool isLocalTime;
         protected bool isJson1, isJson2;
 
