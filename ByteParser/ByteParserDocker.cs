@@ -20,7 +20,7 @@ namespace SmartLogReader
     public class ByteParserDocker : ByteParserJson2
     {
         private readonly byte bracket = (byte)'{';
-
+#if false
         internal ByteParserDocker(byte[] bytes) : base(bytes)
         {
             noCR = true;
@@ -30,6 +30,7 @@ namespace SmartLogReader
             //MoveToTimestamp();
             //CheckTime(lastPos);
         }
+#endif
 
         protected override void FillRecord(Record record)
         {

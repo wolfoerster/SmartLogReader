@@ -88,12 +88,14 @@
     </ApplicationDefinition>
     <Compile Include="ByteParser\ByteParser.cs" />
     <Compile Include="ByteParser\ByteParserDocker.cs" />
+    <Compile Include="ByteParser\ParserFactory.cs" />
     <Compile Include="ByteParser\ByteParserJson1.cs" />
     <Compile Include="ByteParser\ByteParserJson2.cs" />
     <Compile Include="ByteParser\ByteParserJson3.cs" />
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserSerilog.cs" />
     <Compile Include="ByteParser\ByteParserSmartlog.cs" />
+    <Compile Include="ByteParser\IByteParser.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>

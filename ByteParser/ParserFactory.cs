@@ -17,13 +17,32 @@
 
 namespace SmartLogReader
 {
-    public class ByteParserSerilog : ByteParser
+    using System;
+
+    public static class ParserFactory
     {
-        protected override void FillRecord(Record record)
+        public static IByteParser CreateParser(byte[] bytes)
         {
-            record.TimeString = GetTime();
-            record.LevelString = GetNext();
-            record.Message = GetText();
+            if (Check(typeof(ByteParserJson1), bytes, out IByteParser parser))
+                return parser;
+
+            parser = new ByteParser();
+            parser.Bytes = bytes;
+            return parser;
+        }
+
+        private static bool Check(Type type, byte[] bytes, out IByteParser parser)
+        {
+            var instance = Activator.CreateInstance(type);
+            parser = instance as IByteParser;
+
+            if (parser.IsFormatOK(bytes))
+            {
+                parser.Bytes = bytes;
+                return true;
+            }
+
+            return false;
         }
     }
 }

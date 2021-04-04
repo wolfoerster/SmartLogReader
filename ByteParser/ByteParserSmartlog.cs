@@ -22,10 +22,6 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserSmartlog : ByteParser
     {
-        internal ByteParserSmartlog(byte[] bytes) : base(bytes)
-        {
-        }
-
         protected override void FillRecord(Record record)
         {
             record.TimeString = GetTime();

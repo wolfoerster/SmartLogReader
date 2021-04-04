@@ -30,10 +30,6 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserJson2 : ByteParser
     {
-        internal ByteParserJson2(byte[] bytes) : base(bytes)
-        {
-        }
-
         protected override void FillRecord(Record record)
         {
             GetJsonRecord2(record, GetText());

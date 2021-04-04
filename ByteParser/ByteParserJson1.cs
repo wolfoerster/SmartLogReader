@@ -25,8 +25,19 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserJson1 : ByteParser
     {
-        internal ByteParserJson1(byte[] bytes) : base(bytes)
+        public override bool IsFormatOK(byte[] bytes)
         {
+            var searched = "{\"time\"";
+            if (bytes != null && bytes.Length > searched.Length)
+            {
+                string str = Utils.BytesToString(bytes, 0, searched.Length);
+                if (str.startsWith(searched))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected override void FillRecord(Record record)

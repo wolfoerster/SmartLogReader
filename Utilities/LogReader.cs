@@ -107,8 +107,7 @@ namespace SmartLogReader
                 Stopwatch watch = Stopwatch.StartNew();
 
                 if (byteParser == null)
-                    byteParser = ByteParser.CreateParser(bytes);
-                    //byteParser = new xByteParser(bytes);
+                    byteParser = ParserFactory.CreateParser(bytes);
                 else
                     byteParser.Bytes = bytes;
 
@@ -121,7 +120,7 @@ namespace SmartLogReader
                     if (watch.ElapsedMilliseconds > 60)
                     {
                         watch.Restart();
-                        Progress = byteParser.CurrentPosition / bytes.Length;
+                        Progress = byteParser.CurrentPosition / (double)bytes.Length;
                         ReportStatus(ReaderStatus.ProgressChanged);
                     }
 
@@ -154,7 +153,7 @@ namespace SmartLogReader
             firstCall = false;
         }
         bool firstCall;
-        ByteParser byteParser;
+        IByteParser byteParser;
 
         /// <summary>
         /// 

@@ -20,35 +20,39 @@ namespace SmartLogReader
     using System;
     using SmartLogging;
 
-    public class ByteParser
+    public class ByteParser : IByteParser
     {
         private static readonly SmartLogger log = new SmartLogger();
 
-        protected static readonly byte CR = 0x0D; // = '\r'
-        protected static readonly byte LF = 0x0A; // = '\n'
-        protected static readonly byte Space = 0x20; // = ' '
-        protected static readonly byte Plus = 0x2B; // = '+'
-        protected static readonly byte Dash = 0x2D; // = '-'
-        protected static readonly byte Colon = 0x3A; // = ':'
-        protected static readonly byte Comma = 0x2C; // = ','
-        protected static readonly byte FullStop = 0x2E; // = '.'
+        protected static readonly byte CR = 0x0D; // '\r'
+        protected static readonly byte LF = 0x0A; // '\n'
+        protected static readonly byte Space = 0x20; // ' '
+        protected static readonly byte Plus = 0x2B; // '+'
+        protected static readonly byte Dash = 0x2D; // '-'
+        protected static readonly byte Colon = 0x3A; // ':'
+        protected static readonly byte Comma = 0x2C; // ','
+        protected static readonly byte Dot = 0x2E; // '.'
         protected static readonly string LegacyKey1 = "novaSuite";
         protected static readonly string LegacyKey2 = "TrimbleNo";
         protected static readonly string FalconKey3 = "\"_message";
         protected static readonly string DockerKey4 = "Attaching";
 
-        /// <summary>
-        /// 
-        /// </summary>
-        internal ByteParser(byte[] bytes)
+        public virtual bool IsFormatOK(byte[] bytes)
         {
-            Bytes = bytes;
+            return false;
         }
 
+#if false
         /// <summary>
         /// 
+        /// Jeder ByteParser sollte eine statische Methode CheckFormat(byte[] bytes)
+        /// erhalten, mit der er sagt, dass er mit dem Format klar kommt.
+        /// 
+        /// Diese Methode sollte dann in einer ByteParserFactory benutzt werden, 
+        /// um den richtigen ByteParser zu finden.
+        /// 
         /// </summary>
-        public static ByteParser CreateParser(byte[] bytes)
+        public static IByteParser CreateParser(byte[] bytes)
         {
             if (bytes.Length > LegacyKey1.Length)
             {
@@ -104,6 +108,7 @@ namespace SmartLogReader
             //--- unknown format
             return testParser;
         }
+#endif
 
         /// <summary>
         /// 
@@ -123,7 +128,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public double CurrentPosition => lastPos;
+        public int CurrentPosition => lastPos;
 
         /// <summary>
         /// 
@@ -267,7 +272,7 @@ namespace SmartLogReader
             {
                 //--- "2017-07-23 16:48:18.123" ?
                 i += 3;
-                if (bytes[i] == FullStop || bytes[i] == Comma)
+                if (bytes[i] == Dot || bytes[i] == Comma)
                 {
                     //--- move on to next space
                     while (bytes[++i] != Space) ;

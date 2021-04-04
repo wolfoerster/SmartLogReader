@@ -19,11 +19,13 @@ namespace SmartLogReader
 {
     public class ByteParserJson3 : ByteParserJson2
     {
+#if false
         internal ByteParserJson3(byte[] bytes) : base(bytes)
         {
             noCR = true;
             var dummy = GetText();
         }
+#endif
 
         protected override void FillRecord(Record record)
         {

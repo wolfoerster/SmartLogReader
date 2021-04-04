@@ -17,13 +17,14 @@
 
 namespace SmartLogReader
 {
-    public class ByteParserSerilog : ByteParser
+    public interface IByteParser
     {
-        protected override void FillRecord(Record record)
-        {
-            record.TimeString = GetTime();
-            record.LevelString = GetNext();
-            record.Message = GetText();
-        }
+        bool IsFormatOK(byte[] bytes);
+
+        byte[] Bytes { get; set; }
+
+        int CurrentPosition { get; }
+
+        Record GetNextRecord();
     }
 }

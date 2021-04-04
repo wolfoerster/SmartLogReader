@@ -19,10 +19,6 @@ namespace SmartLogReader
 {
     public class ByteParserLegacy : ByteParser
     {
-        internal ByteParserLegacy(byte[] bytes) : base(bytes)
-        {
-        }
-
         protected override void FillRecord(Record record)
         {
             GetLegacyRecord(record);
