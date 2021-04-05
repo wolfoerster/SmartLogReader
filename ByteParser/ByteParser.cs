@@ -32,16 +32,17 @@ namespace SmartLogReader
         protected static readonly byte Colon = 0x3A; // ':'
         protected static readonly byte Comma = 0x2C; // ','
         protected static readonly byte Dot = 0x2E; // '.'
-        protected static readonly string FalconKey3 = "\"_message";
-        protected static readonly string DockerKey4 = "Attaching";
 
+        /// <summary>
+        /// Override this method in derived classes to tell if the bytes are in an accepted format.
+        /// </summary>
         public virtual bool IsFormatOK(byte[] bytes)
         {
             return false;
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets the bytes which contain the log entries.
         /// </summary>
         public byte[] Bytes
         {
@@ -56,12 +57,12 @@ namespace SmartLogReader
         protected int lastPos;
 
         /// <summary>
-        /// 
+        /// Gets the current position, i.e. the position of the next log entry.
         /// </summary>
         public int CurrentPosition => lastPos;
 
         /// <summary>
-        /// 
+        /// Reads the next log entry and converts it to a Record.
         /// </summary>
         public Record GetNextRecord()
         {
@@ -77,13 +78,13 @@ namespace SmartLogReader
             }
             catch (Exception ex)
             {
-                log.Smart(ex.Message, LogLevel.Error, ex);
+                log.Smart("EXCEPTION", LogLevel.Error, ex);
                 return null;
             }
         }
 
         /// <summary>
-        /// 
+        /// Override this method in derived classes to read the next log entry and fill the record.
         /// </summary>
         protected virtual void FillRecord(Record record)
         {
@@ -91,18 +92,20 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
+        /// Reads from the current position to the end of the line and moves current position behind it.
         /// </summary>
         protected string GetNextLine()
         {
             int i = GetIndexOfNext(CR, LF);
             string result = GetString(i - lastPos);
+
+            // move on to the next byte which is neither CR nor LF
             lastPos = GetIndexOfNext(CR, LF, true);
             return result;
         }
 
         /// <summary>
-        /// 
+        /// Reads from the current position a number of bytes and moves current position behind it.
         /// </summary>
         protected string GetString(int numBytes)
         {
@@ -112,23 +115,32 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
+        /// Looks for the first occurrence of a certain byte starting at the current position.
+        /// If 'invert' is true, looks for the first occurrence of a byte which is NOT the specified one.
         /// </summary>
-        protected int GetIndexOfNext(byte b, bool invert = false)
+        protected int GetIndexOfNext(byte b1, bool invert = false)
         {
-            return GetIndexOfNext(b, b, invert);
+            return GetIndexOfNext(b1, b1, b1, invert);
         }
 
         /// <summary>
-        /// 
+        /// Same as above but now one of two bytes are looked for.
         /// </summary>
         protected int GetIndexOfNext(byte b1, byte b2, bool invert = false)
+        {
+            return GetIndexOfNext(b1, b2, b2, invert);
+        }
+
+        /// <summary>
+        /// Same as above but now one of three bytes are looked for.
+        /// </summary>
+        protected int GetIndexOfNext(byte b1, byte b2, byte b3, bool invert = false)
         {
             int i = lastPos;
 
             for (; i < bytes.Length; i++)
             {
-                bool found = bytes[i] == b1 || bytes[i] == b2;
+                bool found = bytes[i] == b1 || bytes[i] == b2 || bytes[i] == b3;
 
                 if (invert)
                     found = !found;
@@ -141,23 +153,23 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
+        /// Reads the next bytes until a Space character or a line terminator is found.
         /// </summary>
         protected string GetNext(int numBytes = -1)
         {
             if (lastPos == bytes.Length)
                 return null;
 
-            int i = numBytes < 0 ? GetIndexOfNext(Space, CR) : lastPos + numBytes;
+            int i = numBytes < 0 ? GetIndexOfNext(Space, CR, LF) : lastPos + numBytes;
             string result = GetString(i - lastPos);
 
             if (numBytes > 0)
                 result = result.Trim();
 
-            if (bytes[i] == CR)
-                lastPos = GetIndexOfNext(LF, CR, true);
+            if (bytes[i] == CR || bytes[i] == LF)
+                lastPos = GetIndexOfNext(CR, LF, true);
             else
-                lastPos = GetIndexOfNext(Space, Space, true);
+                lastPos = GetIndexOfNext(Space, true);
 
             return result;
         }

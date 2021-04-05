@@ -19,37 +19,15 @@ namespace SmartLogReader
 {
     public class ByteParserDocker : ByteParserJson2
     {
-        private readonly byte bracket = (byte)'{';
-#if false
-        internal ByteParserDocker(byte[] bytes) : base(bytes)
+        public override bool IsFormatOK(byte[] bytes)
         {
-            noCR = true;
-            var firstLine = GetText();
-            noCR = false;
-
-            //MoveToTimestamp();
-            //CheckTime(lastPos);
+            return CheckForString("Attaching to", bytes, 0);
         }
-#endif
 
         protected override void FillRecord(Record record)
         {
-            lastPos = GetIndexOfNext(bracket, bracket);
+            lastPos = GetIndexOfNext((byte)'{');
             base.FillRecord(record);
         }
-
-#if false
-        protected override bool CheckTime(int index)
-        {
-            var savedPos = lastPos;
-            lastPos = index;
-            var index2 = GetIndexOfNext(bracket, bracket);
-
-            bool result = base.CheckTime(index2);
-
-            lastPos = savedPos;
-            return result;
-        }
-#endif
     }
 }
