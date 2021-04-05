@@ -25,7 +25,7 @@ namespace SmartLogReader
         {
             IByteParser parser;
 
-            if (IsOK(parser = new ByteParserJson1(), bytes))
+            if (IsOK(parser = new ByteParserSmartLogger(), bytes))
                 return parser;
 
             if (IsOK(parser = new ByteParserJson2(), bytes))

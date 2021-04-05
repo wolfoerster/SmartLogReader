@@ -23,7 +23,7 @@ namespace SmartLogReader
     /// <summary>
     /// A byte parser for JSON based logger (e.g. the SmartLogger found in WFTools).
     /// </summary>
-    public class ByteParserJson1 : ByteParser
+    public class ByteParserSmartLogger : ByteParser
     {
         public override bool IsFormatOK(byte[] bytes)
         {

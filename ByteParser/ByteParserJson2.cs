@@ -28,7 +28,7 @@ namespace SmartLogReader
     /// <summary>
     /// A byte parser for JSON based logger (e.g. JsonLogger)
     /// </summary>
-    public class ByteParserJson2 : ByteParserJson1
+    public class ByteParserJson2 : ByteParserSmartLogger
     {
         public override bool IsFormatOK(byte[] bytes)
         {

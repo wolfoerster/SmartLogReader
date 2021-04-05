@@ -90,7 +90,7 @@
     <Compile Include="ByteParser\ByteParserDocker.cs" />
     <Compile Include="ByteParser\ByteParserJson3.cs" />
     <Compile Include="ByteParser\ParserFactory.cs" />
-    <Compile Include="ByteParser\ByteParserJson1.cs" />
+    <Compile Include="ByteParser\ByteParserSmartLogger.cs" />
     <Compile Include="ByteParser\ByteParserJson2.cs" />
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
