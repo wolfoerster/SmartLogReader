@@ -52,7 +52,7 @@ namespace SmartLogReader
         /// </summary>
         public LogControlVM Clone()
         {
-            log.Smart();
+            log.Debug();
             string xml = Utils.ToXML(this);
             LogControlVM vm = Utils.FromXML<LogControlVM>(xml);
             return vm;
@@ -68,7 +68,7 @@ namespace SmartLogReader
         /// </summary>
         public void SetAsCurrentVM()
         {
-            log.Smart();
+            log.Debug();
             if (CurrentVM != this)
             {
                 CurrentVM = this;

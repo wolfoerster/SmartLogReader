@@ -77,7 +77,7 @@ namespace SmartLogReader
             }
             catch (Exception ex)
             {
-                log.Smart("EXCEPTION", LogLevel.Error, ex);
+                log.Exception(ex);
                 return null;
             }
         }

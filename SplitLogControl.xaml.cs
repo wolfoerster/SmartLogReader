@@ -116,7 +116,7 @@ namespace SmartLogReader
                 string[] fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (var fileName in fileNames)
                 {
-                    log.Smart(fileName);
+                    log.Debug(fileName);
                     string ext = Path.GetExtension(fileName);
                     if (ext.equals(".log"))
                     {

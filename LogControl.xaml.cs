@@ -77,7 +77,7 @@ namespace SmartLogReader
         /// </summary>
         void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            log.Smart(e.PropertyName);
+            log.Debug(e.PropertyName);
             if (e.PropertyName == "ScrollSelectedIntoView")
             {
                 HandleScrollSelectedIntoView();
@@ -143,7 +143,7 @@ namespace SmartLogReader
 
             listBoxItem.Focus();
             //Record record = myListBox.Items[index] as Record;
-            //log.Smart($"Set focus on {0}, item: {1}", ToString(), record.ShortString));
+            //log.Debug($"Set focus on {0}, item: {1}", ToString(), record.ShortString));
         }
 
         /// <summary>

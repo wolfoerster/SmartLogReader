@@ -486,7 +486,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         {
             if (!File.Exists(name))
             {
-                log.Smart($"File >{name}< does not exist");
+                log.Debug($"File >{name}< does not exist");
                 return null;
             }
             try

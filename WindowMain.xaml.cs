@@ -31,7 +31,7 @@ namespace SmartLogReader
         public WindowMain()
         {
             InitializeComponent();
-            log.Smart(Title);
+            log.Debug(Title);
 
             Loaded += MeLoaded;
             Closing += MeClosing;

@@ -155,7 +155,7 @@ namespace SmartLogReader
             get { return reader; }
             set
             {
-                log.Smart();
+                log.Debug();
                 Utils.OnlyOnce(reader, value);
                 reader = value;
                 reader.StatusChanged += ReaderStatusChanged;
@@ -170,7 +170,7 @@ namespace SmartLogReader
         /// </summary>
         private void InitializeSubViewModel(int vmID, bool mode)
         {
-            log.Smart();
+            log.Debug();
             LogControlVM subViewModel = vmID == 1 ? myLogControlVM1 : myLogControlVM2;
             if (mode)
             {
@@ -206,7 +206,7 @@ namespace SmartLogReader
         /// </summary>
         public bool LoadFile(string fileName)
         {
-            log.Smart(fileName);
+            log.Debug(fileName);
             if (!File.Exists(fileName))
             {
                 HandleNoLastFile();
@@ -288,7 +288,7 @@ namespace SmartLogReader
         /// </summary>
         void ApplySyncAndSplit()
         {
-            log.Smart();
+            log.Debug();
             if (!SmartLogControlVM.IsInitialized || myLogControlVM1.RecordsView == null)
                 return;
 

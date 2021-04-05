@@ -27,7 +27,7 @@ namespace SmartLogReader
         {
             string name = MethodBase.GetCurrentMethod().DeclaringType.FullName;
             log = new SmartLogger($"{name}.{++instanceCounter}");
-            log.Smart();
+            log.Debug();
         }
         private static int instanceCounter;
         protected readonly SmartLogger log;
@@ -44,7 +44,7 @@ namespace SmartLogReader
                 {
                     fileName = value;
                     prevLength = 0;
-                    log.Smart(fileName);
+                    log.Debug(fileName);
                 }
             }
         }
@@ -89,9 +89,9 @@ namespace SmartLogReader
                     string rolledFile = path + ".1";
                     if (File.Exists(rolledFile))
                     {
-                        log.Smart($"reading rolled file {rolledFile}");
+                        log.Debug($"reading rolled file {rolledFile}");
                         rolledBytes = ReadNextBytes(rolledFile);
-                        log.Smart($"found {rolledBytes?.Length} bytes in rolled file");
+                        log.Debug($"found {rolledBytes?.Length} bytes in rolled file");
                     }
                     else
                     {

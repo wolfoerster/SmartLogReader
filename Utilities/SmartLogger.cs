@@ -118,6 +118,11 @@ namespace SmartLogReader
             this.Write(msg, LogLevel.Fatal, methodName);
         }
 
+        public void Exception(Exception exception, [CallerMemberName]string methodName = null)
+        {
+            this.Write(new { exception.Message, exception.StackTrace }, LogLevel.Error, methodName);
+        }
+
         private class LogEntry
         {
             public string Time { get; set; }

@@ -67,7 +67,7 @@ namespace SmartLogReader
                 path = GetWorkspaceFile(DefaultWorkspace);
 
             string xml = File.Exists(path) ? File.ReadAllText(path) : null;
-            log.Smart($"Create viewmodel from the following settings: {xml}");
+            log.Debug($"Create viewmodel from the following settings: {xml}");
 
             //--- There are property setters which call ReloadFiles() during XML deserialization. 
             //--- To prevent this, we use this static boolean value:
@@ -143,9 +143,10 @@ namespace SmartLogReader
             ReadModes.Add("Last hour");
 
             LogLevels = new List<string>();
+            LogLevels.Add("Verbose");
             LogLevels.Add("Debug");
-            LogLevels.Add("Info");
-            LogLevels.Add("Warn");
+            LogLevels.Add("Information");
+            LogLevels.Add("Warning");
             LogLevels.Add("Error");
             LogLevels.Add("Fatal");
 
@@ -737,7 +738,7 @@ namespace SmartLogReader
             get { return selectedWorkspace; }
             set
             {
-                log.Smart($"old = {selectedWorkspace}, new = {value}");
+                log.Debug($"old = {selectedWorkspace}, new = {value}");
                 if (selectedWorkspace != value)
                 {
                     if (IsInitialized)
@@ -846,7 +847,7 @@ namespace SmartLogReader
         private string SaveWorkspace()
         {
             string path = GetWorkspaceFile();
-            log.Smart($"path = '{path}'");
+            log.Debug($"path = '{path}'");
             if (path != null)
                 File.WriteAllText(path, ToXML());
             return path;
@@ -858,7 +859,7 @@ namespace SmartLogReader
         private void DeleteWorkspace()
         {
             string path = GetWorkspaceFile();
-            log.Smart($"path = '{path}'");
+            log.Debug($"path = '{path}'");
             if (path != null)
             {
                 var msg = $"Do you really want to delete workspace {workspaces[selectedWorkspace]}?";
@@ -878,10 +879,10 @@ namespace SmartLogReader
         private void LoadWorkspace()
         {
             string path = GetWorkspaceFile();
-            log.Smart($"path = '{path}'");
+            log.Debug($"path = '{path}'");
             if (!File.Exists(path))
             {
-                log.Smart("file does not exist");
+                log.Debug("file does not exist");
                 return;
             }
 
@@ -895,7 +896,7 @@ namespace SmartLogReader
 
             if (vm == null)
             {
-                log.Smart("vm = null", LogLevel.Warn);
+                log.Warning("vm == null");
                 IsInitialized = true;
                 return;
             }

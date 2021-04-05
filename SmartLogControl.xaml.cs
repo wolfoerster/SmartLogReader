@@ -60,7 +60,7 @@ namespace SmartLogReader
         /// </summary>
         void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            log.Smart(e.PropertyName);
+            log.Debug(e.PropertyName);
             if (e.PropertyName == "SelectedRecordDetails")
             {
                 viewModel.MyClientControlVM.HandleRecordsChanged(false);

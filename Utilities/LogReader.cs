@@ -168,14 +168,14 @@ namespace SmartLogReader
                 if (didExist)
                 {
                     Reset(FileName);
-                    log.Smart($"Lost file for {FileName}");
+                    log.Debug($"Lost file for {FileName}");
                 }
             }
             else
             {
                 if (!didExist)
                 {
-                    log.Smart($"Found again file for {FileName}");
+                    log.Debug($"Found again file for {FileName}");
                 }
             }
 
@@ -206,7 +206,7 @@ namespace SmartLogReader
         /// </summary>
         internal void LoadFile(string path)
         {
-            log.Smart($"path = {path}");
+            log.Debug($"path = {path}");
             if (IsBusy)
                 throw new Exception("LoadFile IsBusy");
 
@@ -323,7 +323,7 @@ namespace SmartLogReader
                 return false;
 
             cancelReason = reason;
-            log.Smart($"reason = '{reason}'");
+            log.Debug($"reason = '{reason}'");
             worker.CancelAsync();
             return true;
         }
@@ -334,7 +334,7 @@ namespace SmartLogReader
         /// </summary>
         void DoWork(object sender, DoWorkEventArgs e)
         {
-            log.Smart("begin");
+            log.Debug("begin");
             ReportStatus(ReaderStatus.StartedWork);
 
             //--- first check if there is a rolled file
@@ -356,7 +356,7 @@ namespace SmartLogReader
 
                 if (worker.CancellationPending)
                 {
-                    log.Smart("break");
+                    log.Debug("break");
                     e.Cancel = true;
                     break;
                 }
@@ -366,7 +366,7 @@ namespace SmartLogReader
                     count = -1;
             }
 
-            log.Smart("end");
+            log.Debug("end");
         }
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace SmartLogReader
             else if (e.Error != null)
                 msg = "Error: " + e.Error.Message;
 
-            log.Smart($"reason: '{cancelReason}', message: {msg}");
+            log.Debug($"reason: '{cancelReason}', message: {msg}");
             ReportStatus(ReaderStatus.FinishedWork, cancelReason);
         }
 
