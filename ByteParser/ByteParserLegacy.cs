@@ -19,6 +19,17 @@ namespace SmartLogReader
 {
     public class ByteParserLegacy : ByteParser
     {
+        private static readonly string LegacyKey1 = "TrimbleNo";
+        private static readonly string LegacyKey2 = "novaSuite";
+
+        public override bool IsFormatOK(byte[] bytes)
+        {
+            if (CheckForString(LegacyKey1, bytes, 0))
+                return true;
+
+            return CheckForString(LegacyKey2, bytes, 0);
+        }
+
         protected override void FillRecord(Record record)
         {
             GetLegacyRecord(record);
@@ -27,12 +38,13 @@ namespace SmartLogReader
         private void GetLegacyRecord(Record record)
         {
             string token = GetNext();
+#if false
             if (!token.StartsWith(LegacyKey1) && !token.StartsWith(LegacyKey2))
             {
                 record.Message = GetNextLine();
                 return;
             }
-
+#endif
             token = GetNext();
             switch (token[0])
             {

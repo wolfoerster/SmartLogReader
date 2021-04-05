@@ -23,19 +23,25 @@ namespace SmartLogReader
     {
         public static IByteParser CreateParser(byte[] bytes)
         {
-            if (Check(typeof(ByteParserJson1), bytes, out IByteParser parser))
+            IByteParser parser;
+
+            if (IsOK(parser = new ByteParserJson1(), bytes))
                 return parser;
 
-            parser = new ByteParser();
-            parser.Bytes = bytes;
-            return parser;
+            if (IsOK(parser = new ByteParserJson2(), bytes))
+                return parser;
+
+            if (IsOK(parser = new ByteParserSmartlog(), bytes))
+                return parser;
+
+            if (IsOK(parser = new ByteParserLegacy(), bytes))
+                return parser;
+
+            return new ByteParser { Bytes = bytes };
         }
 
-        private static bool Check(Type type, byte[] bytes, out IByteParser parser)
+        private static bool IsOK(IByteParser parser, byte[] bytes)
         {
-            var instance = Activator.CreateInstance(type);
-            parser = instance as IByteParser;
-
             if (parser.IsFormatOK(bytes))
             {
                 parser.Bytes = bytes;

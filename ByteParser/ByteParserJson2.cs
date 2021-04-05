@@ -28,15 +28,21 @@ namespace SmartLogReader
     /// <summary>
     /// A byte parser for JSON based logger (e.g. JsonLogger)
     /// </summary>
-    public class ByteParserJson2 : ByteParser
+    public class ByteParserJson2 : ByteParserJson1
     {
-        protected override void FillRecord(Record record)
+        public override bool IsFormatOK(byte[] bytes)
         {
-            GetJsonRecord2(record, GetText());
+            return CheckForString("{\"Timestamp\"", bytes, 0);
         }
 
-        protected void GetJsonRecord2(Record record, string json)
+        protected override void FillRecord(Record record)
         {
+            GetJsonRecord2(record);
+        }
+
+        protected void GetJsonRecord2(Record record)
+        {
+            var json = GetNextLine();
             var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
 
             DateTime t = DateTime.Parse(logEntry.Timestamp);

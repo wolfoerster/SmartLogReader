@@ -38,6 +38,7 @@ namespace SmartLogReader
             base.FillRecord(record);
         }
 
+#if false
         protected override bool CheckTime(int index)
         {
             var savedPos = lastPos;
@@ -49,5 +50,6 @@ namespace SmartLogReader
             lastPos = savedPos;
             return result;
         }
+#endif
     }
 }

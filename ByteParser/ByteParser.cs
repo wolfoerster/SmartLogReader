@@ -32,8 +32,6 @@ namespace SmartLogReader
         protected static readonly byte Colon = 0x3A; // ':'
         protected static readonly byte Comma = 0x2C; // ','
         protected static readonly byte Dot = 0x2E; // '.'
-        protected static readonly string LegacyKey1 = "novaSuite";
-        protected static readonly string LegacyKey2 = "TrimbleNo";
         protected static readonly string FalconKey3 = "\"_message";
         protected static readonly string DockerKey4 = "Attaching";
 
@@ -41,74 +39,6 @@ namespace SmartLogReader
         {
             return false;
         }
-
-#if false
-        /// <summary>
-        /// 
-        /// Jeder ByteParser sollte eine statische Methode CheckFormat(byte[] bytes)
-        /// erhalten, mit der er sagt, dass er mit dem Format klar kommt.
-        /// 
-        /// Diese Methode sollte dann in einer ByteParserFactory benutzt werden, 
-        /// um den richtigen ByteParser zu finden.
-        /// 
-        /// </summary>
-        public static IByteParser CreateParser(byte[] bytes)
-        {
-            if (bytes.Length > LegacyKey1.Length)
-            {
-                // NOTE: all keys must have the same length!
-                string result = Utils.BytesToString(bytes, 0, LegacyKey1.Length);
-
-                if (result == LegacyKey1 || result == LegacyKey2)
-                {
-                    return new ByteParserLegacy(bytes);
-                }
-
-                if (result == FalconKey3)
-                {
-                    return new ByteParserJson3(bytes);
-                }
-
-                if (result == DockerKey4)
-                {
-                    return new ByteParserDocker(bytes);
-                }
-            }
-
-            var testParser = new ByteParser(bytes);
-
-            if (testParser.CheckTime(0))
-            {
-                ByteParser parser;
-
-                if (testParser.isJson1)
-                {
-                    parser = new ByteParserJson1(bytes);
-                }
-                else if (testParser.isJson2)
-                {
-                    parser = new ByteParserJson2(bytes);
-                }
-                else if (testParser.isLocalTime)
-                {
-                    parser = new ByteParserSerilog(bytes);
-                }
-                else
-                {
-                    parser = new ByteParserSmartlog(bytes);
-                }
-
-                parser.isJson1 = testParser.isJson1;
-                parser.isJson2 = testParser.isJson2;
-                parser.timeLength = testParser.timeLength;
-                parser.isLocalTime = testParser.isLocalTime;
-                return parser;
-            }
-
-            //--- unknown format
-            return testParser;
-        }
-#endif
 
         /// <summary>
         /// 
@@ -165,9 +95,9 @@ namespace SmartLogReader
         /// </summary>
         protected string GetNextLine()
         {
-            int i = GetIndexOfNext(LF, CR);
+            int i = GetIndexOfNext(CR, LF);
             string result = GetString(i - lastPos);
-            lastPos = GetIndexOfNext(LF, CR, true);
+            lastPos = GetIndexOfNext(CR, LF, true);
             return result;
         }
 
@@ -184,119 +114,30 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        protected int GetIndexOfNext(byte b1, byte b2, bool invSearch = false)
+        protected int GetIndexOfNext(byte b, bool invert = false)
+        {
+            return GetIndexOfNext(b, b, invert);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected int GetIndexOfNext(byte b1, byte b2, bool invert = false)
         {
             int i = lastPos;
+
             for (; i < bytes.Length; i++)
             {
                 bool found = bytes[i] == b1 || bytes[i] == b2;
 
-                if (invSearch)
+                if (invert)
                     found = !found;
 
                 if (found)
                     break;
             }
+
             return i;
-        }
-
-        protected string GetTime()
-        {
-            string s = GetNext(timeLength);
-            if (isLocalTime)
-            {
-                if (DateTime.TryParse(s, out DateTime t))
-                {
-                    t = DateTime.SpecifyKind(t, DateTimeKind.Local);
-                    t = t.ToUniversalTime();
-                    s = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                }
-            }
-            return s;
-        }
-        int minTimeLength = 19;
-        protected int timeLength;
-        protected bool isLocalTime;
-        protected bool isJson1, isJson2;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected virtual bool CheckTime(int index)
-        {
-            if (bytes.Length - index > 12)
-            {
-                string str = Utils.BytesToString(bytes, index, 12);
-                if (str.startsWith("{\"time\""))
-                {
-                    isJson1 = true;
-                    return true;
-                }
-
-                if (str.startsWith("{\"timestamp\""))
-                {
-                    isJson2 = true;
-                    return true;
-                }
-            }
-
-            //--- string should at least look like "2017-07-23 16:48:18"
-
-            if (bytes.Length - index < minTimeLength)
-                return false;
-
-            int i = index + 4;
-            if (bytes[i] != Dash)
-                return false;
-
-            i += 3;
-            if (bytes[i] != Dash)
-                return false;
-
-            i += 3;
-            //if (bytes[i] != Space)
-            //	return false;
-
-            i += 3;
-            if (bytes[i] != Colon)
-                return false;
-
-            i += 3;
-            if (bytes[i] != Colon)
-                return false;
-
-            timeLength = minTimeLength;
-            isLocalTime = false;
-
-            try
-            {
-                //--- "2017-07-23 16:48:18.123" ?
-                i += 3;
-                if (bytes[i] == Dot || bytes[i] == Comma)
-                {
-                    //--- move on to next space
-                    while (bytes[++i] != Space) ;
-                    timeLength = i - index;
-
-                    //--- "2017-07-23 16:48:18.123 +01:00" ?
-                    if (bytes[i + 1] == Plus || bytes[i + 1] == Dash)
-                    {
-                        if (bytes[i + 4] == Colon)
-                        {
-                            if (bytes[i + 7] == Space)
-                            {
-                                timeLength = i - index + 7;
-                                isLocalTime = true;
-                            }
-                        }
-                    }
-                }
-            }
-            catch
-            {
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -322,45 +163,15 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// 
+        /// Check if an expected string is at a certain position of a bytes array.
         /// </summary>
-        protected string GetText()
+        protected bool CheckForString(string expected, byte[] bytes, int position)
         {
-            //--- look for CR followed by LF
-            int i = lastPos;
+            if (bytes == null || position + expected.Length > bytes.Length)
+                return false;
 
-            while (i < bytes.Length)
-            {
-                int prev_i = i - 1;
-
-                if (noCR && bytes[i] == LF) // no CR???
-                {
-                    string result = GetString(prev_i - lastPos);
-                    lastPos = i + 1;
-                    return bytes[prev_i] == CR ? result.Substring(0, result.Length - 1) : result;
-                }
-
-                //--- are we in between CR and LF?
-                if (i > 0 && bytes[prev_i] == CR && bytes[i] == LF)
-                {
-                    int next_i = i + 1;
-
-                    //--- check for end of bytes or next time string
-                    if (next_i == bytes.Length || CheckTime(next_i))
-                    {
-                        string result = GetString(prev_i - lastPos);
-                        lastPos = next_i;
-                        return result;
-                    }
-                }
-
-                i++;
-            }
-
-            //--- no CR-LF found; just return whatever is there
-            return GetString(i - lastPos);
+            string extracted = Utils.BytesToString(bytes, position, expected.Length);
+            return extracted.equals(expected);
         }
-
-        protected bool noCR;
     }
 }
