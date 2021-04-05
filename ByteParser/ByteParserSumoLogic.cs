@@ -20,7 +20,7 @@ namespace SmartLogReader
     /// <summary>
     /// A byte parser for JSON based logger (here: JsonLogger exported from Sumologic)
     /// </summary>
-    public class ByteParserJson3 : ByteParserJsonLogger
+    public class ByteParserSumoLogic : ByteParserJsonLogger
     {
         public override bool IsFormatOK(byte[] bytes)
         {
