@@ -37,12 +37,11 @@ namespace SmartLogReader
 
         protected override void FillRecord(Record record)
         {
-            GetJsonRecord2(record);
+            GetJsonRecord2(record, GetNextLine());
         }
 
-        protected void GetJsonRecord2(Record record)
+        protected void GetJsonRecord2(Record record, string json)
         {
-            var json = GetNextLine();
             var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
 
             DateTime t = DateTime.Parse(logEntry.Timestamp);

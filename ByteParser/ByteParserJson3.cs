@@ -17,44 +17,38 @@
 
 namespace SmartLogReader
 {
-    using System;
-
-    public static class ParserFactory
+    /// <summary>
+    /// A byte parser for JSON based logger (here: JsonLogger exported from Sumologic)
+    /// </summary>
+    public class ByteParserJson3 : ByteParserJson2
     {
-        public static IByteParser CreateParser(byte[] bytes)
+        public override bool IsFormatOK(byte[] bytes)
         {
-            IByteParser parser;
-
-            if (IsOK(parser = new ByteParserJson1(), bytes))
-                return parser;
-
-            if (IsOK(parser = new ByteParserJson2(), bytes))
-                return parser;
-
-            if (IsOK(parser = new ByteParserJson3(), bytes))
-                return parser;
-
-            if (IsOK(parser = new ByteParserDocker(), bytes))
-                return parser;
-
-            if (IsOK(parser = new ByteParserSmartlog(), bytes))
-                return parser;
-
-            if (IsOK(parser = new ByteParserLegacy(), bytes))
-                return parser;
-
-            return new ByteParser { Bytes = bytes };
+            return CheckForString("\"_message", bytes, 0);
         }
 
-        private static bool IsOK(IByteParser parser, byte[] bytes)
+        protected override void FillRecord(Record record)
         {
-            if (parser.IsFormatOK(bytes))
-            {
-                parser.Bytes = bytes;
-                return true;
-            }
+            // get rid of first line
+            var json = GetNextLine();
+            if (json.startsWith("\"_message"))
+                json = GetNextLine();
 
-            return false;
+            GetJsonRecord3(record, json);
+        }
+
+        private void GetJsonRecord3(Record record, string json)
+        {
+            var i1 = json.IndexOf("{");
+            var i2 = json.IndexOf("falcon_log_collector");
+
+            if (i2 < 0)
+                json = json.Substring(i1);
+            else
+                json = json.Substring(i1, i2 - i1 - 3);
+
+            json = json.Replace("\"\"", "\"");
+            GetJsonRecord2(record, json);
         }
     }
 }
