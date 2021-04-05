@@ -93,7 +93,7 @@
     <Compile Include="ByteParser\ByteParserJson1.cs" />
     <Compile Include="ByteParser\ByteParserJson2.cs" />
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
-    <Compile Include="ByteParser\ByteParserSmartlog.cs" />
+    <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\IByteParser.cs" />
     <Compile Include="Utilities\Screen.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">

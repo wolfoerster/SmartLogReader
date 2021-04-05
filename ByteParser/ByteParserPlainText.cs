@@ -20,9 +20,18 @@ namespace SmartLogReader
     using System;
 
     /// <summary>
-    /// A byte parser for the SmartLogger found in my github repository.
+    /// A byte parser for a plain text based logger (e.g. the SmartLogger found in my github repository).
+    /// 
+    /// A log entry has to look like this:
+    /// 2021-04-02 15:37:14.516 FATAL SmartLogReader.App 9760/1/1 .ctor Start logging
+    /// 
+    /// In general:
+    /// Date Time Level ClassName ProcessId/AppDomainId/ThreadId MethodName Message
+    /// 
+    /// The message might span several lines. Everything from the begin of the message up to
+    /// the next Date field is considered as message (including line feeds and spaces).
     /// </summary>
-    public class ByteParserSmartlog : ByteParser
+    public class ByteParserPlainText : ByteParser
     {
         public override bool IsFormatOK(byte[] bytes)
         {

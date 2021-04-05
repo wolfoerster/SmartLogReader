@@ -37,7 +37,7 @@ namespace SmartLogReader
             if (IsOK(parser = new ByteParserDocker(), bytes))
                 return parser;
 
-            if (IsOK(parser = new ByteParserSmartlog(), bytes))
+            if (IsOK(parser = new ByteParserPlainText(), bytes))
                 return parser;
 
             if (IsOK(parser = new ByteParserLegacy(), bytes))
