@@ -28,7 +28,7 @@ namespace SmartLogReader
             if (IsOK(parser = new ByteParserSmartLogger(), bytes))
                 return parser;
 
-            if (IsOK(parser = new ByteParserJson2(), bytes))
+            if (IsOK(parser = new ByteParserJsonLogger(), bytes))
                 return parser;
 
             if (IsOK(parser = new ByteParserJson3(), bytes))

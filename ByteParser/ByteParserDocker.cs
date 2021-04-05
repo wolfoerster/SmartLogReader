@@ -17,7 +17,7 @@
 
 namespace SmartLogReader
 {
-    public class ByteParserDocker : ByteParserJson2
+    public class ByteParserDocker : ByteParserJsonLogger
     {
         public override bool IsFormatOK(byte[] bytes)
         {
