@@ -32,14 +32,6 @@ using SmartLogging;
 
 namespace SmartLogReader
 {
-    public class Screen
-    {
-        public Rect ScreenArea;
-        public Rect WorkArea;
-        public bool IsPrimary;
-        public string Name;
-    }
-
     public static class Utils
     {
         private static readonly SmartLogger log = new SmartLogger();
@@ -252,126 +244,6 @@ namespace SmartLogReader
 
         #endregion ExtendFrameIntoClientArea
 
-        #region GetAllScreens
-
-        [DllImport("user32.dll")]
-        static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip,
-           MonitorEnumDelegate lpfnEnum, IntPtr dwData);
-
-        delegate bool MonitorEnumDelegate(IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx lpmi);
-
-        // size of a device name string
-        const int CCHDEVICENAME = 32;
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public struct MonitorInfoEx
-        {
-            public int Size;
-
-            public RectStruct Monitor;
-
-            public RectStruct WorkArea;
-
-            public uint Flags;//--- first bit = MONITORINFOF_PRIMARY
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME)]
-            public string DeviceName;
-
-            public void Init()
-            {
-                this.Size = 40 + 2 * CCHDEVICENAME;
-                this.DeviceName = string.Empty;
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RectStruct
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
-        static public List<Screen> GetAllScreens()
-        {
-            List<Screen> screens = new List<Screen>();
-
-            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
-                    delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData)
-                    {
-                        MonitorInfoEx mi = new MonitorInfoEx();
-                        mi.Size = (int)Marshal.SizeOf(mi);
-                        bool success = GetMonitorInfo(hMonitor, ref mi);
-                        if (success)
-                        {
-                            Screen screen = new Screen()
-                            {
-                                ScreenArea = new Rect(mi.Monitor.Left, mi.Monitor.Top, mi.Monitor.Right - mi.Monitor.Left, mi.Monitor.Bottom - mi.Monitor.Top),
-                                WorkArea = new Rect(mi.WorkArea.Left, mi.WorkArea.Top, mi.WorkArea.Right - mi.WorkArea.Left, mi.WorkArea.Bottom - mi.WorkArea.Top),
-                                IsPrimary = (mi.Flags & 1) == 1,
-                                Name = mi.DeviceName
-                            };
-                            screens.Add(screen);
-                        }
-                        return true;
-                    }, IntPtr.Zero);
-
-            return screens;
-        }
-
-        static public Screen GetScreenByName(string name)
-        {
-            log.Smart($"name = {name}");
-            if (string.IsNullOrWhiteSpace(name))
-                return null;
-
-            List<Screen> screens = GetAllScreens();
-            foreach (var screen in screens)
-            {
-                log.Smart($"screen.Name = {screen.Name}");
-                if (screen.Name == name)
-                    return screen;
-            }
-            log.Smart("not found");
-            return null;
-        }
-
-        static public Screen GetScreenByPixel(Point pt)
-        {
-            log.Smart($"pt = {pt}");
-            List<Screen> screens = GetAllScreens();
-            foreach (var screen in screens)
-            {
-                log.Smart($"{screen.Name}.WorkArea = {screen.WorkArea}");
-                if (screen.WorkArea.Contains(pt))
-                    return screen;
-            }
-            log.Smart("not found");
-            return null;
-        }
-
-        static public Screen GetScreenByPixel(double x, double y)
-        {
-            return GetScreenByPixel(new Point(x, y));
-        }
-
-        static public Screen GetPrimaryScreen()
-        {
-            List<Screen> screens = GetAllScreens();
-            foreach (var screen in screens)
-            {
-                if (screen.IsPrimary)
-                    return screen;
-            }
-            return null;
-        }
-
-        #endregion GetAllScreens
-
         #region GetObjectId
 
         /// <summary>
@@ -578,11 +450,11 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
                 var mousePos = Mouse.GetPosition(uiElement);
                 var screenPos = uiElement.PointToScreen(mousePos);
 
-                var workArea = GetScreenByPixel(screenPos).WorkArea;
+                var workArea = Screen.LookUpByPixel(screenPos).WorkArea;
                 var source = PresentationSource.FromVisual(uiElement);
                 var target = source.CompositionTarget;
                 var winSize = target.TransformToDevice.Transform(new Point(win.Width, win.Height));
-
+#warning TransformToDevice 80?
                 var top = screenPos.Y - 80;
                 if (top < workArea.Top)
                     top = workArea.Top;

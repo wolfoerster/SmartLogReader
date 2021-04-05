@@ -94,6 +94,7 @@
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserSmartlog.cs" />
     <Compile Include="ByteParser\IByteParser.cs" />
+    <Compile Include="Utilities\Screen.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
