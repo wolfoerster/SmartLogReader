@@ -28,7 +28,6 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Serialization;
-using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -454,7 +453,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
                 var source = PresentationSource.FromVisual(uiElement);
                 var target = source.CompositionTarget;
                 var winSize = target.TransformToDevice.Transform(new Point(win.Width, win.Height));
-#warning TransformToDevice 80?
+
                 var top = screenPos.Y - 80;
                 if (top < workArea.Top)
                     top = workArea.Top;

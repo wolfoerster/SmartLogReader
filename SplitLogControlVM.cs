@@ -21,7 +21,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using Microsoft.Win32;
-using SmartLogging;
 
 namespace SmartLogReader
 {

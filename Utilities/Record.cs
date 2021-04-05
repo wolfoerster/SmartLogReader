@@ -18,7 +18,6 @@ using System;
 using System.Text;
 using System.Windows.Media;
 using System.Collections.Generic;
-using SmartLogging;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
@@ -161,14 +160,17 @@ namespace SmartLogReader
 
         private LogLevel TryParseLevel(string value)
         {
+            if (value.contains("verbose") || value.contains("trace"))
+                return LogLevel.Verbose;
+
             if (value.contains("dbg") || value.contains("debug"))
                 return LogLevel.Debug;
 
             if (value.contains("inf") || value.contains("info"))
-                return LogLevel.Info;
+                return LogLevel.Information;
 
             if (value.contains("wrn") || value.contains("warn"))
-                return LogLevel.Warn;
+                return LogLevel.Warning;
 
             if (value.contains("err"))
                 return LogLevel.Error;

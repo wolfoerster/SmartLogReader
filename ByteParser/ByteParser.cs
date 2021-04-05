@@ -18,7 +18,6 @@
 namespace SmartLogReader
 {
     using System;
-    using SmartLogging;
 
     public class ByteParser : IByteParser
     {

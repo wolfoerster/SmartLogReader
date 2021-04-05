@@ -18,7 +18,6 @@ using System;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using System.Collections.Generic;
-using SmartLogging;
 
 namespace SmartLogReader
 {
