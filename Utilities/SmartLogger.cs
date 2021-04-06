@@ -50,7 +50,6 @@ namespace SmartLogReader
             }
 
             this.sourceContext = GetSourceContext(obj);
-            MinimumLogLevel = LogLevel.Information;
         }
 
         private static string GetSourceContext(object obj)
@@ -84,7 +83,12 @@ namespace SmartLogReader
 
         public static SerializeObjectFunc SerializeObject;
 
-        public static LogLevel MinimumLogLevel { get; set; }
+        public static LogLevel MinimumLogLevel 
+        {
+            get => minimumLogLevel;
+            set => minimumLogLevel = value;
+        }
+        private static LogLevel minimumLogLevel = LogLevel.Information;
 
         public static string FileName { get; set; }
 

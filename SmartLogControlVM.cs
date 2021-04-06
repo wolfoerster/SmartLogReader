@@ -149,6 +149,7 @@ namespace SmartLogReader
             LogLevels.Add("Warning");
             LogLevels.Add("Error");
             LogLevels.Add("Fatal");
+            log.Debug(LogLevels);
 
             RecordDetails = new List<string>();
             RecordDetails.Add("Time");

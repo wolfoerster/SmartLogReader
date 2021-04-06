@@ -25,6 +25,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Newtonsoft.Json;
 
 namespace SmartLogReader
 {
@@ -81,7 +82,8 @@ namespace SmartLogReader
 
             //--- initialize logging
             SmartLogger.Init();
-            SmartLogger.MinimumLogLevel = LogLevel.Debug;
+            SmartLogger.MinimumLogLevel = LogLevel.Information;
+            SmartLogger.SerializeObject = (obj) => JsonConvert.SerializeObject(obj, Formatting.None);
 
             //--- don't start twice
             String myprocessname = Process.GetCurrentProcess().ProcessName;
