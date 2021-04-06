@@ -292,9 +292,16 @@ namespace SmartLogReader
 
             if (OpCodeIndex == 0)
             {
-                var s1 = actualValue.Substring(0, 2);
-                var s2 = ExpectedValue.Substring(0, 2);
-                return s1.equals(s2);
+                if (actualValue.Length > 1 && ExpectedValue.Length > 1)
+                {
+                    var s1 = actualValue.Substring(0, 2);
+                    var s2 = ExpectedValue.Substring(0, 2);
+                    return s1.equals(s2);
+                }
+                else
+                {
+                    return false;
+                }
             }
 
             return base.Test(actualValue);

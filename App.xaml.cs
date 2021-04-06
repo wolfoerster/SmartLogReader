@@ -82,7 +82,7 @@ namespace SmartLogReader
 
             //--- initialize logging
             SmartLogger.Init();
-            SmartLogger.MinimumLogLevel = LogLevel.Information;
+            SmartLogger.MinimumLogLevel = LogLevel.Debug;
             SmartLogger.SerializeObject = (obj) => JsonConvert.SerializeObject(obj, Formatting.None);
 
             //--- don't start twice
@@ -117,9 +117,11 @@ namespace SmartLogReader
                 return;
             }
 
+#if false
             //--- so option is either "/restart" or unknown
             if (NeedToRestart())
                 Shutdown();
+#endif
         }
         public static string OpenFileName;
         string localName, localDir, blockingFile;

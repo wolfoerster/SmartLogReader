@@ -18,11 +18,14 @@
 namespace SmartLogReader
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public enum LogLevel
     {
@@ -38,7 +41,9 @@ namespace SmartLogReader
     public class SmartLogger
     {
         private readonly string sourceContext;
-        private static readonly long maxLength = 40 * 1024 * 1024; // swap log file at 40 MB
+        private static readonly long MaxLength = 40 * 1024; // swap log file at 40 MB
+        private static ConcurrentQueue<LogEntry> LogEntries = new ConcurrentQueue<LogEntry>();
+        private static object Locker = new Object();
 
         public SmartLogger(object obj = null)
         {
@@ -77,6 +82,8 @@ namespace SmartLogReader
 
             var log = new SmartLogger(typeof(SmartLogger));
             log.Add("Start logging", LogLevel.None);
+
+            Task.Run(() => WriterLoop());
         }
 
         public delegate string SerializeObjectFunc(object obj);
@@ -127,21 +134,11 @@ namespace SmartLogReader
             this.Write(new { exception.Message, exception.StackTrace }, LogLevel.Error, methodName);
         }
 
-        private class LogEntry
-        {
-            public string Time { get; set; }
-            public string Level { get; set; }
-            public string Class { get; set; }
-            public string Method { get; set; }
-            public string Message { get; set; }
-        }
-
         public void Write(object msg, LogLevel level, [CallerMemberName]string methodName = null)
         {
             if (FileName == null)
                 Init();
 
-            CheckFileSize();
             Add(msg, level, methodName);
         }
 
@@ -161,14 +158,40 @@ namespace SmartLogReader
                     Message = ToJson(msg, true),
                 };
 
-                using (StreamWriter sw = File.AppendText(FileName))
-                {
-                    var json = ToJson(entry, false);
-                    sw.WriteLine(json);
-                }
+                LogEntries.Enqueue(entry);
             }
             catch
             {
+            }
+        }
+
+        private static void WriterLoop()
+        {
+            DateTime t0 = DateTime.UtcNow;
+            while (true)
+            {
+                while (LogEntries.TryDequeue(out LogEntry entry))
+                {
+                    try
+                    {
+                        using (StreamWriter sw = File.AppendText(FileName))
+                        {
+                            var json = ToJson(entry, false);
+                            sw.WriteLine(json);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var str = ex.Message;
+                    }
+                }
+
+                Thread.Sleep(30);
+                if ((DateTime.UtcNow - t0).TotalSeconds > 5)
+                {
+                    CheckFileSize();
+                    t0 = DateTime.UtcNow;
+                }
             }
         }
 
@@ -179,14 +202,23 @@ namespace SmartLogReader
                 if (File.Exists(FileName))
                 {
                     var fileInfo = new FileInfo(FileName);
-                    if (fileInfo.Length > maxLength)
+                    if (fileInfo.Length > MaxLength)
                     {
-                        var log = new SmartLogger(typeof(SmartLogger));
-                        log.Add(new { logFileSize = fileInfo.Length }, LogLevel.None);
-
                         var backupName = FileName + ".log";
-                        File.Copy(FileName, backupName, true);
-                        File.Delete(FileName);
+
+                        lock (Locker)
+                        {
+                            File.Delete(backupName);
+                            File.Move(FileName, backupName);
+                        }
+
+                        var log = new SmartLogger(typeof(SmartLogger));
+                        log.Add(new 
+                        { 
+                            logFileSize = fileInfo.Length,
+                            allowedSize = MaxLength,
+                            backupName,
+                        }, LogLevel.None);
                     }
                 }
             }
@@ -300,6 +332,15 @@ namespace SmartLogReader
         private static string GetQuotes(bool isInnerObject)
         {
             return isInnerObject ? "\\\"" : "\"";
+        }
+
+        private class LogEntry
+        {
+            public string Time { get; set; }
+            public string Level { get; set; }
+            public string Class { get; set; }
+            public string Method { get; set; }
+            public string Message { get; set; }
         }
     }
 }
