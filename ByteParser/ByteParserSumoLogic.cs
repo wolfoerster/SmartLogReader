@@ -22,16 +22,18 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserSumoLogic : ByteParserJsonLogger
     {
+        private readonly string firstLineStart = "\"_messagetimems\"";
+
         public override bool IsFormatOK(byte[] bytes)
         {
-            return CheckForString("\"_message", bytes, 0);
+            return CheckForString(firstLineStart, bytes, 0);
         }
 
         protected override void FillRecord(Record record)
         {
             // get rid of first line
             var json = GetNextLine();
-            if (json.startsWith("\"_message"))
+            if (json.startsWith(firstLineStart))
                 json = GetNextLine();
 
             GetJsonRecord3(record, json);
@@ -39,14 +41,8 @@ namespace SmartLogReader
 
         private void GetJsonRecord3(Record record, string json)
         {
-            var i1 = json.IndexOf("{");
-            var i2 = json.IndexOf("falcon_log_collector");
-
-            if (i2 < 0)
-                json = json.Substring(i1);
-            else
-                json = json.Substring(i1, i2 - i1 - 3);
-
+            var i = json.IndexOf("{\"\"Timestamp");
+            json = json.Substring(i, json.Length - i - 1);
             json = json.Replace("\"\"", "\"");
             GetJsonRecord2(record, json);
         }
