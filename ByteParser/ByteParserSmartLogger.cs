@@ -43,7 +43,7 @@ namespace SmartLogReader
             DateTime t = DateTime.Parse(logEntry.Time);
             t = t.ToUniversalTime();
             record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
-
+            record.ThreadIds = logEntry.ThreadIds;
             record.LevelString = logEntry.Level;
             record.Logger = logEntry.Class;
             record.Method = logEntry.Method;
@@ -53,6 +53,7 @@ namespace SmartLogReader
         private class LogEntry
         {
             public string Time { get; set; }
+            public string ThreadIds { get; set; }
             public string Level { get; set; }
             public string Class { get; set; }
             public string Method { get; set; }

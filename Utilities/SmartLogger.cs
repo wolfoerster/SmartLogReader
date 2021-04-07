@@ -40,10 +40,13 @@ namespace SmartLogReader
 
     public class SmartLogger
     {
+        private static readonly long MaxLength = 4 * 1024 * 1024; // new log file at 4 MB
+        private static readonly ConcurrentQueue<LogEntry> LogEntries = new ConcurrentQueue<LogEntry>();
+        private static readonly object Locker = new Object();
+        private static Task writerTask;
         private readonly string sourceContext;
-        private static readonly long MaxLength = 40 * 1024; // swap log file at 40 MB
-        private static ConcurrentQueue<LogEntry> LogEntries = new ConcurrentQueue<LogEntry>();
-        private static object Locker = new Object();
+        private readonly int appDomainId;
+        private readonly int processId;
 
         public SmartLogger(object obj = null)
         {
@@ -55,6 +58,114 @@ namespace SmartLogReader
             }
 
             this.sourceContext = GetSourceContext(obj);
+
+            using (var process = Process.GetCurrentProcess())
+            {
+                this.processId = process.Id;
+                this.appDomainId = AppDomain.CurrentDomain.Id;
+            }
+        }
+
+        public delegate string SerializeObjectFunc(object obj);
+
+        public static SerializeObjectFunc SerializeObject;
+
+        public static LogLevel MinimumLogLevel = LogLevel.Information;
+
+        public static string FileName { get; private set; }
+
+        public static void Init(string fileName = null)
+        {
+            if (writerTask != null)
+                return;
+
+            if (fileName == null)
+            {
+                var name = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
+                FileName = Path.Combine(Path.GetTempPath(), $"{name}.log");
+            }
+            else
+            {
+                FileName = fileName;
+            }
+
+            writerTask = Task.Run(() => WriterLoop());
+
+            var log = new SmartLogger(typeof(SmartLogger));
+            log.None("Start logging");
+        }
+
+        public void Verbose(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.Verbose, methodName);
+        }
+
+        public void Debug(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.Debug, methodName);
+        }
+
+        public void Information(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.Information, methodName);
+        }
+
+        public void Warning(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.Warning, methodName);
+        }
+
+        public void Error(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.Error, methodName);
+        }
+
+        public void Fatal(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.Fatal, methodName);
+        }
+
+        public void None(object msg = null, [CallerMemberName] string methodName = null)
+        {
+            this.Write(msg, LogLevel.None, methodName);
+        }
+
+        public void Exception(Exception exception, [CallerMemberName] string methodName = null)
+        {
+            this.Error(new { Message = GetMessage(exception), exception.StackTrace }, methodName);
+        }
+
+        public void Write(object msg, LogLevel level, [CallerMemberName] string methodName = null)
+        {
+            if (level < MinimumLogLevel)
+                return;
+
+            try
+            {
+                if (FileName == null)
+                    Init();
+
+                var entry = CreateLogEntry(level, methodName, msg);
+                LogEntries.Enqueue(entry);
+            }
+            catch
+            {
+            }
+        }
+
+        private LogEntry CreateLogEntry(LogLevel level, string methodName, object msg)
+        {
+            string threadIds = string.Format("{0}/{1}/{2}", this.processId, this.appDomainId, Thread.CurrentThread.ManagedThreadId);
+
+            return new LogEntry
+            {
+                Time = DateTime.UtcNow.ToString("o"),
+                ThreadIds = threadIds,
+                Level = level.ToString(),
+                Class = this.sourceContext,
+                Method = methodName,
+                Message = ToJson(msg, true),
+            };
         }
 
         private static string GetSourceContext(object obj)
@@ -68,102 +179,23 @@ namespace SmartLogReader
             return obj.GetType().FullName;
         }
 
-        public static void Init(string fileName = null)
+        private static string GetMessage(Exception exception)
         {
-            if (fileName == null)
+            var sb = new StringBuilder();
+            sb.Append(exception.Message);
+
+            exception = exception.InnerException;
+            while (exception != null)
             {
-                var name = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
-                FileName = Path.Combine(Path.GetTempPath(), $"{name}.log");
-            }
-            else
-            {
-                FileName = fileName;
+                sb.Append(" InnerException: ");
+                sb.Append(exception.Message);
+                exception = exception.InnerException;
             }
 
-            var log = new SmartLogger(typeof(SmartLogger));
-            log.Add("Start logging", LogLevel.None);
-
-            Task.Run(() => WriterLoop());
+            return sb.ToString();
         }
 
-        public delegate string SerializeObjectFunc(object obj);
-
-        public static SerializeObjectFunc SerializeObject;
-
-        public static LogLevel MinimumLogLevel 
-        {
-            get => minimumLogLevel;
-            set => minimumLogLevel = value;
-        }
-        private static LogLevel minimumLogLevel = LogLevel.Information;
-
-        public static string FileName { get; set; }
-
-        public void Verbose(object msg = null, [CallerMemberName]string methodName = null)
-        {
-            this.Write(msg, LogLevel.Verbose, methodName);
-        }
-
-        public void Debug(object msg = null, [CallerMemberName]string methodName = null)
-        {
-            this.Write(msg, LogLevel.Debug, methodName);
-        }
-
-        public void Information(object msg = null, [CallerMemberName]string methodName = null)
-        {
-            this.Write(msg, LogLevel.Information, methodName);
-        }
-
-        public void Warning(object msg = null, [CallerMemberName]string methodName = null)
-        {
-            this.Write(msg, LogLevel.Warning, methodName);
-        }
-
-        public void Error(object msg = null, [CallerMemberName]string methodName = null)
-        {
-            this.Write(msg, LogLevel.Error, methodName);
-        }
-
-        public void Fatal(object msg = null, [CallerMemberName]string methodName = null)
-        {
-            this.Write(msg, LogLevel.Fatal, methodName);
-        }
-
-        public void Exception(Exception exception, [CallerMemberName]string methodName = null)
-        {
-            this.Write(new { exception.Message, exception.StackTrace }, LogLevel.Error, methodName);
-        }
-
-        public void Write(object msg, LogLevel level, [CallerMemberName]string methodName = null)
-        {
-            if (FileName == null)
-                Init();
-
-            Add(msg, level, methodName);
-        }
-
-        private void Add(object msg, LogLevel level, [CallerMemberName]string methodName = null)
-        {
-            if (level < MinimumLogLevel)
-                return;
-
-            try
-            {
-                var entry = new LogEntry
-                {
-                    Time = DateTime.UtcNow.ToString("o"),
-                    Level = level.ToString(),
-                    Class = this.sourceContext,
-                    Method = methodName,
-                    Message = ToJson(msg, true),
-                };
-
-                LogEntries.Enqueue(entry);
-            }
-            catch
-            {
-            }
-        }
+        #region WriterLoop
 
         private static void WriterLoop()
         {
@@ -180,16 +212,27 @@ namespace SmartLogReader
                             sw.WriteLine(json);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception exception)
                     {
-                        var str = ex.Message;
+                        var str = GetMessage(exception);
+                        Trace.WriteLine(str);
                     }
                 }
 
                 Thread.Sleep(30);
-                if ((DateTime.UtcNow - t0).TotalSeconds > 5)
+
+                if ((DateTime.UtcNow - t0).TotalSeconds > 3)
                 {
-                    CheckFileSize();
+                    try
+                    {
+                        CheckFileSize();
+                    }
+                    catch (Exception exception)
+                    {
+                        var str = GetMessage(exception);
+                        Trace.WriteLine(str);
+                    }
+
                     t0 = DateTime.UtcNow;
                 }
             }
@@ -197,35 +240,28 @@ namespace SmartLogReader
 
         private static void CheckFileSize()
         {
-            try
+            if (File.Exists(FileName))
             {
-                if (File.Exists(FileName))
+                var fileInfo = new FileInfo(FileName);
+                if (fileInfo.Length > MaxLength)
                 {
-                    var fileInfo = new FileInfo(FileName);
-                    if (fileInfo.Length > MaxLength)
+                    var backupName = FileName + ".log";
+
+                    lock (Locker)
                     {
-                        var backupName = FileName + ".log";
-
-                        lock (Locker)
-                        {
-                            File.Delete(backupName);
-                            File.Move(FileName, backupName);
-                        }
-
-                        var log = new SmartLogger(typeof(SmartLogger));
-                        log.Add(new 
-                        { 
-                            logFileSize = fileInfo.Length,
-                            allowedSize = MaxLength,
-                            backupName,
-                        }, LogLevel.None);
+                        File.Delete(backupName);
+                        File.Move(FileName, backupName);
                     }
+
+                    var log = new SmartLogger(typeof(SmartLogger));
+                    log.None(new { logFileSize = fileInfo.Length, allowedSize = MaxLength, backupName });
                 }
             }
-            catch
-            {
-            }
         }
+
+        #endregion WriterLoop
+
+        #region JSON Serializer
 
         private static string ToJson(object obj, bool isInnerObject)
         {
@@ -251,22 +287,6 @@ namespace SmartLogReader
             {
                 return obj.ToString();
             }
-        }
-
-        private static string GetMessage(Exception exception)
-        {
-            var sb = new StringBuilder();
-            sb.Append(exception.Message);
-
-            exception = exception.InnerException;
-            while (exception != null)
-            {
-                sb.Append(" InnerException: ");
-                sb.Append(exception.Message);
-                exception = exception.InnerException;
-            }
-
-            return sb.ToString();
         }
 
         private static string SerializeInternal(object obj, bool isInnerObject)
@@ -334,9 +354,12 @@ namespace SmartLogReader
             return isInnerObject ? "\\\"" : "\"";
         }
 
+        #endregion JSON Serializer
+
         private class LogEntry
         {
             public string Time { get; set; }
+            public string ThreadIds { get; set; }
             public string Level { get; set; }
             public string Class { get; set; }
             public string Method { get; set; }

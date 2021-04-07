@@ -129,13 +129,16 @@ namespace SmartLogReader
             set
             {
                 threadIds = value;
-                string[] s = threadIds.Split(new char[] { '/' });
-                if (s.Length == 3)
+                if (!string.IsNullOrWhiteSpace(threadIds))
                 {
-                    int id;
-                    if (int.TryParse(s[0], out id)) ProcessId = id;
-                    if (int.TryParse(s[1], out id)) AppDomainId = id;
-                    if (int.TryParse(s[2], out id)) ThreadId = id;
+                    string[] s = threadIds.Split(new char[] { '/' });
+                    if (s.Length == 3)
+                    {
+                        int id;
+                        if (int.TryParse(s[0], out id)) ProcessId = id;
+                        if (int.TryParse(s[1], out id)) AppDomainId = id;
+                        if (int.TryParse(s[2], out id)) ThreadId = id;
+                    }
                 }
             }
         }
