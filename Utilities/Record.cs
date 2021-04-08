@@ -439,8 +439,9 @@ namespace SmartLogReader
         static public ColorSpecCollection GetDefaultColorSpecs()
         {
             ColorSpecCollection colorSpecs = new ColorSpecCollection();
-            colorSpecs.Add(NewLevelColorSpec("Info", 0));
-            colorSpecs.Add(NewLevelColorSpec("Warn", 3));
+            colorSpecs.Add(NewLevelColorSpec("Debug", 1));
+            colorSpecs.Add(NewLevelColorSpec("Information", 0));
+            colorSpecs.Add(NewLevelColorSpec("Warning", 3));
             colorSpecs.Add(NewLevelColorSpec("Error", 2));
             colorSpecs.Add(NewLevelColorSpec("Fatal", 11));
             colorSpecs.Add(NewLevelColorSpec("None", 6));
