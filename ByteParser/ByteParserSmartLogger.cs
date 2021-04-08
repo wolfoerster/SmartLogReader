@@ -18,6 +18,7 @@
 namespace SmartLogReader
 {
     using System;
+    using System.Text;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -31,7 +32,7 @@ namespace SmartLogReader
 
         public ByteParserSmartLogger(byte[] bytes)
         {
-            if (CheckForString("{\"Time\"", bytes, 0))
+            if (this.IsEntryStart(bytes, 0))
             {
                 Bytes = bytes;
             }
@@ -39,7 +40,31 @@ namespace SmartLogReader
 
         protected override void FillRecord(Record record)
         {
-            GetJsonRecord1(record, GetNextLine());
+            GetJsonRecord1(record, GetNextEntry());
+        }
+
+        private string GetNextEntry()
+        {
+            var sb = new StringBuilder();
+
+            var line = GetNextLine();
+            sb.Append(line);
+
+            while (this.lastPos < this.bytes.Length 
+                && !this.IsEntryStart(this.bytes, this.lastPos))
+            {
+                line = GetNextLine();
+                //sb.Append("\r\n");
+                sb.Append(" ");
+                sb.Append(line);
+            }
+
+            return sb.ToString();
+        }
+
+        private bool IsEntryStart(byte[] bytes, int position)
+        {
+            return CheckForString("{\"Time\"", bytes, position);
         }
 
         private void GetJsonRecord1(Record record, string json)
