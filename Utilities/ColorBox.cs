@@ -31,7 +31,7 @@ namespace SmartLogReader
             AddColor(255, 211, 171);
             AddColor(255, 255, 171);
             AddColor(226, 255, 171);
-            AddColor(171, 255, 171);
+            AddColor(171, 233, 171);
             AddColor(171, 255, 255);
             AddColor(171, 211, 255);
             AddColor(171, 171, 255);
