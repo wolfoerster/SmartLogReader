@@ -30,9 +30,16 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserJsonLogger : ByteParserSmartLogger
     {
-        public override bool IsFormatOK(byte[] bytes)
+        public ByteParserJsonLogger()
         {
-            return CheckForString("{\"Timestamp\"", bytes, 0);
+        }
+
+        public ByteParserJsonLogger(byte[] bytes)
+        {
+            if (CheckForString("{\"Timestamp\"", bytes, 0))
+            {
+                Bytes = bytes;
+            }
         }
 
         protected override void FillRecord(Record record)

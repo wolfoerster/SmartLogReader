@@ -19,8 +19,6 @@ namespace SmartLogReader
 {
     public interface IByteParser
     {
-        bool IsFormatOK(byte[] bytes);
-
         byte[] Bytes { get; set; }
 
         int CurrentPosition { get; }

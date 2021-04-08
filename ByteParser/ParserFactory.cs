@@ -25,36 +25,30 @@ namespace SmartLogReader
         {
             IByteParser parser;
 
-            if (IsOK(parser = new ByteParserSmartLogger(), bytes))
+            if (IsOK(parser = new ByteParserSmartLogger(bytes)))
                 return parser;
 
-            if (IsOK(parser = new ByteParserJsonLogger(), bytes))
+            if (IsOK(parser = new ByteParserJsonLogger(bytes)))
                 return parser;
 
-            if (IsOK(parser = new ByteParserSumoLogic(), bytes))
+            if (IsOK(parser = new ByteParserSumoLogic(bytes)))
                 return parser;
 
-            if (IsOK(parser = new ByteParserDocker(), bytes))
+            if (IsOK(parser = new ByteParserDocker(bytes)))
                 return parser;
 
-            if (IsOK(parser = new ByteParserPlainText(), bytes))
+            if (IsOK(parser = new ByteParserPlainText(bytes)))
                 return parser;
 
-            if (IsOK(parser = new ByteParserLegacy(), bytes))
+            if (IsOK(parser = new ByteParserLegacy(bytes)))
                 return parser;
 
             return new ByteParser { Bytes = bytes };
         }
 
-        private static bool IsOK(IByteParser parser, byte[] bytes)
+        private static bool IsOK(IByteParser parser)
         {
-            if (parser.IsFormatOK(bytes))
-            {
-                parser.Bytes = bytes;
-                return true;
-            }
-
-            return false;
+            return parser.Bytes != null;
         }
     }
 }

@@ -25,19 +25,25 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserSmartLogger : ByteParser
     {
-        public override bool IsFormatOK(byte[] bytes)
+        public ByteParserSmartLogger()
         {
-            return CheckForString("{\"Time\"", bytes, 0);
+        }
+
+        public ByteParserSmartLogger(byte[] bytes)
+        {
+            if (CheckForString("{\"Time\"", bytes, 0))
+            {
+                Bytes = bytes;
+            }
         }
 
         protected override void FillRecord(Record record)
         {
-            GetJsonRecord1(record);
+            GetJsonRecord1(record, GetNextLine());
         }
 
-        private void GetJsonRecord1(Record record)
+        private void GetJsonRecord1(Record record, string json)
         {
-            var json = GetNextLine();
             var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
             DateTime t = DateTime.Parse(logEntry.Time);

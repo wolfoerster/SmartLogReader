@@ -22,12 +22,13 @@ namespace SmartLogReader
         private static readonly string LegacyKey1 = "TrimbleNo";
         private static readonly string LegacyKey2 = "novaSuite";
 
-        public override bool IsFormatOK(byte[] bytes)
+        public ByteParserLegacy(byte[] bytes)
         {
-            if (CheckForString(LegacyKey1, bytes, 0))
-                return true;
-
-            return CheckForString(LegacyKey2, bytes, 0);
+            if (CheckForString(LegacyKey1, bytes, 0) 
+                || CheckForString(LegacyKey2, bytes, 0))
+            {
+                Bytes = bytes;
+            }
         }
 
         protected override void FillRecord(Record record)

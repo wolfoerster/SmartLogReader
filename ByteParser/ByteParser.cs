@@ -33,14 +33,6 @@ namespace SmartLogReader
         protected static readonly byte Dot = 0x2E; // '.'
 
         /// <summary>
-        /// Override this method in derived classes to tell if the bytes are in an accepted format.
-        /// </summary>
-        public virtual bool IsFormatOK(byte[] bytes)
-        {
-            return false;
-        }
-
-        /// <summary>
         /// Gets or sets the bytes which contain the log entries.
         /// </summary>
         public byte[] Bytes

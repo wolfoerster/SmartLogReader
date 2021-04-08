@@ -33,9 +33,12 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserPlainText : ByteParser
     {
-        public override bool IsFormatOK(byte[] bytes)
+        public ByteParserPlainText(byte[] bytes)
         {
-            return CheckTime(bytes, 0);
+            if (CheckTime(bytes, 0))
+            {
+                Bytes = bytes;
+            }
         }
 
         protected override void FillRecord(Record record)

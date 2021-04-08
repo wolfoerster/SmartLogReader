@@ -19,9 +19,13 @@ namespace SmartLogReader
 {
     public class ByteParserDocker : ByteParserJsonLogger
     {
-        public override bool IsFormatOK(byte[] bytes)
+        public ByteParserDocker(byte[] bytes)
         {
-            return CheckForString("Attaching to", bytes, 0);
+            if (CheckForString("Attaching to", bytes, 0))
+            {
+                Bytes = bytes;
+                _ = GetNextLine();
+            }
         }
 
         protected override void FillRecord(Record record)
