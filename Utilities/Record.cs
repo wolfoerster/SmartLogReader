@@ -443,6 +443,7 @@ namespace SmartLogReader
             colorSpecs.Add(NewLevelColorSpec("Warn", 3));
             colorSpecs.Add(NewLevelColorSpec("Error", 2));
             colorSpecs.Add(NewLevelColorSpec("Fatal", 11));
+            colorSpecs.Add(NewLevelColorSpec("None", 6));
             return colorSpecs;
         }
 
