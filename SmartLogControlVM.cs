@@ -130,33 +130,40 @@ namespace SmartLogReader
         /// </summary>
         static void InitLists()
         {
-            Fonts = new List<string>();
-            Fonts.Add("Consolas");
-            Fonts.Add("Courier New");
-            Fonts.Add("Lucida Console");
+            Fonts = new List<string>
+            {
+                "Consolas",
+                "Courier New",
+                "Lucida Console"
+            };
 
-            ReadModes = new List<string>();
-            ReadModes.Add("All records");
-            ReadModes.Add("Last session");
-            ReadModes.Add("Last 24 hours");
-            ReadModes.Add("Last 8 hours");
-            ReadModes.Add("Last hour");
+            ReadModes = new List<string>
+            {
+                "All records",
+                "Last session",
+                "Last 24 hours",
+                "Last 8 hours",
+                "Last hour"
+            };
 
-            LogLevels = new List<string>();
-            LogLevels.Add("Verbose");
-            LogLevels.Add("Debug");
-            LogLevels.Add("Information");
-            LogLevels.Add("Warning");
-            LogLevels.Add("Error");
-            LogLevels.Add("Fatal");
-            log.Debug(LogLevels);
+            LogLevels = new List<string>
+            {
+                "Verbose",
+                "Debug",
+                "Information",
+                "Warning",
+                "Error",
+                "Fatal"
+            };
 
-            RecordDetails = new List<string>();
-            RecordDetails.Add("Time");
-            RecordDetails.Add("Logger");
-            RecordDetails.Add("Level");
-            RecordDetails.Add("ThreadIds");
-            RecordDetails.Add("Method");
+            RecordDetails = new List<string>
+            {
+                "Time",
+                "Logger",
+                "Level",
+                "ThreadIds",
+                "Method"
+            };
 
             InitWorkspaces();
         }
