@@ -618,7 +618,11 @@ namespace SmartLogReader
 
         void ExecuteCloseCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            reader.Stop("NoLastFile");
+            if (reader.IsBusy)
+                reader.Stop("NoLastFile");
+            else
+                HandleNoLastFile();
+
             OnPropertyChanged("NoLastFile");
         }
 
