@@ -30,21 +30,25 @@ namespace SmartLogReader
         /// </summary>
         static Filter()
         {
-            PropertyNames = new List<string>();
-            PropertyNames.Add("Time");
-            PropertyNames.Add("Level");
-            PropertyNames.Add("ProcessId");
-            PropertyNames.Add("AppDomainId");
-            PropertyNames.Add("ThreadId");
-            PropertyNames.Add("Logger");
-            PropertyNames.Add("Method");
-            PropertyNames.Add("Message");
+            PropertyNames = new List<string>
+            {
+                "Time",
+                "ProcessId",
+                "AppDomainId",
+                "ThreadId",
+                "Level",
+                "Class",
+                "Method",
+                "Message"
+            };
 
-            OpCodes = new List<string>();
-            OpCodes.Add("=");
-            OpCodes.Add("≠");
-            OpCodes.Add("<");
-            OpCodes.Add(">");
+            OpCodes = new List<string>
+            {
+                "=",
+                "≠",
+                "<",
+                ">"
+            };
         }
         static public List<string> PropertyNames { get; set; }
         static public List<string> OpCodes { get; set; }
@@ -66,15 +70,17 @@ namespace SmartLogReader
         /// </summary>
         public static List<IndexValuePair> GetRecordProperties(Record record)
         {
-            List<IndexValuePair> list = new List<IndexValuePair>();
-            list.Add(new IndexValuePair(0, record.TimeString));
-            list.Add(new IndexValuePair(1, record.LevelString));
-            list.Add(new IndexValuePair(2, record.ProcessId.ToString()));
-            list.Add(new IndexValuePair(3, record.AppDomainId.ToString()));
-            list.Add(new IndexValuePair(4, record.ThreadId.ToString()));
-            list.Add(new IndexValuePair(5, record.Logger));
-            list.Add(new IndexValuePair(6, record.Method));
-            list.Add(new IndexValuePair(7, record.ShortMessage));
+            List<IndexValuePair> list = new List<IndexValuePair>
+            {
+                new IndexValuePair(0, record.TimeString),
+                new IndexValuePair(1, record.ProcessId.ToString()),
+                new IndexValuePair(2, record.AppDomainId.ToString()),
+                new IndexValuePair(3, record.ThreadId.ToString()),
+                new IndexValuePair(4, record.LevelString),
+                new IndexValuePair(5, record.Logger),
+                new IndexValuePair(6, record.Method),
+                new IndexValuePair(7, record.ShortMessage)
+            };
             return list;
         }
 
@@ -86,10 +92,10 @@ namespace SmartLogReader
             switch (PropertyIndex)
             {
                 case 0: return Test(record.UtcTime);
-                case 1: return Test(record.LevelString);
-                case 2: return Test(record.ProcessId);
-                case 3: return Test(record.AppDomainId);
-                case 4: return Test(record.ThreadId);
+                case 1: return Test(record.ProcessId);
+                case 2: return Test(record.AppDomainId);
+                case 3: return Test(record.ThreadId);
+                case 4: return Test(record.LevelString);
                 case 5: return Test(record.Logger);
                 case 6: return Test(record.Method);
                 case 7: return Test(record.Message);

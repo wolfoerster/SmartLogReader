@@ -206,11 +206,11 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void ShowFilterDialog(bool useLastTopLeft)
+        void ShowFilterDialog(bool useLastPos)
         {
             LogControlVM clone = viewModel.Clone();
             FilterDialog dlg = new FilterDialog(clone);
-            Utils.MoveToMouse(dlg, "Configure filter - all OR by default", useLastTopLeft);
+            Utils.MoveToMouse(dlg, "Configure filter - all OR by default", useLastPos);
 
             if (dlg.ShowDialog() == true)
                 viewModel.ReadFilterSettings(clone);

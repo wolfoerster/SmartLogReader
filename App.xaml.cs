@@ -82,7 +82,7 @@ namespace SmartLogReader
 
             //--- initialize logging
             SimpleLogger.Init();
-            SimpleLogger.MinimumLogLevel = LogLevel.Debug;
+            SimpleLogger.MinimumLogLevel = GetMinimumLogLevel();
 
             //--- don't start twice
             String myprocessname = Process.GetCurrentProcess().ProcessName;
@@ -132,6 +132,18 @@ namespace SmartLogReader
         {
             log.Debug($"Exiting application {localName}");
             base.OnExit(e);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        LogLevel GetMinimumLogLevel()
+        {
+            string str = ConfigurationManager.AppSettings["MinimumLogLevel"];
+            if (Enum.TryParse<LogLevel>(str, out LogLevel logLevel))
+                return logLevel;
+
+            return LogLevel.Information;
         }
 
         /// <summary>

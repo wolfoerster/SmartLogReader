@@ -441,43 +441,61 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// <summary>
         /// 
         /// </summary>
-        public static void MoveToMouse(Window win, string title, bool useLastTopLeft = false)
+        public static void MoveToMouse(Window win, string title, bool useLastPos = false)
         {
-            if (!useLastTopLeft)
+            Point screenPos;
+            var mainWindow = Application.Current.MainWindow;
+            log.Verbose($"mainWindow: {mainWindow}, useLastPos: {useLastPos}, lastPos: {lastPos}");
+
+            if (useLastPos)
             {
-                var uiElement = Application.Current.MainWindow;
-                var mousePos = Mouse.GetPosition(uiElement);
-                var screenPos = uiElement.PointToScreen(mousePos);
-
-                var workArea = Screen.LookUpByPixel(screenPos).WorkArea;
-                var source = PresentationSource.FromVisual(uiElement);
-                var target = source.CompositionTarget;
-                var winSize = target.TransformToDevice.Transform(new Point(win.Width, win.Height));
-
-                var top = screenPos.Y - 80;
-                if (top < workArea.Top)
-                    top = workArea.Top;
-
-                var exceed = top + winSize.Y - workArea.Bottom;
-                if (exceed > 0)
-                    top -= exceed;
-
-                var left = screenPos.X - 80;
-                if (left < workArea.Left)
-                    left = workArea.Left;
-
-                exceed = left + winSize.X - workArea.Right;
-                if (exceed > 0)
-                    left -= exceed;
-
-                topLeft = target.TransformFromDevice.Transform(new Point(left, top));
+                screenPos = lastPos;
+            }
+            else
+            {
+                var mousePos = Mouse.GetPosition(mainWindow);
+                log.Verbose($"mousePos: {mousePos}");
+                screenPos = mainWindow.PointToScreen(mousePos);
+                lastPos = screenPos;
             }
 
-            win.Top = topLeft.Y;
-            win.Left = topLeft.X;
+            log.Verbose($"screenPos: {screenPos}");
+            var screen = Screen.LookUpByPixel(screenPos);
+            log.Verbose($"screen: {screen.Name}");
+
+            var workArea = screen.WorkArea;
+            log.Verbose($"workArea: {workArea}");
+
+            var source = PresentationSource.FromVisual(mainWindow);
+            var target = source.CompositionTarget;
+            var winSize = target.TransformToDevice.Transform(new Point(win.Width, win.Height));
+            log.Verbose($"winSize: {winSize}");
+
+            var top = screenPos.Y - 80;
+            if (top < workArea.Top)
+                top = workArea.Top;
+
+            var exceed = top + winSize.Y - workArea.Bottom;
+            if (exceed > 0)
+                top -= exceed;
+
+            var left = screenPos.X - 80;
+            if (left < workArea.Left)
+                left = workArea.Left;
+
+            exceed = left + winSize.X - workArea.Right;
+            if (exceed > 0)
+                left -= exceed;
+
+            log.Verbose($"left,top: {left},{top}");
+            var position = target.TransformFromDevice.Transform(new Point(left, top));
+            log.Verbose($"position: {position}");
+
+            win.Top = position.Y;
+            win.Left = position.X;
             win.Title = title + "   (right click or Esc to cancel)";
         }
-        static Point topLeft;
+        static Point lastPos;
 
         /// <summary>
         /// 
