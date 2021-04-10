@@ -472,20 +472,16 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             log.Verbose($"winSize: {winSize}");
 
             var top = screenPos.Y - 80;
-            if (top < workArea.Top)
-                top = workArea.Top;
+            if (top < workArea.Top) top = workArea.Top;
 
             var exceed = top + winSize.Y - workArea.Bottom;
-            if (exceed > 0)
-                top -= exceed;
+            if (exceed > 0) top -= exceed;
 
             var left = screenPos.X - 80;
-            if (left < workArea.Left)
-                left = workArea.Left;
+            if (left < workArea.Left) left = workArea.Left;
 
             exceed = left + winSize.X - workArea.Right;
-            if (exceed > 0)
-                left -= exceed;
+            if (exceed > 0) left -= exceed;
 
             log.Verbose($"left,top: {left},{top}");
             var position = target.TransformFromDevice.Transform(new Point(left, top));
