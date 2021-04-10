@@ -263,11 +263,11 @@ namespace SmartLogReader
             if (ShowTimeDiff)
                 sb.Append(Align(TimeDiffString, AmountOfTimeDiff, showAll));
 
-            if (showAll || ShowLevel)
-                sb.Append(Align(LevelString, AmountOfLevel, showAll, true));
-
             if (showAll || ShowThreadIds)
                 sb.Append(Align(ThreadIds, AmountOfThreadIds, showAll));
+
+            if (showAll || ShowLevel)
+                sb.Append(Align(LevelString, AmountOfLevel, showAll, true));
 
             if (showAll || ShowLogger)
                 sb.Append(Align(Logger, AmountOfLogger, showAll));
@@ -280,16 +280,16 @@ namespace SmartLogReader
 
         public static bool ShowTime = true;
         public static bool ShowTimeDiff = true;
-        public static bool ShowLogger = true;
-        public static bool ShowLevel = false;
         public static bool ShowThreadIds = false;
+        public static bool ShowLevel = false;
+        public static bool ShowLogger = true;
         public static bool ShowMethod = true;
 
         public static int AmountOfTime = 12;
         public static int AmountOfTimeDiff = 6;
-        public static int AmountOfLogger = 23;
-        public static int AmountOfLevel = 5;
         public static int AmountOfThreadIds = 9;
+        public static int AmountOfLevel = 5;
+        public static int AmountOfLogger = 23;
         public static int AmountOfMethod = 23;
 
         /// <summary>
@@ -438,20 +438,20 @@ namespace SmartLogReader
         /// </summary>
         static public ColorSpecCollection GetDefaultColorSpecs()
         {
-            ColorSpecCollection colorSpecs = new ColorSpecCollection();
-            colorSpecs.Add(NewLevelColorSpec("Debug", 1));
-            colorSpecs.Add(NewLevelColorSpec("Information", 0));
-            colorSpecs.Add(NewLevelColorSpec("Warning", 3));
-            colorSpecs.Add(NewLevelColorSpec("Error", 2));
-            colorSpecs.Add(NewLevelColorSpec("Fatal", 11));
-            colorSpecs.Add(NewLevelColorSpec("None", 6));
-            return colorSpecs;
-        }
+            ColorSpec newSpec(string logLevel, int colorIndex)
+            {
+                ColorSpec colorSpec = new ColorSpec() { PropertyIndex = 4, OpCodeIndex = 0, ExpectedValue = logLevel, ColorIndex = colorIndex };
+                return colorSpec;
+            }
 
-        static ColorSpec NewLevelColorSpec(string logLevel, int colorIndex)
-        {
-            ColorSpec colorSpec = new ColorSpec() { PropertyIndex = 1, OpCodeIndex = 0, ExpectedValue = logLevel, ColorIndex = colorIndex };
-            return colorSpec;
+            ColorSpecCollection colorSpecs = new ColorSpecCollection();
+            colorSpecs.Add(newSpec("Debug", 1));
+            colorSpecs.Add(newSpec("Information", 0));
+            colorSpecs.Add(newSpec("Warning", 3));
+            colorSpecs.Add(newSpec("Error", 2));
+            colorSpecs.Add(newSpec("Fatal", 11));
+            colorSpecs.Add(newSpec("None", 6));
+            return colorSpecs;
         }
     }
 

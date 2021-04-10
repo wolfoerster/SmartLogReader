@@ -25,7 +25,6 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using Newtonsoft.Json;
 
 namespace SmartLogReader
 {
