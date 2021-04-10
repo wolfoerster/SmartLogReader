@@ -21,7 +21,7 @@ namespace SmartLogReader
 
     public class ByteParser : IByteParser
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SimpleLogger log = new SimpleLogger();
 
         protected static readonly byte CR = 0x0D; // '\r'
         protected static readonly byte LF = 0x0A; // '\n'

@@ -24,7 +24,7 @@ namespace SmartLogReader
 {
     public partial class WindowMain : Window
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SimpleLogger log = new SimpleLogger();
         private readonly DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
         private bool doMaximize;
 

@@ -42,11 +42,11 @@
           <TextBox  Grid.Row="0" Grid.Column="2" Text="{Binding AmountOfTime}"/>
           <CheckBox Grid.Row="1" Grid.Column="0" Content="TimeDiff" IsChecked="{Binding ShowTimeDiff}"/>
           <TextBox  Grid.Row="1" Grid.Column="2" Text="{Binding AmountOfTimeDiff}"/>
-          <CheckBox Grid.Row="2" Grid.Column="0" Content="Level" IsChecked="{Binding ShowLevel}"/>
-          <TextBox  Grid.Row="2" Grid.Column="2" Text="{Binding AmountOfLevel}"/>
-          <CheckBox Grid.Row="3" Grid.Column="0" Content="ThreadIds" IsChecked="{Binding ShowThreadIds}"/>
-          <TextBox  Grid.Row="3" Grid.Column="2" Text="{Binding AmountOfThreadIds}"/>
-          <CheckBox Grid.Row="4" Grid.Column="0" Content="Logger" IsChecked="{Binding ShowLogger}"/>
+          <CheckBox Grid.Row="2" Grid.Column="0" Content="ThreadIds" IsChecked="{Binding ShowThreadIds}"/>
+          <TextBox  Grid.Row="2" Grid.Column="2" Text="{Binding AmountOfThreadIds}"/>
+          <CheckBox Grid.Row="3" Grid.Column="0" Content="Level" IsChecked="{Binding ShowLevel}"/>
+          <TextBox  Grid.Row="3" Grid.Column="2" Text="{Binding AmountOfLevel}"/>
+          <CheckBox Grid.Row="4" Grid.Column="0" Content="Class" IsChecked="{Binding ShowLogger}"/>
           <TextBox  Grid.Row="4" Grid.Column="2" Text="{Binding AmountOfLogger}"/>
           <CheckBox Grid.Row="5" Grid.Column="0" Content="Method" IsChecked="{Binding ShowMethod}"/>
           <TextBox  Grid.Row="5" Grid.Column="2" Text="{Binding AmountOfMethod}"/>

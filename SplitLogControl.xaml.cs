@@ -32,12 +32,12 @@ namespace SmartLogReader
         public SplitLogControl()
         {
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SmartLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{name}.{++instanceCounter}");
             InitializeComponent();
             AllowDrop = true;
             Drop += MeDrop;
         }
-        private readonly SmartLogger log;
+        private readonly SimpleLogger log;
         private static int instanceCounter;
 
         /// <summary>

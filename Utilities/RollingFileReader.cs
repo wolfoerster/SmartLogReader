@@ -26,11 +26,11 @@ namespace SmartLogReader
         public RollingFileReader()
         {
             string name = MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SmartLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{name}.{++instanceCounter}");
             log.Debug();
         }
         private static int instanceCounter;
-        protected readonly SmartLogger log;
+        protected readonly SimpleLogger log;
 
         /// <summary>
         /// The name of the related file.

@@ -32,11 +32,11 @@ namespace SmartLogReader
         public LogControlVM()
         {
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SmartLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{name}.{++instanceCounter}");
             IncludeList = new FilterCollection();
             ExcludeList = new FilterCollection();
         }
-        private readonly SmartLogger log;
+        private readonly SimpleLogger log;
         private static int instanceCounter;
 
         /// <summary>

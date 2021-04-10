@@ -33,7 +33,7 @@ namespace SmartLogReader
 {
     public static class Utils
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SimpleLogger log = new SimpleLogger();
 
         /// <summary>
         /// Gets a value indicating if Left-Shift or Right-Shift is down.

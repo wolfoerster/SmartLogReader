@@ -33,11 +33,11 @@ namespace SmartLogReader
         public LogControl()
         {
             string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SmartLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{name}.{++instanceCounter}");
             InitializeComponent();
             SnapsToDevicePixels = true;
         }
-        private readonly SmartLogger log;
+        private readonly SimpleLogger log;
         private static int instanceCounter;
 
         /// <summary>

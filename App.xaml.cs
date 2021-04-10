@@ -34,7 +34,7 @@ namespace SmartLogReader
     /// </summary>
     public partial class App : Application
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SimpleLogger log = new SimpleLogger();
 
         /// <summary>
         /// 
@@ -81,9 +81,8 @@ namespace SmartLogReader
             blockingFile = localDir + "\\SmartLogReader.blocking";
 
             //--- initialize logging
-            SmartLogger.Init();
-            SmartLogger.MinimumLogLevel = LogLevel.Debug;
-            SmartLogger.SerializeObject = (obj) => JsonConvert.SerializeObject(obj, Formatting.None);
+            SimpleLogger.Init();
+            SimpleLogger.MinimumLogLevel = LogLevel.Debug;
 
             //--- don't start twice
             String myprocessname = Process.GetCurrentProcess().ProcessName;

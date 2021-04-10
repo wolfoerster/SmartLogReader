@@ -20,7 +20,7 @@ namespace SmartLogReader
     using System;
 
     /// <summary>
-    /// A byte parser for a plain text based logger (e.g. the SmartLogger found in my github repository).
+    /// A byte parser for a plain text based logger (e.g. the SimpleLogger used in this app).
     /// 
     /// A log entry has to look like this:
     /// 2021-04-02 15:37:14.516 FATAL SmartLogReader.App 9760/1/1 .ctor Start logging
@@ -44,9 +44,9 @@ namespace SmartLogReader
         protected override void FillRecord(Record record)
         {
             record.TimeString = GetTime();
+            record.ThreadIds = GetNext();
             record.LevelString = GetNext();
             record.Logger = GetNext();
-            record.ThreadIds = GetNext();
             record.Method = GetNext();
             record.Message = GetRest();
         }

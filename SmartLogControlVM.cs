@@ -31,7 +31,7 @@ namespace SmartLogReader
     /// </summary>
     public class SmartLogControlVM : SplitGridViewModel3
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SimpleLogger log = new SimpleLogger();
 
         /// <summary>
         /// Fill some static lists.
@@ -67,7 +67,7 @@ namespace SmartLogReader
                 path = GetWorkspaceFile(DefaultWorkspace);
 
             string xml = File.Exists(path) ? File.ReadAllText(path) : null;
-            log.Debug($"Create viewmodel from the following settings: {xml}");
+            log.Debug($"Create viewmodel from the following settings:\r\n{xml}");
 
             //--- There are property setters which call ReloadFiles() during XML deserialization. 
             //--- To prevent this, we use this static boolean value:

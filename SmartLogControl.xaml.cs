@@ -25,7 +25,7 @@ namespace SmartLogReader
     /// </summary>
     public partial class SmartLogControl : UserControl
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SimpleLogger log = new SimpleLogger();
 
         /// <summary>
         /// 

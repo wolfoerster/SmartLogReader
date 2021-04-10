@@ -92,7 +92,7 @@
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\IByteParser.cs" />
     <Compile Include="Utilities\Screen.cs" />
-    <Compile Include="Utilities\SmartLogger.cs" />
+    <Compile Include="Utilities\SimpleLogger.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
