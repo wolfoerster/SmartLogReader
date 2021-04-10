@@ -40,6 +40,8 @@ namespace SmartLogReader
 
     public class SimpleLogger
     {
+        #region Private stuff
+
         private static readonly long MaxLength = 8 * 1024 * 1024; // new log file at 8 MB
         private static readonly ConcurrentQueue<string> LogEntries = new ConcurrentQueue<string>();
         private static readonly object Locker = new Object();
@@ -47,6 +49,8 @@ namespace SmartLogReader
         private readonly string className;
         private readonly int appDomainId;
         private readonly int processId;
+
+        #endregion Private stuff
 
         public SimpleLogger(object context = null)
         {
@@ -149,6 +153,8 @@ namespace SmartLogReader
             }
         }
 
+        #region Private stuff
+
         private string CreateLogEntry(LogLevel level, string methodName, string message)
         {
             string threadIds = string.Format("{0}/{1}/{2}", 
@@ -191,6 +197,8 @@ namespace SmartLogReader
 
             return sb.ToString();
         }
+
+        #endregion Private stuff
 
         #region WriterLoop
 
