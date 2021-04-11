@@ -35,6 +35,20 @@ namespace SmartLogReader
     {
         private static readonly SimpleLogger log = new SimpleLogger();
 
+        public static Point ToPixel(this Point pointInDip, Visual visual)
+        {
+            var source = PresentationSource.FromVisual(visual);
+            var matrix = source.CompositionTarget.TransformToDevice;
+            return matrix.Transform(pointInDip);
+        }
+
+        public static Point ToDip(this Point pointInPixel, Visual visual)
+        {
+            var source = PresentationSource.FromVisual(visual);
+            var matrix = source.CompositionTarget.TransformFromDevice;
+            return matrix.Transform(pointInPixel);
+        }
+
         /// <summary>
         /// Gets a value indicating if Left-Shift or Right-Shift is down.
         /// </summary>
@@ -195,7 +209,7 @@ namespace SmartLogReader
 
         #region ExtendFrameIntoClientArea
 
-        public static bool ExtendFrameIntoClientArea(Window window, Thickness margin)
+        public static bool ExtendFrameIntoClientArea(Window window, Thickness marginInDips)
         {
             try
             {
@@ -206,6 +220,10 @@ namespace SmartLogReader
             {
                 return false;
             }
+
+            var letop = (new Point(marginInDips.Left, marginInDips.Top)).ToPixel(window);
+            var ribot = (new Point(marginInDips.Right, marginInDips.Bottom)).ToPixel(window);
+            var margin = new Thickness(letop.X, letop.Y, ribot.X, ribot.Y);
 
             IntPtr hwnd = new WindowInteropHelper(window).Handle;
             if (hwnd == IntPtr.Zero)
@@ -453,9 +471,9 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             }
             else
             {
-                var mousePos = Mouse.GetPosition(mainWindow);
+                var mousePos = Mouse.GetPosition(mainWindow); // in dips
                 log.Verbose($"mousePos: {mousePos}");
-                screenPos = mainWindow.PointToScreen(mousePos);
+                screenPos = mainWindow.PointToScreen(mousePos); // in pixel
                 lastPos = screenPos;
             }
 
@@ -463,32 +481,31 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             var screen = Screen.LookUpByPixel(screenPos);
             log.Verbose($"screen: {screen.Name}");
 
-            var workArea = screen.WorkArea;
+            var workArea = screen.WorkArea; // in pixel
             log.Verbose($"workArea: {workArea}");
 
-            var source = PresentationSource.FromVisual(mainWindow);
-            var target = source.CompositionTarget;
-            var winSize = target.TransformToDevice.Transform(new Point(win.Width, win.Height));
+            var winSize = new Point(win.Width, win.Height); // in dips
+            winSize = winSize.ToPixel(mainWindow); // in pixel
             log.Verbose($"winSize: {winSize}");
 
-            var top = screenPos.Y - 80;
-            if (top < workArea.Top) top = workArea.Top;
+            var eps = new Point(80, 80);
+            eps = eps.ToPixel(mainWindow);
+            var pos = new Point(screenPos.X - eps.X, screenPos.Y - eps.Y);
 
-            var exceed = top + winSize.Y - workArea.Bottom;
-            if (exceed > 0) top -= exceed;
+            if (pos.X < workArea.Left) pos.X = workArea.Left;
+            var exceed = pos.X + winSize.X - workArea.Right;
+            if (exceed > 0) pos.X -= exceed;
 
-            var left = screenPos.X - 80;
-            if (left < workArea.Left) left = workArea.Left;
+            if (pos.Y < workArea.Top) pos.Y = workArea.Top;
+            exceed = pos.Y + winSize.Y - workArea.Bottom;
+            if (exceed > 0) pos.Y -= exceed;
 
-            exceed = left + winSize.X - workArea.Right;
-            if (exceed > 0) left -= exceed;
+            log.Verbose($"position in pixel: {pos}");
+            pos = pos.ToDip(mainWindow);
+            log.Verbose($"position in dip: {pos}");
 
-            log.Verbose($"left,top: {left},{top}");
-            var position = target.TransformFromDevice.Transform(new Point(left, top));
-            log.Verbose($"position: {position}");
-
-            win.Top = position.Y;
-            win.Left = position.X;
+            win.Top = pos.Y;
+            win.Left = pos.X;
             win.Title = title + "   (right click or Esc to cancel)";
         }
         static Point lastPos;
@@ -519,7 +536,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// </summary>
         static public bool equals(this string str, string value)
         {
-            return str.Equals(value, StringComparison.InvariantCultureIgnoreCase);
+            return str.Equals(value, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -527,7 +544,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// </summary>
         static public bool startsWith(this string str, string value)
         {
-            return str.StartsWith(value, StringComparison.InvariantCultureIgnoreCase);
+            return str.StartsWith(value, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -535,7 +552,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// </summary>
         static public bool endsWith(this string str, string value)
         {
-            return str.EndsWith(value, StringComparison.InvariantCultureIgnoreCase);
+            return str.EndsWith(value, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -543,7 +560,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// </summary>
         static public bool contains(this string str, string value)
         {
-            int index = str.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+            int index = str.IndexOf(value, StringComparison.OrdinalIgnoreCase);
             return index > -1;
         }
 
