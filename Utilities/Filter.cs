@@ -77,11 +77,18 @@ namespace SmartLogReader
                 new IndexValuePair(2, record.AppDomainId.ToString()),
                 new IndexValuePair(3, record.ThreadId.ToString()),
                 new IndexValuePair(4, record.LevelString),
-                new IndexValuePair(5, record.Logger),
-                new IndexValuePair(6, record.Method),
+                new IndexValuePair(5, Check(record.Logger)),
+                new IndexValuePair(6, Check(record.Method)),
                 new IndexValuePair(7, record.ShortMessage)
             };
             return list;
+        }
+
+        public const string Empty = "<empty>";
+
+        private static string Check(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? Empty : value;
         }
 
         /// <summary>
@@ -96,8 +103,8 @@ namespace SmartLogReader
                 case 2: return Test(record.AppDomainId);
                 case 3: return Test(record.ThreadId);
                 case 4: return Test(record.LevelString);
-                case 5: return Test(record.Logger);
-                case 6: return Test(record.Method);
+                case 5: return Test(Check(record.Logger));
+                case 6: return Test(Check(record.Method));
                 case 7: return Test(record.Message);
             }
             return true;

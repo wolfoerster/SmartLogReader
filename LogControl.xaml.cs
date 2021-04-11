@@ -221,7 +221,7 @@ namespace SmartLogReader
         /// </summary>
         void ShowQuickFilterDialog(Record record)
         {
-            QuickFilterDialog dlg = new QuickFilterDialog(viewModel, record);
+            var dlg = new QuickFilterDialog(viewModel, record);
             Utils.MoveToMouse(dlg, "Quick Filter - all AND by default");
 
             if (dlg.ShowDialog() == true)
