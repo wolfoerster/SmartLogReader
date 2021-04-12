@@ -26,7 +26,6 @@ namespace SmartLogReader
     {
         private static readonly SimpleLogger log = new SimpleLogger();
         private readonly DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
-        private bool doMaximize;
 
         public WindowMain()
         {
@@ -62,9 +61,6 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            if (doMaximize)
-                WindowState = WindowState.Maximized;
-
             if (App.OpenFileName == null)
             {
                 smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(Properties.Settings.Default.LastWorkspace);
@@ -85,42 +81,27 @@ namespace SmartLogReader
 
         private void RestoreSizeAndPosition()
         {
+            var name = Properties.Settings.Default.ScreenName;
+            var screen = Screen.LookUpByName(name);
+            if (screen == null) 
+                return;
+
             this.Top = Properties.Settings.Default.Top;
             this.Left = Properties.Settings.Default.Left;
             this.Width = Properties.Settings.Default.Width;
             this.Height = Properties.Settings.Default.Height;
-
-            this.doMaximize = false;
-            this.WindowState = WindowState.Normal;
-
-            var name = Properties.Settings.Default.ScreenName;
-            var screen = Screen.LookUpByName(name);
-
-            if (screen == null)
-            {
-                var leftMargin = 80;
-                var rightMargin = 150;
-
-                screen = Screen.LookUpPrimary();
-                this.Top = screen.WorkArea.Top;
-                this.Left = screen.WorkArea.Left + leftMargin;
-                this.Width = screen.WorkArea.Width - leftMargin - rightMargin;
-                this.Height = screen.WorkArea.Height;
-            }
-            else
-            {
-                this.doMaximize = Properties.Settings.Default.WindowState == 2;
-            }
+            this.WindowState = (WindowState)Properties.Settings.Default.WindowState;
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
         }
 
         private void StoreSizeAndPosition()
         {
             Properties.Settings.Default.WindowState = (int)this.WindowState;
-
             if (this.WindowState != WindowState.Normal)
                 this.WindowState = WindowState.Normal;
 
-            var screen = Screen.LookUpByPixel(this.Left, this.Top);
+            var pt = new Point(this.Left, this.Top);
+            var screen = Screen.LookUpByPixel(pt.ToPixel(this));
             Properties.Settings.Default.ScreenName = screen?.Name;
 
             Properties.Settings.Default.Top = this.Top;

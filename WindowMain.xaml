@@ -1,7 +1,8 @@
 ﻿<Window x:Class="SmartLogReader.WindowMain"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:my="clr-namespace:SmartLogReader">
+        xmlns:my="clr-namespace:SmartLogReader" 
+        WindowStartupLocation="CenterScreen" Width="1300" Height="900">
   <!-- -->
   <my:SmartLogControl x:Name="smartLogControl"/>
   <!-- -->
