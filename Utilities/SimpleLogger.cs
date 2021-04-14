@@ -153,7 +153,21 @@ namespace SmartLogReader
             }
         }
 
-        #region Private stuff
+        public static string GetMessage(Exception exception)
+        {
+            var sb = new StringBuilder();
+            sb.Append(exception.Message);
+
+            exception = exception.InnerException;
+            while (exception != null)
+            {
+                sb.Append(" InnerException: ");
+                sb.Append(exception.Message);
+                exception = exception.InnerException;
+            }
+
+            return sb.ToString();
+        }
 
         private string CreateLogEntry(LogLevel level, string methodName, string message)
         {
@@ -181,24 +195,6 @@ namespace SmartLogReader
 
             return context.GetType().FullName;
         }
-
-        private static string GetMessage(Exception exception)
-        {
-            var sb = new StringBuilder();
-            sb.Append(exception.Message);
-
-            exception = exception.InnerException;
-            while (exception != null)
-            {
-                sb.Append(" InnerException: ");
-                sb.Append(exception.Message);
-                exception = exception.InnerException;
-            }
-
-            return sb.ToString();
-        }
-
-        #endregion Private stuff
 
         #region WriterLoop
 

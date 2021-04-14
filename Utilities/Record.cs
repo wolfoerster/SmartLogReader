@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace SmartLogReader
 {
@@ -97,8 +98,7 @@ namespace SmartLogReader
                 timeString = value.Replace(',', '.');
                 timeString = timeString.Replace('T', ' ');
                 timeString = timeString.Replace('Z', ' ');
-                DateTime time;
-                if (DateTime.TryParse(timeString, out time))
+                if (DateTime.TryParse(timeString, out DateTime time))
                 {
                     UtcTime = DateTime.SpecifyKind(time, DateTimeKind.Utc);
                     time = UtcTime.ToLocalTime();
@@ -134,10 +134,9 @@ namespace SmartLogReader
                     string[] s = threadIds.Split(new char[] { '/' });
                     if (s.Length == 3)
                     {
-                        int id;
-                        if (int.TryParse(s[0], out id)) ProcessId = id;
-                        if (int.TryParse(s[1], out id)) AppDomainId = id;
-                        if (int.TryParse(s[2], out id)) ThreadId = id;
+                        if (int.TryParse(s[0], out int processId)) ProcessId = processId;
+                        if (int.TryParse(s[1], out int appDomainId)) AppDomainId = appDomainId;
+                        if (int.TryParse(s[2], out int threadId)) ThreadId = threadId;
                     }
                 }
             }
@@ -153,8 +152,7 @@ namespace SmartLogReader
             set
             {
                 levelString = value;
-                LogLevel level;
-                if (Enum.TryParse(value, true, out level))
+                if (Enum.TryParse(value, true, out LogLevel level))
                     Level = level;
                 else
                     Level = TryParseLevel(value);
@@ -242,9 +240,10 @@ namespace SmartLogReader
                 var jToken = JValue.Parse(json);
                 return jToken.ToString(Formatting.Indented);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                var msg = ex.Message;
+                var message = SimpleLogger.GetMessage(exception);
+                Trace.WriteLine(message);
             }
 
             return json;
@@ -444,13 +443,15 @@ namespace SmartLogReader
                 return colorSpec;
             }
 
-            ColorSpecCollection colorSpecs = new ColorSpecCollection();
-            colorSpecs.Add(newSpec("Debug", 1));
-            colorSpecs.Add(newSpec("Information", 0));
-            colorSpecs.Add(newSpec("Warning", 3));
-            colorSpecs.Add(newSpec("Error", 2));
-            colorSpecs.Add(newSpec("Fatal", 11));
-            colorSpecs.Add(newSpec("None", 6));
+            ColorSpecCollection colorSpecs = new ColorSpecCollection
+            {
+                newSpec("Debug", 1),
+                newSpec("Information", 0),
+                newSpec("Warning", 3),
+                newSpec("Error", 2),
+                newSpec("Fatal", 11),
+                newSpec("None", 6)
+            };
             return colorSpecs;
         }
     }

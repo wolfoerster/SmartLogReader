@@ -261,34 +261,6 @@ namespace SmartLogReader
 
         #endregion ExtendFrameIntoClientArea
 
-        #region GetObjectId
-
-        /// <summary>
-        /// 
-        /// </summary>
-        static public string GetObjectIdString(object obj)
-        {
-            int id = GetObjectId(obj);
-            return "Object#" + id.ToString();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        static public int GetObjectId(object obj)
-        {
-            int code = obj.GetHashCode();
-            if (IDs.ContainsKey(code))
-                return IDs[code];
-
-            return IDs[code] = ++count;
-        }
-        static int count;
-
-        static Dictionary<int, int> IDs = new Dictionary<int, int>();
-
-        #endregion GetObjectId
-
         #region ScrollIntoCenter
 
         public static void ScrollIntoCenter(this ListBox listBox, object item, int index)
@@ -647,11 +619,9 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 #region Significant figures
 
                 // If you round '0.002' to 3 significant figures, the resulting string should be '0.00200'.
-                int sigFigures;
-                int.TryParse(format.Remove(0, 1), out sigFigures);
+                int.TryParse(format.Remove(0, 1), out int sigFigures);
 
-                int roundingPosition = 0;
-                double roundedValue = RoundSignificantDigits(value, sigFigures, out roundingPosition);
+                double roundedValue = RoundSignificantDigits(value, sigFigures, out int roundingPosition);
 
                 //--- 0 shall be formatted as 1 or any other integer < 10:
                 if (roundedValue == 0.0d)
