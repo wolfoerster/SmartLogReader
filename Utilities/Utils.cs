@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -435,49 +434,39 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         {
             Point screenPos;
             var mainWindow = Application.Current.MainWindow;
-            log.Verbose($"mainWindow: {mainWindow}, useLastPos: {useLastPos}, lastPos: {lastPos}");
 
             if (useLastPos)
             {
-                screenPos = lastPos;
+                screenPos = lastPos; // in pixel
             }
             else
             {
-                var mousePos = Mouse.GetPosition(mainWindow); // in dips
-                log.Verbose($"mousePos: {mousePos}");
+                var mousePos = Mouse.GetPosition(mainWindow); // in dip
                 screenPos = mainWindow.PointToScreen(mousePos); // in pixel
                 lastPos = screenPos;
             }
 
-            log.Verbose($"screenPos: {screenPos}");
+            // desired position is one inch to the left and one inch to the top of the mouse
+            var oneInch = new Point(96, 96); // in dip
+            oneInch = oneInch.ToPixel(mainWindow); // in pixel
+            var topLeft = new Point(screenPos.X - oneInch.X, screenPos.Y - oneInch.Y); // in pixel
+
+            // top left corner must be on screen
             var screen = Screen.LookUpByPixel(screenPos);
-            log.Verbose($"screen: {screen.Name}");
-
             var workArea = screen.WorkArea; // in pixel
-            log.Verbose($"workArea: {workArea}");
+            topLeft.X = Math.Max(topLeft.X, workArea.Left);
+            topLeft.Y = Math.Max(topLeft.Y, workArea.Top);
 
-            var winSize = new Point(win.Width, win.Height); // in dips
+            // bottom right corner must be on screen
+            var winSize = new Point(win.Width, win.Height); // in dip
             winSize = winSize.ToPixel(mainWindow); // in pixel
-            log.Verbose($"winSize: {winSize}");
+            topLeft.X = Math.Min(topLeft.X, workArea.Right - winSize.X);
+            topLeft.Y = Math.Min(topLeft.Y, workArea.Bottom - winSize.Y);
 
-            var eps = new Point(80, 80);
-            eps = eps.ToPixel(mainWindow);
-            var pos = new Point(screenPos.X - eps.X, screenPos.Y - eps.Y);
-
-            if (pos.X < workArea.Left) pos.X = workArea.Left;
-            var exceed = pos.X + winSize.X - workArea.Right;
-            if (exceed > 0) pos.X -= exceed;
-
-            if (pos.Y < workArea.Top) pos.Y = workArea.Top;
-            exceed = pos.Y + winSize.Y - workArea.Bottom;
-            if (exceed > 0) pos.Y -= exceed;
-
-            log.Verbose($"position in pixel: {pos}");
-            pos = pos.ToDip(mainWindow);
-            log.Verbose($"position in dip: {pos}");
-
-            win.Top = pos.Y;
-            win.Left = pos.X;
+            // transform to dip and set window position
+            topLeft = topLeft.ToDip(mainWindow);
+            win.Top = topLeft.Y;
+            win.Left = topLeft.X;
             win.Title = title + "   (right click or Esc to cancel)";
         }
         static Point lastPos;

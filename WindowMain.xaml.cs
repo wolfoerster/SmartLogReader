@@ -61,6 +61,9 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
+            if (Properties.Settings.Default.IsMaximized)
+                this.WindowState = WindowState.Maximized;
+
             if (App.OpenFileName == null)
             {
                 smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(Properties.Settings.Default.LastWorkspace);
@@ -90,13 +93,14 @@ namespace SmartLogReader
             this.Left = Properties.Settings.Default.Left;
             this.Width = Properties.Settings.Default.Width;
             this.Height = Properties.Settings.Default.Height;
-            this.WindowState = (WindowState)Properties.Settings.Default.WindowState;
+            this.WindowState = WindowState.Normal;
             this.WindowStartupLocation = WindowStartupLocation.Manual;
         }
 
         private void StoreSizeAndPosition()
         {
-            Properties.Settings.Default.WindowState = (int)this.WindowState;
+            Properties.Settings.Default.IsMaximized = this.WindowState == WindowState.Maximized;
+
             if (this.WindowState != WindowState.Normal)
                 this.WindowState = WindowState.Normal;
 
