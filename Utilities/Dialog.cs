@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -14,30 +14,43 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
-using System.Windows;
-using System.Reflection;
-using System.Windows.Input;
 using System;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SmartLogReader
 {
     public class Dialog : Window
     {
+        private bool showAsDialog;
+
         public Dialog()
         {
             Loaded += MeLoaded;
         }
 
+        public new void Show()
+        {
+            throw new InvalidOperationException("use Show(string title)");
+        }
+
+        public new bool? ShowDialog()
+        {
+            throw new InvalidOperationException("use ShowDialog(string title)");
+        }
+
         public void Show(string title)
         {
+            showAsDialog = false;
             SetTitle(title);
-            Show();
+            base.Show();
         }
 
         public bool ShowDialog(string title)
         {
+            showAsDialog = true;
             SetTitle(title);
-            return ShowDialog() ?? false;
+            return base.ShowDialog() ?? false;
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -49,11 +62,10 @@ namespace SmartLogReader
 
         void Close(bool result)
         {
-            bool isModal = (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
-            if (!isModal)
-                Close();
-            else
+            if (showAsDialog)
                 DialogResult = result;
+            else
+                Close();
         }
 
         protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
@@ -74,12 +86,14 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            var mousePos = Mouse.GetPosition(this); // in dips
-            var screenPos = PointToScreen(mousePos); // in pixel
+            // move this window near the mouse position
+            var mainWindow = Application.Current.MainWindow;
+            var mousePos = Mouse.GetPosition(mainWindow); // in dips
+            var screenPos = mainWindow.PointToScreen(mousePos); // in pixel
 
             // desired position is one inch to the left and one inch to the top of the mouse
             var oneInch = new Point(96, 96); // in dips
-            oneInch = oneInch.ToPixel(this); // in pixel
+            oneInch = oneInch.ToPixel(mainWindow); // in pixel
             var topLeft = new Point(screenPos.X - oneInch.X, screenPos.Y - oneInch.Y); // in pixel
 
             // top left corner must be on screen
@@ -90,12 +104,12 @@ namespace SmartLogReader
 
             // bottom right corner must be on screen
             var winSize = new Point(ActualWidth, ActualHeight); // in dips
-            winSize = winSize.ToPixel(this); // in pixel
+            winSize = winSize.ToPixel(mainWindow); // in pixel
             topLeft.X = Math.Min(topLeft.X, workArea.Right - winSize.X);
             topLeft.Y = Math.Min(topLeft.Y, workArea.Bottom - winSize.Y);
 
             // transform to dips and set window position
-            topLeft = topLeft.ToDip(this);
+            topLeft = topLeft.ToDip(mainWindow);
             Top = topLeft.Y;
             Left = topLeft.X;
         }

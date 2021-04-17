@@ -18,7 +18,7 @@
       </ToggleButton.Content>
     </ToggleButton>
     <Popup x:Name="popup" Width="120" Height="142" StaysOpen="false">
-      <Border BorderThickness="1,1,1,1" MouseLeave="PopupMouseLeave" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+      <Border BorderThickness="1" MouseLeave="PopupMouseLeave" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
         <Grid Margin="4">
           <Grid.Resources>
             <Style TargetType="CheckBox">

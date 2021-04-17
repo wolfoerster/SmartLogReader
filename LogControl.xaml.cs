@@ -221,7 +221,9 @@ namespace SmartLogReader
             var dlg = new QuickFilterDialog(viewModel, record);
 
             if (dlg.ShowDialog("Quick Filter - all AND by default"))
-                ShowFilterDialog();
+            {
+                this.Dispatch(() => ShowFilterDialog(), DispatcherPriority.Background);
+            }
         }
     }
 }

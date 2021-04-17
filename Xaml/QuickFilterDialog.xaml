@@ -16,18 +16,20 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <ItemsControl x:Name="listBox" Padding="4">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding PropertyName}" Width="82" Margin="0,3,0,0"/>
-            <TextBox Text="{Binding PropertyValue}" Width="320" MaxHeight="50" TextWrapping="Wrap"/>
-            <ToggleButton Content="Incl" IsChecked="{Binding IsIncluded}"/>
-            <ToggleButton Content="Excl" IsChecked="{Binding IsExcluded}"/>
-          </StackPanel>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Padding="4">
+      <ItemsControl x:Name="listBox">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding PropertyName}" Width="82" Margin="0,3,0,0"/>
+              <TextBox Text="{Binding PropertyValue}" Width="320" MaxHeight="50" TextWrapping="Wrap"/>
+              <ToggleButton Content="Incl" IsChecked="{Binding IsIncluded}"/>
+              <ToggleButton Content="Excl" IsChecked="{Binding IsExcluded}"/>
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Border>
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
       <Button x:Name="okButton" Margin="0,0,6,0" MinWidth="80" Height="23" IsDefault="True" Click="OnButtonOK" Content="Config" ToolTip="Configure filter"/>
       <Button x:Name="btnCancel" MinWidth="80" Height="23" IsCancel="True" Content="Done" ToolTip="Leave this dialog"/>
