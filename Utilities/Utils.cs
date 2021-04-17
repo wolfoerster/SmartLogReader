@@ -430,50 +430,6 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         /// <summary>
         /// 
         /// </summary>
-        public static void MoveToMouse(Window win, string title, bool useLastPos = false)
-        {
-            Point screenPos;
-            var mainWindow = Application.Current.MainWindow;
-
-            if (useLastPos)
-            {
-                screenPos = lastPos; // in pixel
-            }
-            else
-            {
-                var mousePos = Mouse.GetPosition(mainWindow); // in dip
-                screenPos = mainWindow.PointToScreen(mousePos); // in pixel
-                lastPos = screenPos;
-            }
-
-            // desired position is one inch to the left and one inch to the top of the mouse
-            var oneInch = new Point(96, 96); // in dip
-            oneInch = oneInch.ToPixel(mainWindow); // in pixel
-            var topLeft = new Point(screenPos.X - oneInch.X, screenPos.Y - oneInch.Y); // in pixel
-
-            // top left corner must be on screen
-            var screen = Screen.LookUpByPixel(screenPos);
-            var workArea = screen.WorkArea; // in pixel
-            topLeft.X = Math.Max(topLeft.X, workArea.Left);
-            topLeft.Y = Math.Max(topLeft.Y, workArea.Top);
-
-            // bottom right corner must be on screen
-            var winSize = new Point(win.Width, win.Height); // in dip
-            winSize = winSize.ToPixel(mainWindow); // in pixel
-            topLeft.X = Math.Min(topLeft.X, workArea.Right - winSize.X);
-            topLeft.Y = Math.Min(topLeft.Y, workArea.Bottom - winSize.Y);
-
-            // transform to dip and set window position
-            topLeft = topLeft.ToDip(mainWindow);
-            win.Top = topLeft.Y;
-            win.Left = topLeft.X;
-            win.Title = title + "   (right click or Esc to cancel)";
-        }
-        static Point lastPos;
-
-        /// <summary>
-        /// 
-        /// </summary>
         static public FileInfo GetFileInfo(string name)
         {
             if (!File.Exists(name))

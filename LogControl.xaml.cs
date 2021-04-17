@@ -124,10 +124,10 @@ namespace SmartLogReader
         /// </summary>
         private void HandleSetFocusOnSelected()
         {
-            this.Dispatch(() => handleSetFocusOnSelected(), DispatcherPriority.Background);
+            this.Dispatch(() => HandleSetFocusOnSelectedInternal(), DispatcherPriority.Background);
         }
 
-        private void handleSetFocusOnSelected()
+        private void HandleSetFocusOnSelectedInternal()
         {
             int index = myListBox.SelectedIndex;
             if (index < 0)
@@ -137,13 +137,12 @@ namespace SmartLogReader
             if (dpo == null)
                 return;
 
-            UIElement listBoxItem = dpo as UIElement;
-            if (listBoxItem == null)
-                return;
-
-            listBoxItem.Focus();
-            //Record record = myListBox.Items[index] as Record;
-            //log.Debug($"Set focus on {0}, item: {1}", ToString(), record.ShortString));
+            if (dpo is UIElement listBoxItem)
+            {
+                listBoxItem.Focus();
+                // Record record = myListBox.Items[index] as Record;
+                // log.Debug($"Set focus on {0}, item: {1}", ToString(), record.ShortString));
+            }
         }
 
         /// <summary>
@@ -183,8 +182,7 @@ namespace SmartLogReader
 
                 DetailsWindow win = new DetailsWindow(record.LongString);
                 win.Owner = Application.Current.MainWindow;
-                Utils.MoveToMouse(win, "Details Window");
-                win.Show();
+                win.Show("Details Window");
             }
         }
 
@@ -196,7 +194,7 @@ namespace SmartLogReader
             Record record = SelectedRecord();
 
             if (record == null)
-                ShowFilterDialog(false);
+                ShowFilterDialog();
             else
                 ShowQuickFilterDialog(record);
 
@@ -206,13 +204,12 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void ShowFilterDialog(bool useLastPos)
+        void ShowFilterDialog()
         {
             LogControlVM clone = viewModel.Clone();
             FilterDialog dlg = new FilterDialog(clone);
-            Utils.MoveToMouse(dlg, "Configure filter - all OR by default", useLastPos);
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog("Configure filter - all OR by default"))
                 viewModel.ReadFilterSettings(clone);
         }
 
@@ -222,10 +219,9 @@ namespace SmartLogReader
         void ShowQuickFilterDialog(Record record)
         {
             var dlg = new QuickFilterDialog(viewModel, record);
-            Utils.MoveToMouse(dlg, "Quick Filter - all AND by default");
 
-            if (dlg.ShowDialog() == true)
-                ShowFilterDialog(true);
+            if (dlg.ShowDialog("Quick Filter - all AND by default"))
+                ShowFilterDialog();
         }
     }
 }

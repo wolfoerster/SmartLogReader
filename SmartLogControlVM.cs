@@ -664,9 +664,8 @@ namespace SmartLogReader
         {
             ColorSpecCollection colorSpecs = new ColorSpecCollection(ColorSpecs);
             HighLightingDialog dlg = new HighLightingDialog(colorSpecs);
-            Utils.MoveToMouse(dlg, HighlightingCmd.Text);
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog(HighlightingCmd.Text))
             {
                 ColorSpecs = new ColorSpecCollection(colorSpecs);
                 myClientControlVM.HandleRecordsChanged();
@@ -810,9 +809,8 @@ namespace SmartLogReader
         void ExecuteNewWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
         {
             NewWorkspaceDialog dlg = new NewWorkspaceDialog();
-            Utils.MoveToMouse(dlg, "Workspace Name:");
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog("Workspace Name:"))
             {
                 var value = dlg.Workspace;
                 if (string.IsNullOrWhiteSpace(value))

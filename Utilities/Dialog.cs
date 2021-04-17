@@ -17,11 +17,29 @@
 using System.Windows;
 using System.Reflection;
 using System.Windows.Input;
+using System;
 
 namespace SmartLogReader
 {
     public class Dialog : Window
     {
+        public Dialog()
+        {
+            Loaded += MeLoaded;
+        }
+
+        public void Show(string title)
+        {
+            SetTitle(title);
+            Show();
+        }
+
+        public bool ShowDialog(string title)
+        {
+            SetTitle(title);
+            return ShowDialog() ?? false;
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -47,6 +65,39 @@ namespace SmartLogReader
         public void OnButtonOK(object sender, RoutedEventArgs e)
         {
             Close(true);
+        }
+
+        private void SetTitle(string title)
+        {
+            Title = title + "   (right click or Esc to cancel)";
+        }
+
+        private void MeLoaded(object sender, RoutedEventArgs e)
+        {
+            var mousePos = Mouse.GetPosition(this); // in dips
+            var screenPos = PointToScreen(mousePos); // in pixel
+
+            // desired position is one inch to the left and one inch to the top of the mouse
+            var oneInch = new Point(96, 96); // in dips
+            oneInch = oneInch.ToPixel(this); // in pixel
+            var topLeft = new Point(screenPos.X - oneInch.X, screenPos.Y - oneInch.Y); // in pixel
+
+            // top left corner must be on screen
+            var screen = Screen.LookUpByPixel(screenPos);
+            var workArea = screen.WorkArea; // in pixel
+            topLeft.X = Math.Max(topLeft.X, workArea.Left);
+            topLeft.Y = Math.Max(topLeft.Y, workArea.Top);
+
+            // bottom right corner must be on screen
+            var winSize = new Point(ActualWidth, ActualHeight); // in dips
+            winSize = winSize.ToPixel(this); // in pixel
+            topLeft.X = Math.Min(topLeft.X, workArea.Right - winSize.X);
+            topLeft.Y = Math.Min(topLeft.Y, workArea.Bottom - winSize.Y);
+
+            // transform to dips and set window position
+            topLeft = topLeft.ToDip(this);
+            Top = topLeft.Y;
+            Left = topLeft.X;
         }
     }
 }

@@ -651,9 +651,8 @@ namespace SmartLogReader
         {
             LogControlVM clone = myCurrentVM.Clone();
             FilterDialog dlg = new FilterDialog(clone);
-            Utils.MoveToMouse(dlg, "Configure filter");
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog("Configure filter"))
             {
                 myCurrentVM.ReadFilterSettings(clone);
                 myCurrentVM.SetFocusOnSelected();
