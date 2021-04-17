@@ -86,15 +86,18 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            // move this window near the mouse position
-            var mainWindow = Application.Current.MainWindow;
-            var mousePos = Mouse.GetPosition(mainWindow); // in dips
-            var screenPos = mainWindow.PointToScreen(mousePos); // in pixel
+            CenterUnderneathMouse();
+        }
 
-            // desired position is one inch to the left and one inch to the top of the mouse
-            var oneInch = new Point(96, 96); // in dips
-            oneInch = oneInch.ToPixel(mainWindow); // in pixel
-            var topLeft = new Point(screenPos.X - oneInch.X, screenPos.Y - oneInch.Y); // in pixel
+        private void CenterUnderneathMouse()
+        {
+            var mousePos = Mouse.GetPosition(this); // in dips
+            var screenPos = PointToScreen(mousePos); // in pixel
+
+            // get the actual size and calculate a position
+            var winSize = new Point(ActualWidth, ActualHeight); // in dips
+            winSize = winSize.ToPixel(this); // in pixel
+            var topLeft = new Point(screenPos.X - winSize.X / 2, screenPos.Y - winSize.Y / 2);
 
             // top left corner must be on screen
             var screen = Screen.LookUpByPixel(screenPos);
@@ -103,13 +106,11 @@ namespace SmartLogReader
             topLeft.Y = Math.Max(topLeft.Y, workArea.Top);
 
             // bottom right corner must be on screen
-            var winSize = new Point(ActualWidth, ActualHeight); // in dips
-            winSize = winSize.ToPixel(mainWindow); // in pixel
             topLeft.X = Math.Min(topLeft.X, workArea.Right - winSize.X);
             topLeft.Y = Math.Min(topLeft.Y, workArea.Bottom - winSize.Y);
 
-            // transform to dips and set window position
-            topLeft = topLeft.ToDip(mainWindow);
+            // transform to dips and set position
+            topLeft = topLeft.ToDip(this);
             Top = topLeft.Y;
             Left = topLeft.X;
         }
