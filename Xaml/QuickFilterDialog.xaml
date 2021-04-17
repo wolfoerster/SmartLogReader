@@ -2,8 +2,16 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:SmartLogReader"
-        Width="502" Height="286" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        Width="526" SizeToContent="Height" ResizeMode="NoResize" WindowStyle="ToolWindow">
   <Grid Margin="4">
+    <Grid.Resources>
+      <Style TargetType="ToggleButton">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="MaxHeight" Value="22"/>
+        <Setter Property="Margin" Value="2,0,0,0"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+      </Style>
+    </Grid.Resources>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
@@ -13,9 +21,9 @@
         <DataTemplate>
           <StackPanel Orientation="Horizontal">
             <TextBlock Text="{Binding PropertyName}" Width="82" Margin="0,3,0,0"/>
-            <TextBox Text="{Binding PropertyValue}" Width="300"/>
-            <ToggleButton Content="Incl" IsChecked="{Binding IsIncluded}" Width="40" Margin="0,0,0,0"/>
-            <ToggleButton Content="Excl" IsChecked="{Binding IsExcluded}" Width="40" Margin="0,0,0,0"/>
+            <TextBox Text="{Binding PropertyValue}" Width="320" MaxHeight="50" TextWrapping="Wrap"/>
+            <ToggleButton Content="Incl" IsChecked="{Binding IsIncluded}"/>
+            <ToggleButton Content="Excl" IsChecked="{Binding IsExcluded}"/>
           </StackPanel>
         </DataTemplate>
       </ListBox.ItemTemplate>
