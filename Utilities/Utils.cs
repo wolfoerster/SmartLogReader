@@ -37,15 +37,13 @@ namespace SmartLogReader
         public static Point ToPixel(this Point pointInDip, Visual visual)
         {
             var source = PresentationSource.FromVisual(visual);
-            var matrix = source.CompositionTarget.TransformToDevice;
-            return matrix.Transform(pointInDip);
+            return source.CompositionTarget.TransformToDevice.Transform(pointInDip);
         }
 
         public static Point ToDip(this Point pointInPixel, Visual visual)
         {
             var source = PresentationSource.FromVisual(visual);
-            var matrix = source.CompositionTarget.TransformFromDevice;
-            return matrix.Transform(pointInPixel);
+            return source.CompositionTarget.TransformFromDevice.Transform(pointInPixel);
         }
 
         /// <summary>

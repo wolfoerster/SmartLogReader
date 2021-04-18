@@ -94,7 +94,7 @@ namespace SmartLogReader
             var mousePos = Mouse.GetPosition(this); // in dips
             var screenPos = PointToScreen(mousePos); // in pixel
 
-            // get the actual size and calculate a position
+            // get the actual size and calculate a position in pixel
             var winSize = new Point(ActualWidth, ActualHeight); // in dips
             winSize = winSize.ToPixel(this); // in pixel
             var topLeft = new Point(screenPos.X - winSize.X / 2, screenPos.Y - winSize.Y / 2);
