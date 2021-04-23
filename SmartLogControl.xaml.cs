@@ -61,14 +61,7 @@ namespace SmartLogReader
         void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             log.Debug(e.PropertyName);
-            if (e.PropertyName == "SelectedRecordDetails")
-            {
-                viewModel.MyClientControlVM.HandleRecordsChanged(false);
-                viewModel.MyServerControlVM.HandleRecordsChanged(false);
-                viewModel.MyAdditionalControlVM.HandleRecordsChanged(false);
-            }
-            //--- need ColumnDefinitions for the rest of this method
-            else if (splitGrid.ColumnDefinitions.Count > 4)
+            if (splitGrid.ColumnDefinitions.Count > 4)
             {
                 if (e.PropertyName == "GetGridLengths")
                 {
