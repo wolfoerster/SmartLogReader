@@ -156,23 +156,13 @@ namespace SmartLogReader
                 "Fatal"
             };
 
-            RecordDetails = new List<string>
-            {
-                "Time",
-                "Logger",
-                "Level",
-                "ThreadIds",
-                "Method"
-            };
-
             InitWorkspaces();
         }
         static public List<string> Fonts { get; set; }
         static public List<string> ReadModes { get; set; }
         static public List<string> LogLevels { get; set; }
-        static public List<string> RecordDetails { get; set; }
 
-        #region Sub viewmodels
+#region Sub viewmodels
 
         /// <summary>
         /// 
@@ -258,9 +248,9 @@ namespace SmartLogReader
         [XmlIgnore]
         internal int ColumnIndex { get; private set; }
 
-        #endregion Sub viewmodels
+#endregion Sub viewmodels
 
-        #region Public Properties
+#region Public Properties
 
         /// <summary>
         /// 
@@ -516,7 +506,7 @@ namespace SmartLogReader
             set { HighLightingDialog.LastSize = value; }
         }
 
-        #endregion Public Properties
+#endregion Public Properties
 
         /// <summary>
         /// 
@@ -582,7 +572,7 @@ namespace SmartLogReader
             myServerControlVM.LoadFile(path);
         }
 
-        #region Commands
+#region Commands
 
         void InitCommands()
         {
@@ -674,9 +664,9 @@ namespace SmartLogReader
             }
         }
 
-        #endregion Commands
+#endregion Commands
 
-        #region Workspaces
+#region Workspaces
 
         /// <summary>
         /// 
