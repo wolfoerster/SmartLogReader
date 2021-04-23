@@ -74,7 +74,7 @@ namespace SmartLogReader
 
         void OnButtonCopy(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(textBox.Text);
+            Clipboard.SetText(textBox.SelectionLength > 0 ? textBox.SelectedText : textBox.Text);
         }
 
         void OnButtonClose(object sender, RoutedEventArgs e)
