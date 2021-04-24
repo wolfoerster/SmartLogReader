@@ -52,7 +52,9 @@ namespace SmartLogReader
                 ">"
             };
         }
+
         static public List<string> PropertyNames { get; set; }
+
         static public List<string> OpCodes { get; set; }
 
         public Filter()
@@ -101,9 +103,13 @@ namespace SmartLogReader
                     var name = property.Name;
                     if (!nogo.Contains(name))
                     {
-                        var value = Check(property.Value.ToString());
-                        if (result.Length > 0) result += "\r\n";
-                        result += $"{name}:{value}";
+                        ////var value = Check(property.Value.ToString());
+                        var value = property.Value.ToString();
+                        if (!string.IsNullOrWhiteSpace(value))
+                        {
+                            if (result.Length > 0) result += "\r\n";
+                            result += $"{name}: {value}";
+                        }
                     }
                 }
 

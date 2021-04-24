@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:SmartLogReader"
         Width="526" SizeToContent="Height" WindowStyle="ToolWindow">
-  <Grid Margin="4" TextElement.FontSize="13">
+  <Grid Margin="4">
     <Grid.Resources>
       <my:WidthConverter x:Key="myWidthConverter"/>
     </Grid.Resources>
