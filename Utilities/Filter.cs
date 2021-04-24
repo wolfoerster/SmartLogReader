@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json.Linq;
 
 namespace SmartLogReader
 {
@@ -39,7 +40,8 @@ namespace SmartLogReader
                 "Level",
                 "Class",
                 "Method",
-                "Message"
+                "Message",
+                "JSON Props",
             };
 
             OpCodes = new List<string>
@@ -79,9 +81,38 @@ namespace SmartLogReader
                 new IndexValuePair(4, record.LevelString),
                 new IndexValuePair(5, Check(record.Logger)),
                 new IndexValuePair(6, Check(record.Method)),
-                new IndexValuePair(7, record.ShortMessage)
+                new IndexValuePair(7, record.ShortMessage),
+                new IndexValuePair(8, GetJsonProperties(record)),
             };
             return list;
+        }
+
+        private static string GetJsonProperties(Record record)
+        {
+            try
+            {
+                var nogo = new List<string> { "Message", "SourceContext", "MethodName", "ActionName", "RequestPath", "SpanId" };
+                //var nogo = new List<string> { "Message", "SourceContext", "MethodName" };
+                var result = string.Empty;
+                var properties = record.Json.Properties();
+
+                foreach (var property in properties)
+                {
+                    var name = property.Name;
+                    if (!nogo.Contains(name))
+                    {
+                        var value = Check(property.Value.ToString());
+                        if (result.Length > 0) result += "\r\n";
+                        result += $"{name}:{value}";
+                    }
+                }
+
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public const string Empty = "<empty>";

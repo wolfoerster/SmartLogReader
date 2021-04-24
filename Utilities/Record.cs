@@ -39,7 +39,10 @@ namespace SmartLogReader
         }
         static ulong count;
 
-        public string Json { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public JObject Json { get; set; }
 
         /// <summary>
         /// The record time in UTC.
@@ -216,7 +219,7 @@ namespace SmartLogReader
             get
             {
                 if (Json != null)
-                    return Beautify(Json);
+                    return Json.ToString(Formatting.Indented);
 
                 return GetPrefix(true) + JsonMessage;
             }
