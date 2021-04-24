@@ -83,7 +83,7 @@ namespace SmartLogReader
                 new IndexValuePair(4, record.LevelString),
                 new IndexValuePair(5, Check(record.Logger)),
                 new IndexValuePair(6, Check(record.Method)),
-                new IndexValuePair(7, record.ShortMessage),
+                new IndexValuePair(7, record.Message),
                 new IndexValuePair(8, GetJsonProperties(record.Json)),
             };
             return list;

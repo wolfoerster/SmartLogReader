@@ -153,6 +153,11 @@ namespace SmartLogReader
         {
             if (createNewFilter)
             {
+                if (PropertyIndex == 8 && PropertyValue.IndexOf('\n') > 0)
+                {
+                    MessageBox.Show("Only a single JSON property can be specified in this version.\r\nPlease delete all lines except one.", "We're sorry!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
                 filter = new Filter(PropertyIndex, 0, PropertyValue);
                 filter.AndNext = true;
