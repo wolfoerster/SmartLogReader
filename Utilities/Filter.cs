@@ -84,41 +84,43 @@ namespace SmartLogReader
                 new IndexValuePair(5, Check(record.Logger)),
                 new IndexValuePair(6, Check(record.Method)),
                 new IndexValuePair(7, record.ShortMessage),
-                new IndexValuePair(8, GetJsonProperties(record)),
+                new IndexValuePair(8, GetJsonProperties(record.Json)),
             };
             return list;
         }
 
-        private static string GetJsonProperties(Record record)
+        private static string GetJsonProperties(JObject jObject)
         {
-            try
+            if (jObject != null)
             {
-                var nogo = new List<string> { "Message", "SourceContext", "MethodName", "ActionName", "RequestPath", "SpanId" };
-                //var nogo = new List<string> { "Message", "SourceContext", "MethodName" };
-                var result = string.Empty;
-                var properties = record.Json.Properties();
-
-                foreach (var property in properties)
+                try
                 {
-                    var name = property.Name;
-                    if (!nogo.Contains(name))
+                    var nogo = new List<string> { "Message", "SourceContext", "MethodName", "ActionName", "RequestPath", "SpanId" };
+                    var result = string.Empty;
+                    var properties = jObject.Properties();
+
+                    foreach (var property in properties)
                     {
-                        ////var value = Check(property.Value.ToString());
-                        var value = property.Value.ToString();
-                        if (!string.IsNullOrWhiteSpace(value))
+                        var name = property.Name;
+                        if (!nogo.Contains(name))
                         {
-                            if (result.Length > 0) result += "\r\n";
-                            result += $"{name}: {value}";
+                            var value = property.Value.ToString();
+                            if (!string.IsNullOrWhiteSpace(value))
+                            {
+                                if (result.Length > 0) result += "\r\n";
+                                result += $"{name}:{value}";
+                            }
                         }
                     }
-                }
 
-                return result;
+                    return result;
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public const string Empty = "<empty>";
@@ -143,8 +145,19 @@ namespace SmartLogReader
                 case 5: return Test(Check(record.Logger));
                 case 6: return Test(Check(record.Method));
                 case 7: return Test(record.Message);
+                case 8: return Test(record.Json);
             }
             return true;
+        }
+
+        protected virtual bool Test(JObject jObject)
+        {
+            if (jObject == null || string.IsNullOrWhiteSpace(expectedValue))
+                return false;
+
+            var actualValue = GetJsonProperties(jObject);
+            var isContained = actualValue.Contains(expectedValue);
+            return OpCodeIndex == 0 ? isContained : !isContained;
         }
 
         /// <summary>
