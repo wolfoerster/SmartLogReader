@@ -500,6 +500,15 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
+        public Size QuickFilterDialogSize
+        {
+            get { return QuickFilterDialog.LastSize; }
+            set { QuickFilterDialog.LastSize = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Size HighLightingDialogSize
         {
             get { return HighLightingDialog.LastSize; }

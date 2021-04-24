@@ -16,6 +16,7 @@
 //******************************************************************************************
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
 
 namespace SmartLogReader
 {
@@ -41,14 +42,24 @@ namespace SmartLogReader
 
             IndexValuePair.FirstIncluded = IndexValuePair.FirstExcluded = -1;
             listBox.ItemsSource = list;
+
+            if (LastSize.Width > 55 && LastSize.Height > 55)
+            {
+                Width = LastSize.Width;
+                Height = LastSize.Height;
+            }
         }
         LogControlVM ViewModel;
+
+        public static Size LastSize;
 
         /// <summary>
         /// 
         /// </summary>
         void MeClosing(object sender, CancelEventArgs e)
         {
+            LastSize.Width = Width;
+            LastSize.Height = Height;
             RemoveLastAnd(ViewModel.IncludeList);
             RemoveLastAnd(ViewModel.ExcludeList);
         }
