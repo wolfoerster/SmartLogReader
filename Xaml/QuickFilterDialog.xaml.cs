@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017-2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -31,7 +31,6 @@ namespace SmartLogReader
         public QuickFilterDialog(LogControlVM viewModel, Record record)
         {
             InitializeComponent();
-
             ViewModel = viewModel;
             Closing += MeClosing;
 
@@ -47,6 +46,12 @@ namespace SmartLogReader
             {
                 Width = LastSize.Width;
                 Height = LastSize.Height;
+            }
+
+            filterWarning.ViewModel = viewModel;
+            if (!viewModel.IsFilterEnabled)
+            {
+                filterWarning.Visibility = Visibility.Visible;
             }
         }
         LogControlVM ViewModel;
@@ -168,6 +173,7 @@ namespace SmartLogReader
                 filterList.Remove(filter);
                 filter = null;
             }
+
             ViewModel.NotifyFilterChanged();
         }
     }

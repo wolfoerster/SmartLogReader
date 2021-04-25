@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017-2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -18,7 +18,6 @@ using System;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace SmartLogReader
 {
@@ -221,16 +220,12 @@ namespace SmartLogReader
         }
         bool isFilterEnabled = true;
 
-        public void CheckIsFilterEnabled()
+        /// <summary>
+        /// 
+        /// </summary>
+        public void MakeFilterEnabled()
         {
-            if (!IsFilterEnabled)
-            {
-                var dlg = new MyMessageBox("Currently filtering is not enabled.\r\nClick OK to enable it.");
-                if (dlg.ShowDialog("Filtering disabled"))
-                {
-                    OnPropertyChanged("MakeFilterEnabled");
-                }
-            }
+            OnPropertyChanged("MakeFilterEnabled");
         }
 
         /// <summary>

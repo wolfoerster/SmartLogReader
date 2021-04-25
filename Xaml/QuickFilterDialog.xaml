@@ -31,9 +31,17 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </Border>
-    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-      <Button x:Name="okButton" Margin="0,0,6,0" MinWidth="80" Height="23" IsDefault="True" Click="OnButtonOK" Content="Config" ToolTip="Configure filter"/>
-      <Button x:Name="btnCancel" MinWidth="80" Height="23" IsCancel="True" Content="Done" ToolTip="Leave this dialog"/>
-    </StackPanel>
+    <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <my:FilterWarning Grid.Column="0" x:Name="filterWarning"/>
+      <Button Grid.Column="2" x:Name="okButton" MinWidth="80" IsDefault="True" Click="OnButtonOK" Content="OK"/>
+      <Button Grid.Column="4" x:Name="btnCancel" MinWidth="80" IsCancel="True" Content="Cancel"/>
+    </Grid>
   </Grid>
 </my:Dialog>

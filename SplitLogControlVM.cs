@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017-2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -652,14 +652,11 @@ namespace SmartLogReader
 
         void ExecuteConfigureCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            LogControlVM clone = myCurrentVM.Clone();
-            FilterDialog dlg = new FilterDialog(clone);
+            FilterDialog dlg = new FilterDialog(myCurrentVM);
 
             if (dlg.ShowDialog("Configure filter"))
             {
-                myCurrentVM.ReadFilterSettings(clone);
-                ////needs to be dispatched:
-                ////myCurrentVM.CheckIsFilterEnabled();
+                myCurrentVM.ReadFilterSettings(dlg.DataContext as LogControlVM);
                 myCurrentVM.SetFocusOnSelected();
             }
         }

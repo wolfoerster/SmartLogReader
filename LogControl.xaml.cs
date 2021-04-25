@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017-2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -205,11 +205,10 @@ namespace SmartLogReader
         /// </summary>
         void ShowFilterDialog()
         {
-            LogControlVM clone = viewModel.Clone();
-            FilterDialog dlg = new FilterDialog(clone);
+            FilterDialog dlg = new FilterDialog(viewModel);
 
             if (dlg.ShowDialog("Configure filter - all OR by default"))
-                viewModel.ReadFilterSettings(clone);
+                viewModel.ReadFilterSettings(dlg.DataContext as LogControlVM);
         }
 
         /// <summary>
@@ -217,15 +216,12 @@ namespace SmartLogReader
         /// </summary>
         void ShowQuickFilterDialog(Record record)
         {
-            viewModel.CheckIsFilterEnabled();
-            this.Dispatch(() => 
+            var dlg = new QuickFilterDialog(viewModel, record);
+
+            if (dlg.ShowDialog("Quick Filter - all AND by default"))
             {
-                var dlg = new QuickFilterDialog(viewModel, record);
-                if (dlg.ShowDialog("Quick Filter - all AND by default"))
-                {
-                    this.Dispatch(() => ShowFilterDialog(), DispatcherPriority.Background);
-                }
-            }, DispatcherPriority.Background);
+                this.Dispatch(() => ShowFilterDialog(), DispatcherPriority.Background);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017-2021 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -14,41 +14,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
-using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SmartLogReader
 {
-    /// <summary>
-    /// Interaction logic for FilterDialog.xaml
-    /// </summary>
-    public partial class FilterDialog : Dialog
+    public class FilterWarning : TextBlock
     {
-        public FilterDialog(LogControlVM viewModel)
+        public FilterWarning()
         {
-            InitializeComponent();
-            DataContext = viewModel.Clone();
-            Closing += MeClosing;
+            FontSize = 13;
+            Text = "Filtering is not enabled! Click here to enable it.";
 
-            if (LastSize.Width > 55 && LastSize.Height > 55)
-            {
-                Width = LastSize.Width;
-                Height = LastSize.Height;
-            }
+            Foreground = Brushes.White;
+            Background = Brushes.Firebrick;
 
-            filterWarning.ViewModel = viewModel;
-            if (!viewModel.IsFilterEnabled)
-            {
-                filterWarning.Visibility = Visibility.Visible;
-            }
+            TextAlignment = TextAlignment.Center;
+            HorizontalAlignment = HorizontalAlignment.Stretch;
+
+            Visibility = Visibility.Collapsed;
         }
 
-        public static Size LastSize;
+        public LogControlVM ViewModel { get; set; }
 
-        void MeClosing(object sender, CancelEventArgs e)
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            LastSize.Width = Width;
-            LastSize.Height = Height;
+            base.OnMouseLeftButtonUp(e);
+            ViewModel.MakeFilterEnabled();
+            Visibility = Visibility.Collapsed;
         }
     }
 }
