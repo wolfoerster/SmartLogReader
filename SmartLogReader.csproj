@@ -93,6 +93,9 @@
     <Compile Include="ByteParser\IByteParser.cs" />
     <Compile Include="Utilities\Screen.cs" />
     <Compile Include="Utilities\SimpleLogger.cs" />
+    <Compile Include="Xaml\MyMessageBox.xaml.cs">
+      <DependentUpon>MyMessageBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
@@ -149,6 +152,10 @@
     <Compile Include="Xaml\WaitControl.xaml.cs">
       <DependentUpon>WaitControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Xaml\MyMessageBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Xaml\NewWorkspaceDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

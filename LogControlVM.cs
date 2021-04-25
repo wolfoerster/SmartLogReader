@@ -18,6 +18,7 @@ using System;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace SmartLogReader
 {
@@ -31,8 +32,7 @@ namespace SmartLogReader
         /// </summary>
         public LogControlVM()
         {
-            string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SimpleLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
             IncludeList = new FilterCollection();
             ExcludeList = new FilterCollection();
         }
@@ -220,6 +220,18 @@ namespace SmartLogReader
             }
         }
         bool isFilterEnabled = true;
+
+        public void CheckIsFilterEnabled()
+        {
+            if (!IsFilterEnabled)
+            {
+                var dlg = new MyMessageBox("Currently filtering is not enabled.\r\nClick OK to enable it.");
+                if (dlg.ShowDialog("Filtering disabled"))
+                {
+                    OnPropertyChanged("MakeFilterEnabled");
+                }
+            }
+        }
 
         /// <summary>
         /// 

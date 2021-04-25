@@ -32,8 +32,7 @@ namespace SmartLogReader
         /// </summary>
         public LogControl()
         {
-            string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SimpleLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
             InitializeComponent();
             SnapsToDevicePixels = true;
         }
@@ -218,12 +217,15 @@ namespace SmartLogReader
         /// </summary>
         void ShowQuickFilterDialog(Record record)
         {
-            var dlg = new QuickFilterDialog(viewModel, record);
-
-            if (dlg.ShowDialog("Quick Filter - all AND by default"))
+            viewModel.CheckIsFilterEnabled();
+            this.Dispatch(() => 
             {
-                this.Dispatch(() => ShowFilterDialog(), DispatcherPriority.Background);
-            }
+                var dlg = new QuickFilterDialog(viewModel, record);
+                if (dlg.ShowDialog("Quick Filter - all AND by default"))
+                {
+                    this.Dispatch(() => ShowFilterDialog(), DispatcherPriority.Background);
+                }
+            }, DispatcherPriority.Background);
         }
     }
 }

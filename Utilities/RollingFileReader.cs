@@ -25,8 +25,7 @@ namespace SmartLogReader
     {
         public RollingFileReader()
         {
-            string name = MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SimpleLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
             log.Debug();
         }
         private static int instanceCounter;
@@ -148,6 +147,7 @@ namespace SmartLogReader
             try
             {
                 FileInfo fileInfo = new FileInfo(path);
+                prevLength = fileInfo.Length;
                 return ReadBytes(path, 0, fileInfo.Length);
             }
             catch (Exception e)

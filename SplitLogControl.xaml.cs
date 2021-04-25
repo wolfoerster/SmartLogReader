@@ -31,8 +31,7 @@ namespace SmartLogReader
         /// </summary>
         public SplitLogControl()
         {
-            string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SimpleLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
             InitializeComponent();
             AllowDrop = true;
             Drop += MeDrop;

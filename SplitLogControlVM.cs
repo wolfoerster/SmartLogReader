@@ -34,8 +34,7 @@ namespace SmartLogReader
         /// </summary>
         public SplitLogControlVM()
         {
-            string name = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName;
-            log = new SimpleLogger($"{name}.{++instanceCounter}");
+            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
             GridLength0 = 1;
             GridLength2 = 0;
             InitCommands();
@@ -80,7 +79,11 @@ namespace SmartLogReader
         /// </summary>
         void SubVMPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsFilterEnabled")
+            if (e.PropertyName == "MakeFilterEnabled")
+            {
+                IsFilterEnabled = true;
+            }
+            else if (e.PropertyName == "IsFilterEnabled")
             {
                 HandleFilterChanged();
             }
@@ -655,6 +658,8 @@ namespace SmartLogReader
             if (dlg.ShowDialog("Configure filter"))
             {
                 myCurrentVM.ReadFilterSettings(clone);
+                ////needs to be dispatched:
+                ////myCurrentVM.CheckIsFilterEnabled();
                 myCurrentVM.SetFocusOnSelected();
             }
         }
