@@ -17,8 +17,6 @@
 
 namespace SmartLogReader
 {
-    using System;
-
     public static class ParserFactory
     {
         public static IByteParser CreateParser(byte[] bytes)

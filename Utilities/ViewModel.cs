@@ -63,10 +63,10 @@ namespace SmartLogReader
         static void InitCommands()
         {
             CopyCmd = new UICommand("Copy selected", "Copy", Key.C, ModifierKeys.Control, "Ctrl+C");
-            OpenCmd = new UICommand("Open log file", "Open", Key.O, ModifierKeys.Control, "Ctrl+O");
-            CloseCmd = new UICommand("Close log file", "Close", Key.X, ModifierKeys.Control, "Ctrl+X");
+            OpenCmd = new UICommand("Open file", "Open", Key.O, ModifierKeys.Control, "Ctrl+O");
+            CloseCmd = new UICommand("Close file", "Close", Key.X, ModifierKeys.Control, "Ctrl+X");
             ConfigureCmd = new UICommand("Configure filter", "Configure", Key.C, ModifierKeys.Alt, "Alt+C");
-            HighlightingCmd = new UICommand("Select highlighting colors", "Highlighting", Key.H, ModifierKeys.Control, "Ctrl+H");
+            HighlightingCmd = new UICommand("Select colors", "Highlighting", Key.H, ModifierKeys.Control, "Ctrl+H");
 
             SplitCmd = new UICommand("Split log (TODO)", "Split", Key.S, ModifierKeys.Control, "Ctrl+S");
             FindCmd = new UICommand("Find record", "Find", Key.F, ModifierKeys.Control, "Ctrl+F");
@@ -74,7 +74,6 @@ namespace SmartLogReader
             SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
             NewWorkspaceCmd = new UICommand("New workspace (Ctrl+Enter)", "New", Key.Return, ModifierKeys.Control, "Ctrl+Return");
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
-            TimeReferenceCmd = new UICommand("Set selected record time as reference time", "Time ref.", Key.R, ModifierKeys.Control, "Ctrl+R");
         }
 
         static public UICommand CopyCmd { get; set; }
@@ -89,7 +88,6 @@ namespace SmartLogReader
         static public UICommand SearchDownCmd { get; set; }
         static public UICommand NewWorkspaceCmd { get; set; }
         static public UICommand DeleteWorkspaceCmd { get; set; }
-        static public UICommand TimeReferenceCmd { get; set; }
     }
 
     /// <summary>

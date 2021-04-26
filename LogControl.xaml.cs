@@ -172,7 +172,7 @@ namespace SmartLogReader
             if (record != null)
             {
                 var pt = e.GetPosition(this);
-                if (pt.X < 150)
+                if (pt.X < 96) // one inch!
                 {
                     Record.UtcTime0 = record.UtcTime;
                     viewModel.RefreshAll();

@@ -17,7 +17,6 @@
         <Button Content="C" ToolTip="{Binding ConfigureCmd.Text}" Command="{Binding ConfigureCmd}" Width="20" Margin="4,0,0,0" Focusable="false"/>
         <ToggleButton Content="S" ToolTip="Split log" IsChecked="{Binding IsSplitLog}" Width="20" Margin="4,0,0,0" Focusable="false"/>
         <ToggleButton Content="Y" ToolTip="Sync selection" IsChecked="{Binding IsSyncSelection}" Width="20" Margin="4,0,0,0" Focusable="false"/>
-        <Button Content="R" ToolTip="{Binding TimeReferenceCmd.Text}" Command="{Binding TimeReferenceCmd}" Width="20" Margin="4,0,0,0"/>
         <Button Content="X" ToolTip="{Binding CloseCmd.Text}" Command="{Binding CloseCmd}" Width="20" Margin="4,0,0,0" Focusable="false"/>
       </StackPanel>
       <!-- -->
