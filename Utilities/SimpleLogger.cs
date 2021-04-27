@@ -40,8 +40,6 @@ namespace SmartLogReader
 
     public class SimpleLogger
     {
-        #region Private stuff
-
         private static readonly long MaxLength = 8 * 1024 * 1024; // new log file at 8 MB
         private static readonly ConcurrentQueue<string> LogEntries = new ConcurrentQueue<string>();
         private static readonly object Locker = new Object();
@@ -49,8 +47,6 @@ namespace SmartLogReader
         private readonly string className;
         private readonly int appDomainId;
         private readonly int processId;
-
-        #endregion Private stuff
 
         public SimpleLogger(object context = null)
         {
@@ -191,16 +187,15 @@ namespace SmartLogReader
                 return type.FullName;
 
             if (context is string sourceContext)
-                return string.IsNullOrWhiteSpace(sourceContext) ? "-?-" : sourceContext;
+                return sourceContext;
 
             return context.GetType().FullName;
         }
 
-        #region WriterLoop
-
         private static void WriterLoop()
         {
             DateTime t0 = DateTime.UtcNow;
+
             while (true)
             {
                 while (LogEntries.TryDequeue(out string entry))
@@ -254,7 +249,5 @@ namespace SmartLogReader
                 }
             }
         }
-
-        #endregion WriterLoop
     }
 }

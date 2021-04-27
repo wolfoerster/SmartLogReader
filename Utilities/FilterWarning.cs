@@ -26,6 +26,7 @@ namespace SmartLogReader
         public FilterWarning()
         {
             FontSize = 13;
+            Padding = new Thickness(0, 2, 0, 0);
             Text = "Filtering is not enabled! Click here to enable it.";
 
             Foreground = Brushes.White;

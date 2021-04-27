@@ -91,7 +91,7 @@ namespace SmartLogReader
             string result = GetString(i - lastPos);
 
             // move on to the next byte which is neither CR nor LF
-            lastPos = GetIndexOfNext(CR, LF, true);
+            lastPos = GetIndexOfNextNot(CR, LF);
             return result;
         }
 
@@ -106,41 +106,19 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// Looks for the first occurrence of a certain byte starting at the current position.
-        /// If 'invert' is true, looks for the first occurrence of a byte which is NOT the specified one.
+        /// Looks for the first occurrence of one of the given bytes starting at the current position.
         /// </summary>
-        protected int GetIndexOfNext(byte b1, bool invert = false)
+        protected int GetIndexOfNext(params byte[] bites)
         {
-            return GetIndexOfNext(b1, b1, b1, invert);
+            return GetIndexOfNext(false, bites);
         }
 
         /// <summary>
-        /// Same as above but now one of two bytes are looked for.
+        /// Looks for the first occurrence of a byte which is NOT one of the given bytes starting at the current position.
         /// </summary>
-        protected int GetIndexOfNext(byte b1, byte b2, bool invert = false)
+        protected int GetIndexOfNextNot(params byte[] bites)
         {
-            return GetIndexOfNext(b1, b2, b2, invert);
-        }
-
-        /// <summary>
-        /// Same as above but now one of three bytes are looked for.
-        /// </summary>
-        protected int GetIndexOfNext(byte b1, byte b2, byte b3, bool invert = false)
-        {
-            int i = lastPos;
-
-            for (; i < bytes.Length; i++)
-            {
-                bool found = bytes[i] == b1 || bytes[i] == b2 || bytes[i] == b3;
-
-                if (invert)
-                    found = !found;
-
-                if (found)
-                    break;
-            }
-
-            return i;
+            return GetIndexOfNext(true, bites);
         }
 
         /// <summary>
@@ -158,9 +136,9 @@ namespace SmartLogReader
                 result = result.Trim();
 
             if (bytes[i] == CR || bytes[i] == LF)
-                lastPos = GetIndexOfNext(CR, LF, true);
+                lastPos = GetIndexOfNextNot(CR, LF);
             else
-                lastPos = GetIndexOfNext(Space, true);
+                lastPos = GetIndexOfNextNot(Space);
 
             return result;
         }
@@ -175,6 +153,36 @@ namespace SmartLogReader
 
             string extracted = Utils.BytesToString(bytes, position, expected.Length);
             return extracted.equals(expected);
+        }
+
+        /// <summary>
+        /// Looks for the first occurrence of one of the given bytes starting at the current position.
+        /// If 'invert' is true, looks for the first occurrence of a byte which is NOT one the given ones.
+        /// </summary>
+        private int GetIndexOfNext(bool invert, params byte[] bites)
+        {
+            int i = lastPos;
+
+            for (; i < bytes.Length; i++)
+            {
+                var found = false;
+                foreach (var bite in bites)
+                {
+                    if (bytes[i] == bite)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (invert)
+                    found = !found;
+
+                if (found)
+                    break;
+            }
+
+            return i;
         }
     }
 }
