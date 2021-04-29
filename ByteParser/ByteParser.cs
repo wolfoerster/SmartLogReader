@@ -159,16 +159,16 @@ namespace SmartLogReader
         /// Looks for the first occurrence of one of the given bytes starting at the current position.
         /// If 'invert' is true, looks for the first occurrence of a byte which is NOT one the given ones.
         /// </summary>
-        private int GetIndexOfNext(bool invert, params byte[] bites)
+        private int GetIndexOfNext(bool invert, params byte[] searchedBytes)
         {
             int i = lastPos;
 
             for (; i < bytes.Length; i++)
             {
                 var found = false;
-                foreach (var bite in bites)
+                foreach (var searchedByte in searchedBytes)
                 {
-                    if (bytes[i] == bite)
+                    if (bytes[i] == searchedByte)
                     {
                         found = true;
                         break;
