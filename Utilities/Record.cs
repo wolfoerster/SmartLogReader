@@ -107,7 +107,7 @@ namespace SmartLogReader
                     time = UtcTime.ToLocalTime();
                     //--- even if the log file has more than 3 digits for the seconds, 
                     //--- the resolution will not be higher than a millisecond!!!
-                    timeString = time.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    timeString = time.ToStringN();
                 }
             }
         }

@@ -52,8 +52,7 @@ namespace SmartLogReader
             var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
 
             DateTime t = DateTime.Parse(logEntry.Timestamp);
-            t = t.ToUniversalTime();
-            record.TimeString = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            record.TimeString = t.ToUniversalTime().ToStringN();
             record.LevelString = logEntry.Level;
 
             record.Logger = logEntry.GetProperty("SourceContext");

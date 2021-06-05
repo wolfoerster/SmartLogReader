@@ -59,8 +59,7 @@ namespace SmartLogReader
                 if (DateTime.TryParse(s, out DateTime t))
                 {
                     t = DateTime.SpecifyKind(t, DateTimeKind.Local);
-                    t = t.ToUniversalTime();
-                    s = t.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    s = t.ToUniversalTime().ToStringN();
                 }
             }
             return s;

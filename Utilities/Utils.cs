@@ -643,5 +643,10 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             string result = Encoding.Default.GetString(bytes, index, count);
             return result;
         }
+
+        public static string ToStringN(this DateTime time)
+        {
+            return time.ToString("yyyy-MM-dd HH:mm:ss.fff");
+        }
     }
 }
