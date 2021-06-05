@@ -124,7 +124,7 @@ namespace SmartLogReader
         /// <summary>
         /// Reads the next bytes until a Space character or a line terminator is found.
         /// </summary>
-        protected string GetNext(int numBytes = -1)
+        protected virtual string GetNext(int numBytes = -1)
         {
             if (lastPos == bytes.Length)
                 return null;

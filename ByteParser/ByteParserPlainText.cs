@@ -51,6 +51,23 @@ namespace SmartLogReader
             record.Message = GetRest();
         }
 
+        protected override string GetNext(int numBytes = -1)
+        {
+            if (lastPos == bytes.Length)
+                return null;
+
+            int i = numBytes < 0 ? GetIndexOfNext(Space, CR, LF) : lastPos + numBytes;
+            string result = GetString(i - lastPos);
+
+            if (numBytes > 0)
+                result = result.Trim();
+
+            if (bytes[i] == Space)
+                lastPos = GetIndexOfNextNot(Space);
+
+            return result;
+        }
+
         private string GetTime()
         {
             string s = GetNext(timeLength);
@@ -84,8 +101,8 @@ namespace SmartLogReader
                 return false;
 
             i += 3;
-            //if (array[i] != Space) // wrong! can also be 'T'
-            //	return false;
+            if (array[i] != Space && array[i] != 'T')
+            	return false;
 
             i += 3;
             if (array[i] != Colon)
@@ -102,7 +119,7 @@ namespace SmartLogReader
             i += 3;
             if (IsAt(array, i, Dot) || IsAt(array, i, Comma))
             {
-                i = MoveToNextSpace(array, i);
+                i = MoveToNextDelim(array, i);
                 if (i < 0)
                     return false;
 
@@ -130,15 +147,13 @@ namespace SmartLogReader
             return i < array.Length && array[i] == b;
         }
 
-        private int MoveToNextSpace(byte[] array, int i)
+        private int MoveToNextDelim(byte[] array, int i)
         {
             for (; i < array.Length; i++)
             {
-                if (array[i] == Space)
+                var b = array[i];
+                if (b == Space || b == CR || b == LF)
                     return i;
-
-                if (array[i] == CR || array[i] == LF)
-                    break;
             }
 
             return -1;
