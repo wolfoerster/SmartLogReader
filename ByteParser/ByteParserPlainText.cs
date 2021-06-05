@@ -99,35 +99,50 @@ namespace SmartLogReader
             timeLength = minTimeLength;
             isLocalTime = false;
 
-            try
+            //--- are there fractions of seconds "2017-07-23 16:48:18.123" ?
+            i += 3;
+            if (IsAt(array, i, Dot) || IsAt(array, i, Comma))
             {
-                //--- are there fractions of seconds "2017-07-23 16:48:18.123" ?
-                i += 3;
-                if (array[i] == Dot || array[i] == Comma)
-                {
-                    //--- move on to next space
-                    while (array[++i] != Space) ;
-                    timeLength = i - index;
+                i = MoveToNextSpace(array, i);
+                if (i < 0)
+                    return false;
 
-                    //--- is there a time zone shift "2017-07-23 16:48:18.123 +01:00" ?
-                    if (array[i + 1] == Plus || array[i + 1] == Dash)
+                timeLength = i - index;
+
+                //--- is there a time zone shift "2017-07-23 16:48:18.123 +01:00" ?
+                if (IsAt(array, i + 1, Plus) || IsAt(array, i + 1, Dash))
+                {
+                    if (IsAt(array, i + 4, Colon))
                     {
-                        if (array[i + 4] == Colon)
+                        if (IsAt(array, i + 7, Space))
                         {
-                            if (array[i + 7] == Space)
-                            {
-                                timeLength = i - index + 7;
-                                isLocalTime = true;
-                            }
+                            timeLength = i - index + 7;
+                            isLocalTime = true;
                         }
                     }
                 }
             }
-            catch
-            {
-            }
 
             return true;
+        }
+
+        private bool IsAt(byte[] array, int i, byte b)
+        {
+            return i < array.Length && array[i] == b;
+        }
+
+        private int MoveToNextSpace(byte[] array, int i)
+        {
+            for (; i < array.Length; i++)
+            {
+                if (array[i] == Space)
+                    return i;
+
+                if (array[i] == CR || array[i] == LF)
+                    break;
+            }
+
+            return -1;
         }
 
         private string GetRest()

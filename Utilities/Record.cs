@@ -116,7 +116,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public string TimeDiffString => (this.UtcTime - UtcTime0).TotalMilliseconds.ToString("F0");
+        public string TimeDiffString => timeString == null ? null : (this.UtcTime - UtcTime0).TotalMilliseconds.ToString("F0");
 
         /// <summary>
         /// 
