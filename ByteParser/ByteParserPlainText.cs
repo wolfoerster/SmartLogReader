@@ -86,23 +86,27 @@ namespace SmartLogReader
 
         private bool CheckTime(byte[] array, int index)
         {
-            //--- string should at least look like "2017-07-23 16:48:18"
+            //--- check for one of the following
+            //--- yyyy-MM-dd HH:mm:ss             (19 bytes)
+            //--- yyyy-MM-dd HH:mm:ss.fff         (plus second fractions)
+            //--- yyyy-MM-dd HH:mm:ss.fff ±hh:mm  (plus timezone shift)
+            //--- yyyy-MM-ddTHH:mm:ss.ffffffZ     (Zulu time, i.e. UTC)
 
             int minTimeLength = 19;
             if (array.Length - index < minTimeLength)
                 return false;
 
             int i = index + 4;
-            if (array[i] != Dash)
+            if (array[i] != Minus)
                 return false;
 
             i += 3;
-            if (array[i] != Dash)
+            if (array[i] != Minus)
                 return false;
 
             i += 3;
             if (array[i] != Space && array[i] != 'T')
-            	return false;
+                return false;
 
             i += 3;
             if (array[i] != Colon)
@@ -117,7 +121,7 @@ namespace SmartLogReader
 
             //--- are there fractions of seconds "2017-07-23 16:48:18.123" ?
             i += 3;
-            if (IsAt(array, i, Dot) || IsAt(array, i, Comma))
+            if (IsAt(array, i, Point) || IsAt(array, i, Comma))
             {
                 i = MoveToNextDelim(array, i);
                 if (i < 0)
@@ -126,7 +130,7 @@ namespace SmartLogReader
                 timeLength = i - index;
 
                 //--- is there a time zone shift "2017-07-23 16:48:18.123 +01:00" ?
-                if (IsAt(array, i + 1, Plus) || IsAt(array, i + 1, Dash))
+                if (IsAt(array, i + 1, Plus) || IsAt(array, i + 1, Minus))
                 {
                     if (IsAt(array, i + 4, Colon))
                     {

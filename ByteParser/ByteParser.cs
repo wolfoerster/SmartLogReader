@@ -27,10 +27,10 @@ namespace SmartLogReader
         protected static readonly byte LF = 0x0A; // '\n'
         protected static readonly byte Space = 0x20; // ' '
         protected static readonly byte Plus = 0x2B; // '+'
-        protected static readonly byte Dash = 0x2D; // '-'
+        protected static readonly byte Minus = 0x2D; // '-'
         protected static readonly byte Colon = 0x3A; // ':'
         protected static readonly byte Comma = 0x2C; // ','
-        protected static readonly byte Dot = 0x2E; // '.'
+        protected static readonly byte Point = 0x2E; // '.'
 
         /// <summary>
         /// Gets or sets the bytes which contain the log entries.
