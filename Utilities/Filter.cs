@@ -353,6 +353,10 @@ namespace SmartLogReader
             if (string.IsNullOrEmpty(actualValue) || string.IsNullOrEmpty(ExpectedValue))
                 return false;
 
+#if false
+            //--- Commit 312874f5: fixed highlighting filter bug
+            //--- but I cannot remember the bug - and now obviously there's a new bug:
+            //--- just try to set color for messages that contain "089", i.e. message = *089*
             if (OpCodeIndex == 0)
             {
                 if (actualValue.Length > 1 && ExpectedValue.Length > 1)
@@ -366,6 +370,7 @@ namespace SmartLogReader
                     return false;
                 }
             }
+#endif
 
             return base.Test(actualValue);
         }
