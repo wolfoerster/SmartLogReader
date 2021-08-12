@@ -58,7 +58,8 @@ namespace SmartLogReader
             record.Logger = logEntry.GetProperty("SourceContext");
             record.Method = logEntry.GetProperty("MethodName");
             record.Message = logEntry.GetMessage();
-            record.Json = logEntry.Properties;
+            //record.Json = logEntry.Properties;
+            record.Json = JObject.Parse(json);
         }
 
         private class LogEntry2
