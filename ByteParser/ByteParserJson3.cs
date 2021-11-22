@@ -48,6 +48,7 @@ namespace SmartLogReader
                 json = json.Substring(i1, i2 - i1 - 3);
 
             json = json.Replace("\"\"", "\"");
+            json = json.TrimEnd(new[] { '\"' });
             GetJsonRecord2(record, json);
         }
     }
