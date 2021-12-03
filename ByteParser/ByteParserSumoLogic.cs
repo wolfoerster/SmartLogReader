@@ -41,6 +41,7 @@ namespace SmartLogReader
             var i = json.IndexOf("{\"\"Timestamp");
             json = json.Substring(i, json.Length - i - 1);
             json = json.Replace("\"\"", "\"");
+            json = json.TrimEnd(new[] { '\"' });
             GetJsonRecord2(record, json);
         }
     }
