@@ -56,7 +56,7 @@ namespace SmartLogReader
 
         private void TimerTick(object sender, EventArgs e)
         {
-            Title = $"SmartLogReader {App.Version.Major}.{App.Version.Minor}, {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+            Title = $"SmartLogReader {App.Version.Major}.{App.Version.Minor}.{App.Version.Build}, {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
         }
 
         private void MeLoaded(object sender, RoutedEventArgs e)

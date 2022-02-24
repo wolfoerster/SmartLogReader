@@ -281,7 +281,7 @@ namespace SmartLogReader
         }
 
         public static bool ShowTime = true;
-        public static bool ShowTimeDiff = true;
+        public static bool ShowTimeDiff = false;
         public static bool ShowThreadIds = false;
         public static bool ShowLevel = false;
         public static bool ShowLogger = true;
@@ -290,7 +290,7 @@ namespace SmartLogReader
         public static int AmountOfTime = 12;
         public static int AmountOfTimeDiff = 6;
         public static int AmountOfThreadIds = 9;
-        public static int AmountOfLevel = 5;
+        public static int AmountOfLevel = 3;
         public static int AmountOfLogger = 23;
         public static int AmountOfMethod = 23;
 
