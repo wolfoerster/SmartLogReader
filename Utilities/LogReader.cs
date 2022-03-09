@@ -15,11 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SmartLogReader
 {
@@ -214,8 +217,8 @@ namespace SmartLogReader
             firstCall = true;
             Reset(path);
 
-            //--- check if this is an extracted SumoLogic csv-file
-            var tempFile = FileIsExtractedFromSumoLogic();
+            //--- check if this is an extracted SumoLogic or NewRelic file
+            var tempFile = FileIsExtracted();
             if (tempFile == null)
             {
                 worker.RunWorkerAsync();
@@ -228,15 +231,82 @@ namespace SmartLogReader
             }
         }
 
+        string FileIsExtracted()
+        {
+            if (!File.Exists(fileName))
+                return null;
+
+            var ext = Path.GetExtension(fileName);
+
+            if (ext.equals(".csv"))
+                return FileIsExtractedFromSumoLogic();
+
+            if (ext.equals(".json"))
+                return FileIsExtractedFromNewRelic();
+
+            return null;
+        }
+
+        /// <summary>
+        /// NewRelic files have log entries in reverse order (last first)
+        /// </summary>
+        string FileIsExtractedFromNewRelic()
+        {
+            try
+            {
+                var json = File.ReadAllText(fileName);
+                var jobj = JObject.Parse(json);
+                if (jobj == null)
+                    return null;
+
+                var results = jobj["results"] as JArray;
+                if (results == null)
+                    return null;
+
+                jobj = results.FirstOrDefault() as JObject;
+                if (jobj == null)
+                    return null;
+
+                var events = jobj["events"] as JArray;
+                if (events == null)
+                    return null;
+
+                var lines = new List<string>();
+                foreach (var item in events)
+                {
+                    jobj = item as JObject;
+                    if (jobj != null)
+                    {
+                        lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
+                    }
+                }
+
+                var newFile = Path.GetTempFileName();
+
+                using (var stream = File.OpenWrite(newFile))
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine("extracted from NewRelic");
+                    for (int i = lines.Count - 1; i >= 0; i--)
+                    {
+                        writer.WriteLine(lines[i]);
+                    }
+                }
+
+                return newFile;
+            }
+            catch
+            {
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// SumoLogic files have log entries in reverse order (last first)
         /// </summary>
         string FileIsExtractedFromSumoLogic()
         {
-            var ext = Path.GetExtension(fileName);
-            if (!File.Exists(fileName) || !ext.equals(".csv"))
-                return null;
-
             try
             {
                 var lines = File.ReadAllLines(fileName);
@@ -294,7 +364,7 @@ namespace SmartLogReader
             return record.Message.StartsWith("Start logging");
         }
 
-        #region BackgroundWorker
+#region BackgroundWorker
 
         /// <summary>
         /// 
@@ -415,6 +485,6 @@ namespace SmartLogReader
             StatusChanged?.Invoke(this, status, text);
         }
 
-        #endregion BackgroundWorker
+#endregion BackgroundWorker
     }
 }

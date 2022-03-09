@@ -84,6 +84,7 @@
     </ApplicationDefinition>
     <Compile Include="ByteParser\ByteParser.cs" />
     <Compile Include="ByteParser\ByteParserDocker.cs" />
+    <Compile Include="ByteParser\ByteParserNewRelic.cs" />
     <Compile Include="ByteParser\ByteParserSumoLogic.cs" />
     <Compile Include="ByteParser\ParserFactory.cs" />
     <Compile Include="ByteParser\ByteParserSmartLogger.cs" />

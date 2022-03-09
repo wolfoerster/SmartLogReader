@@ -602,7 +602,7 @@ namespace SmartLogReader
 
         void ExecuteOpenCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog { Filter = "Log Files|*.log;*.csv|All Files|*.*", Title = "Select a file" };
+            OpenFileDialog dlg = new OpenFileDialog { Filter = "Log Files|*.log;*.csv;*.json|All Files|*.*", Title = "Select a file" };
             if (File.Exists(LastFile))
                 dlg.InitialDirectory = Path.GetDirectoryName(LastFile);
 
