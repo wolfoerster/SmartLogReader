@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2021 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2022 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -15,11 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
-using System;
-using Newtonsoft.Json.Linq;
-
 namespace SmartLogReader
 {
+    using System;
+    using Newtonsoft.Json.Linq;
+
     /// <summary>
     /// A byte parser for JSON based logger (here: JsonLogger exported from NewRelic)
     /// </summary>
@@ -39,26 +39,26 @@ namespace SmartLogReader
             var json = GetNextLine();
             var jobj = JObject.Parse(json);
 
-            if (long.TryParse(GetValue(jobj, "timestamp"), out long timestamp))
+            string GetValue(string name)
+            {
+                if (jobj.TryGetValue(name, out JToken value))
+                    return value.ToString();
+
+                return string.Empty;
+            }
+
+            if (long.TryParse(GetValue("timestamp"), out long timestamp))
             {
                 var offSet = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
                 var dateTime = offSet.LocalDateTime;
                 record.TimeString = dateTime.ToUniversalTime().ToStringN();
             }
 
-            record.LevelString = GetValue(jobj, "level");
-            record.Logger = GetValue(jobj, "SourceContext");
-            record.Method = GetValue(jobj, "MethodName");
-            record.Message = GetValue(jobj, "message");
+            record.LevelString = GetValue("level");
+            record.Logger = GetValue("SourceContext");
+            record.Method = GetValue("MethodName");
+            record.Message = GetValue("message");
             record.Json = jobj;
-        }
-
-        private string GetValue(JObject jobj, string name)
-        {
-            if (jobj.TryGetValue(name, out JToken value))
-                return value.ToString();
-
-            return "";
         }
     }
 }
