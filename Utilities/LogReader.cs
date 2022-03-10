@@ -50,11 +50,21 @@ namespace SmartLogReader
         LastHour
     }
 
+    internal enum FileOrigin
+    {
+        Local,
+        NewRelic,
+        SumoLogic,
+    }
+
     /// <summary>
     /// 
     /// </summary>
     public class LogReader : RollingFileReader
     {
+        private readonly BackgroundWorker worker;
+        private FileOrigin fileOrigin;
+
         /// <summary>
         /// 
         /// </summary>
@@ -69,7 +79,6 @@ namespace SmartLogReader
             worker.ProgressChanged += ProgressChanged;
             worker.RunWorkerCompleted += RunWorkerCompleted;
         }
-        private readonly BackgroundWorker worker;
 
         /// <summary>
         /// 
@@ -217,119 +226,156 @@ namespace SmartLogReader
             firstCall = true;
             Reset(path);
 
-            //--- check if this is an extracted SumoLogic or NewRelic file
-            var tempFile = FileIsExtracted();
-            if (tempFile == null)
-            {
-                worker.RunWorkerAsync();
-            }
-            else
-            {
-                byte[] bytes = ReadBytes(tempFile);
-                ExtractRecords(bytes);
-                File.Delete(tempFile);
-            }
+            fileOrigin = GetFileOrigin();
+            worker.RunWorkerAsync();
         }
 
-        string FileIsExtracted()
+        FileOrigin GetFileOrigin()
         {
             if (!File.Exists(fileName))
-                return null;
+                return FileOrigin.Local;
 
             var ext = Path.GetExtension(fileName);
 
             if (ext.equals(".csv"))
-                return FileIsExtractedFromSumoLogic();
+                return IsFileExportedFromSumoLogic();
 
             if (ext.equals(".json"))
-                return FileIsExtractedFromNewRelic();
+                return IsFileExportedFromNewRelic();
 
-            return null;
+            return FileOrigin.Local;
+        }
+
+        FileOrigin IsFileExportedFromNewRelic()
+        {
+            try
+            {
+                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var reader = new StreamReader(stream))
+                {
+                    var line1 = reader.ReadLine();
+                    var line2 = reader.ReadLine();
+                    var isNewRelic = line1 == "{" && line2 == "  \"results\": [";
+                    return isNewRelic ? FileOrigin.NewRelic : FileOrigin.Local;
+                }
+            }
+            catch
+            {
+            }
+
+            return FileOrigin.Local;
+        }
+
+        FileOrigin IsFileExportedFromSumoLogic()
+        {
+            try
+            {
+                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var reader = new StreamReader(stream))
+                {
+                    var line1 = reader.ReadLine();
+                    var isSumoLogic = line1.startsWith("\"_messagetimems\"");
+                    return isSumoLogic ? FileOrigin.SumoLogic : FileOrigin.Local;
+                }
+            }
+            catch
+            {
+            }
+
+            return FileOrigin.Local;
+        }
+
+        private void ReadExportedFile()
+        {
+            var tempFile = (string)null;
+
+            try
+            {
+                tempFile = fileOrigin == FileOrigin.NewRelic ? ReadExportedNewRelic() : ReadExportedSumoLogic();
+            }
+            catch
+            {
+            }
+
+            firstCall = true;
+            byteParser = null;
+            Records.Clear();
+
+            if (tempFile == null)
+            {
+                ReportStatus(ReaderStatus.RecordsChanged);
+                return;
+            }
+
+            byte[] bytes = ReadBytes(tempFile);
+            ExtractRecords(bytes);
+            File.Delete(tempFile);
         }
 
         /// <summary>
         /// NewRelic files have log entries in reverse order (last first)
         /// </summary>
-        string FileIsExtractedFromNewRelic()
+        string ReadExportedNewRelic()
         {
-            try
+            var json = File.ReadAllText(fileName);
+            var jobj = JObject.Parse(json);
+            if (jobj == null)
+                return null;
+
+            if (!(jobj["results"] is JArray results))
+                return null;
+
+            jobj = results.FirstOrDefault() as JObject;
+            if (jobj == null)
+                return null;
+
+            if (!(jobj["events"] is JArray events))
+                return null;
+
+            var lines = new List<string>();
+            foreach (var item in events)
             {
-                var json = File.ReadAllText(fileName);
-                var jobj = JObject.Parse(json);
-                if (jobj == null)
-                    return null;
-
-                var results = jobj["results"] as JArray;
-                if (results == null)
-                    return null;
-
-                jobj = results.FirstOrDefault() as JObject;
-                if (jobj == null)
-                    return null;
-
-                var events = jobj["events"] as JArray;
-                if (events == null)
-                    return null;
-
-                var lines = new List<string>();
-                foreach (var item in events)
+                jobj = item as JObject;
+                if (jobj != null)
                 {
-                    jobj = item as JObject;
-                    if (jobj != null)
-                    {
-                        lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
-                    }
+                    lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
                 }
-
-                var newFile = Path.GetTempFileName();
-
-                using (var stream = File.OpenWrite(newFile))
-                using (var writer = new StreamWriter(stream))
-                {
-                    writer.WriteLine("extracted from NewRelic");
-                    for (int i = lines.Count - 1; i >= 0; i--)
-                    {
-                        writer.WriteLine(lines[i]);
-                    }
-                }
-
-                return newFile;
-            }
-            catch
-            {
             }
 
-            return null;
+            var newFile = Path.GetTempFileName();
+            using (var stream = File.OpenWrite(newFile))
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.WriteLine("extracted from NewRelic");
+                for (int i = lines.Count - 1; i >= 0; i--)
+                {
+                    writer.WriteLine(lines[i]);
+                }
+            }
+
+            return newFile;
         }
 
         /// <summary>
         /// SumoLogic files have log entries in reverse order (last first)
         /// </summary>
-        string FileIsExtractedFromSumoLogic()
+        string ReadExportedSumoLogic()
         {
-            try
-            {
-                var lines = File.ReadAllLines(fileName);
-                if (lines.Length < 2)
-                    return null;
+            var lines = File.ReadAllLines(fileName);
+            if (lines.Length < 2)
+                return null;
 
-                if (!lines[0].startsWith("\"_messagetimems"))
-                    return null;
+            if (!lines[0].startsWith("\"_messagetimems"))
+                return null;
 
-                var newFile = Path.GetTempFileName();
-                var list = lines.Reverse().ToList();
-                int i = list.Count - 1;
-                string line = list[i];
-                list.RemoveAt(i);
-                list.Insert(0, line);
-                File.WriteAllLines(newFile, list);
-                return newFile;
-            }
-            catch
-            {
-            }
-
-            return null;
+            var newFile = Path.GetTempFileName();
+            var list = lines.Reverse().ToList();
+            int i = list.Count - 1;
+            string line = list[i];
+            list.RemoveAt(i);
+            list.Insert(0, line);
+            File.WriteAllLines(newFile, list);
+            return newFile;
         }
 
         /// <summary>
@@ -407,6 +453,46 @@ namespace SmartLogReader
             log.Debug("begin");
             ReportStatus(ReaderStatus.StartedWork);
 
+            if (fileOrigin == FileOrigin.Local)
+                DoContinuousWork(e);
+            else
+                DoDiscontinuousWork(e);
+
+            log.Debug("end");
+        }
+
+        private void DoDiscontinuousWork(DoWorkEventArgs e)
+        {
+            var lastModified = new DateTime(0, DateTimeKind.Utc);
+
+            //--- go into an endless loop and check the file every second
+            for (int count = 0; ; ++count)
+            {
+                if (count == 0 && FileExists())
+                {
+                    var modified = File.GetLastWriteTimeUtc(fileName);
+                    if (modified > lastModified)
+                    {
+                        lastModified = modified;
+                        ReadExportedFile();
+                    }
+                }
+
+                if (worker.CancellationPending)
+                {
+                    log.Debug("break");
+                    e.Cancel = true;
+                    break;
+                }
+
+                Thread.Sleep(50);
+                if (count > 19)
+                    count = -1;
+            }
+        }
+
+        private void DoContinuousWork(DoWorkEventArgs e)
+        {
             //--- first check if there is a rolled file
             string rolledFile = fileName + ".1";
             if (File.Exists(rolledFile))
@@ -435,8 +521,6 @@ namespace SmartLogReader
                 if (count > 19)
                     count = -1;
             }
-
-            log.Debug("end");
         }
 
         /// <summary>
