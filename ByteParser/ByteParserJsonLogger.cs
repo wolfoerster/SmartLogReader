@@ -50,6 +50,10 @@ namespace SmartLogReader
         protected void GetJsonRecord2(Record record, string json)
         {
             var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
+            if (logEntry?.Timestamp == null)
+            {
+                return;
+            }
 
             DateTime t = DateTime.Parse(logEntry.Timestamp);
             record.TimeString = t.ToUniversalTime().ToStringN();

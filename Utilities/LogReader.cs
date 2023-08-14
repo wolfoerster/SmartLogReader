@@ -128,6 +128,9 @@ namespace SmartLogReader
                     if (record == null)
                         break;
 
+                    if (record.TimeString == null)
+                        continue;
+
                     if (watch.ElapsedMilliseconds > 60)
                     {
                         watch.Restart();
