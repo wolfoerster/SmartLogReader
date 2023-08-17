@@ -15,13 +15,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+
 namespace SmartLogReader
 {
     public class ByteParserDocker : ByteParserJsonLogger
     {
         public ByteParserDocker(byte[] bytes)
         {
-            if (CheckForString("Attaching to", bytes, 0))
+            if (CheckForString("Attaching to", bytes, 0)
+                || IsNewDocker(bytes))
             {
                 Bytes = bytes;
                 _ = GetNextLine();
@@ -32,6 +35,14 @@ namespace SmartLogReader
         {
             lastPos = GetIndexOfNext((byte)'{');
             base.FillRecord(record);
+        }
+
+        private static bool IsNewDocker(byte[] bytes)
+        {
+            var numBytes = Math.Min(bytes.Length, 1000);
+            var str = Utils.BytesToString(bytes, 0, numBytes);
+            var index = str.IndexOf("  | {\"Timestamp\":");
+            return index > 0;
         }
     }
 }
