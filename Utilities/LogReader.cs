@@ -256,9 +256,10 @@ namespace SmartLogReader
                 using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var reader = new StreamReader(stream))
                 {
-                    var line1 = reader.ReadLine();
-                    var line2 = reader.ReadLine();
-                    var isNewRelic = line1 == "{" && line2 == "  \"results\": [";
+                    var buffer = new char[64];
+                    reader.Read(buffer, 0, buffer.Length);
+                    var text = new string(buffer);
+                    var isNewRelic = text.StartsWith("[{\"ApplicationName\":");
                     return isNewRelic ? FileOrigin.NewRelic : FileOrigin.Local;
                 }
             }
@@ -321,24 +322,14 @@ namespace SmartLogReader
         string ReadExportedNewRelic()
         {
             var json = File.ReadAllText(fileName);
-            var jobj = JObject.Parse(json);
-            if (jobj == null)
-                return null;
-
-            if (!(jobj["results"] is JArray results))
-                return null;
-
-            jobj = results.FirstOrDefault() as JObject;
-            if (jobj == null)
-                return null;
-
-            if (!(jobj["events"] is JArray events))
+            var jtok = JToken.Parse(json);
+            if (jtok.Type != JTokenType.Array)
                 return null;
 
             var lines = new List<string>();
-            foreach (var item in events)
+            foreach (var item in jtok)
             {
-                jobj = item as JObject;
+                var jobj = item as JObject;
                 if (jobj != null)
                 {
                     lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
@@ -350,7 +341,7 @@ namespace SmartLogReader
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("extracted from NewRelic");
-                for (int i = lines.Count - 1; i >= 0; i--)
+                for (int i = 0; i < lines.Count; i++)
                 {
                     writer.WriteLine(lines[i]);
                 }
