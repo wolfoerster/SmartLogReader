@@ -259,7 +259,7 @@ namespace SmartLogReader
                     var buffer = new char[64];
                     reader.Read(buffer, 0, buffer.Length);
                     var text = new string(buffer);
-                    var isNewRelic = text.StartsWith("[{\"ApplicationName\":");
+                    var isNewRelic = text.StartsWith("[{\"");
                     return isNewRelic ? FileOrigin.NewRelic : FileOrigin.Local;
                 }
             }
