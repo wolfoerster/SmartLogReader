@@ -329,8 +329,7 @@ namespace SmartLogReader
             var lines = new List<string>();
             foreach (var item in jtok)
             {
-                var jobj = item as JObject;
-                if (jobj != null)
+                if (item is JObject jobj)
                 {
                     lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
                 }
