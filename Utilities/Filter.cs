@@ -75,9 +75,9 @@ namespace SmartLogReader
             List<IndexValuePair> list = new List<IndexValuePair>
             {
                 new IndexValuePair(0, record.TimeString),
-                new IndexValuePair(1, record.ConnectionId),
+                new IndexValuePair(1, record.ConnId),
                 new IndexValuePair(2, record.LevelString),
-                new IndexValuePair(3, Check(record.Logger)),
+                new IndexValuePair(3, Check(record.Class)),
                 new IndexValuePair(4, Check(record.Method)),
                 new IndexValuePair(5, record.Message),
                 new IndexValuePair(6, GetJsonProperties(record.Json)),
@@ -134,9 +134,9 @@ namespace SmartLogReader
             switch (PropertyIndex)
             {
                 case 0: return Test(record.UtcTime);
-                case 1: return Test(record.ConnectionId);
+                case 1: return Test(record.ConnId);
                 case 2: return Test(record.LevelString);
-                case 3: return Test(Check(record.Logger));
+                case 3: return Test(Check(record.Class));
                 case 4: return Test(Check(record.Method));
                 case 5: return Test(record.Message);
                 case 6: return Test(record.Json);

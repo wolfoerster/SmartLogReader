@@ -55,10 +55,10 @@ namespace SmartLogReader
             }
 
             record.LevelString = GetValue("level");
-            record.Logger = GetValue("SourceContext");
+            record.Class = GetValue("SourceContext");
             record.Method = GetValue("MethodName");
             record.Message = GetValue("message");
-            record.ConnectionId = GetValue("ConnectionId");
+            record.ConnId = GetValue("ConnectionId");
             record.Json = jobj;
         }
     }

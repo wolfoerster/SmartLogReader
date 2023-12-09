@@ -58,7 +58,7 @@ namespace SmartLogReader
 
             token = GetNext();
             token = GetNext();
-            record.Logger = GetNext().TrimEnd(new char[] { ':' });
+            record.Class = GetNext().TrimEnd(new char[] { ':' });
 
             record.Message = GetNextLine();
             record.Method = " ";

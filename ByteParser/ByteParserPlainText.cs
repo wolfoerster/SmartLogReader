@@ -44,9 +44,9 @@ namespace SmartLogReader
         protected override void FillRecord(Record record)
         {
             record.TimeString = GetTime();
-            record.ConnectionId = GetNext();
+            record.ConnId = GetNext();
             record.LevelString = GetNext();
-            record.Logger = GetNext();
+            record.Class = GetNext();
             record.Method = GetNext();
             record.Message = GetRest();
         }

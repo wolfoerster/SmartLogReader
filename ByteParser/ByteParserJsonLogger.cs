@@ -59,10 +59,10 @@ namespace SmartLogReader
             record.TimeString = t.ToUniversalTime().ToStringN();
             record.LevelString = logEntry.Level;
 
-            record.Logger = logEntry.GetProperty("SourceContext");
+            record.Class = logEntry.GetProperty("SourceContext");
             record.Method = logEntry.GetProperty("MethodName");
             record.Message = logEntry.GetMessage();
-            record.ConnectionId = logEntry.GetProperty("ConnectionId");
+            record.ConnId = logEntry.GetProperty("ConnectionId");
             record.Json = JObject.Parse(json);
         }
 

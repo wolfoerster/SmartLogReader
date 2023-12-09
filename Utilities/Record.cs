@@ -52,7 +52,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public string Logger { get; set; }
+        public string Class { get; set; }
 
         /// <summary>
         /// 
@@ -111,7 +111,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public string ConnectionId { get; set; }
+        public string ConnId { get; set; }
 
         /// <summary>
         /// 
@@ -233,13 +233,13 @@ namespace SmartLogReader
                 sb.Append(Align(TimeDiffString, AmountOfTimeDiff, showAll));
 
             if (showAll || ShowThreadIds)
-                sb.Append(Align(ConnectionId, AmountOfThreadIds, showAll));
+                sb.Append(Align(ConnId, AmountOfThreadIds, showAll));
 
             if (showAll || ShowLevel)
                 sb.Append(Align(LevelString, AmountOfLevel, showAll, true));
 
             if (showAll || ShowLogger)
-                sb.Append(Align(Logger, AmountOfLogger, showAll));
+                sb.Append(Align(Class, AmountOfLogger, showAll));
 
             if (showAll || ShowMethod)
                 sb.Append(Align(Method, AmountOfMethod, showAll));
@@ -344,13 +344,13 @@ namespace SmartLogReader
             if (timeString != null && timeString.contains(text))
                 return true;
 
-            if (Logger != null && Logger.contains(text))
+            if (Class != null && Class.contains(text))
                 return true;
 
             if (levelString != null && levelString.contains(text))
                 return true;
 
-            if (ConnectionId != null && ConnectionId.contains(text))
+            if (ConnId != null && ConnId.contains(text))
                 return true;
 
             return false;
