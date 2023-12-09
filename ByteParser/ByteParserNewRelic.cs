@@ -58,7 +58,7 @@ namespace SmartLogReader
             record.Logger = GetValue("SourceContext");
             record.Method = GetValue("MethodName");
             record.Message = GetValue("message");
-            record.ThreadIds = GetValue("ConnectionId");
+            record.ConnectionId = GetValue("ConnectionId");
             record.Json = jobj;
         }
     }

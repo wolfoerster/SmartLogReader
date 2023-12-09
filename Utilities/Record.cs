@@ -67,21 +67,6 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public int ProcessId { get; protected set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int AppDomainId { get; protected set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ThreadId { get; protected set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public string Message { get; set; }
 
         /// <summary>
@@ -126,25 +111,7 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public string ThreadIds
-        {
-            get { return threadIds; }
-            set
-            {
-                threadIds = value;
-                if (!string.IsNullOrWhiteSpace(threadIds))
-                {
-                    string[] s = threadIds.Split(new char[] { '/' });
-                    if (s.Length == 3)
-                    {
-                        if (int.TryParse(s[0], out int processId)) ProcessId = processId;
-                        if (int.TryParse(s[1], out int appDomainId)) AppDomainId = appDomainId;
-                        if (int.TryParse(s[2], out int threadId)) ThreadId = threadId;
-                    }
-                }
-            }
-        }
-        string threadIds;
+        public string ConnectionId { get; set; }
 
         /// <summary>
         /// 
@@ -266,7 +233,7 @@ namespace SmartLogReader
                 sb.Append(Align(TimeDiffString, AmountOfTimeDiff, showAll));
 
             if (showAll || ShowThreadIds)
-                sb.Append(Align(ThreadIds, AmountOfThreadIds, showAll));
+                sb.Append(Align(ConnectionId, AmountOfThreadIds, showAll));
 
             if (showAll || ShowLevel)
                 sb.Append(Align(LevelString, AmountOfLevel, showAll, true));
@@ -383,7 +350,7 @@ namespace SmartLogReader
             if (levelString != null && levelString.contains(text))
                 return true;
 
-            if (threadIds != null && threadIds.contains(text))
+            if (ConnectionId != null && ConnectionId.contains(text))
                 return true;
 
             return false;
@@ -441,10 +408,7 @@ namespace SmartLogReader
         static public ColorSpecCollection GetDefaultColorSpecs()
         {
             ColorSpec newSpec(string logLevel, int colorIndex)
-            {
-                ColorSpec colorSpec = new ColorSpec() { PropertyIndex = 4, OpCodeIndex = 0, ExpectedValue = logLevel, ColorIndex = colorIndex };
-                return colorSpec;
-            }
+                => new ColorSpec() { PropertyIndex = 2, OpCodeIndex = 0, ExpectedValue = logLevel, ColorIndex = colorIndex };
 
             ColorSpecCollection colorSpecs = new ColorSpecCollection
             {
@@ -455,6 +419,7 @@ namespace SmartLogReader
                 newSpec("Fatal", 11),
                 newSpec("None", 6)
             };
+
             return colorSpecs;
         }
     }

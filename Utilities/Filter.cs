@@ -34,9 +34,7 @@ namespace SmartLogReader
             PropertyNames = new List<string>
             {
                 "Time",
-                "ProcessId",
-                "AppDomainId",
-                "ThreadId",
+                "ConnId",
                 "Level",
                 "Class",
                 "Method",
@@ -77,14 +75,12 @@ namespace SmartLogReader
             List<IndexValuePair> list = new List<IndexValuePair>
             {
                 new IndexValuePair(0, record.TimeString),
-                new IndexValuePair(1, record.ProcessId.ToString()),
-                new IndexValuePair(2, record.AppDomainId.ToString()),
-                new IndexValuePair(3, record.ThreadId.ToString()),
-                new IndexValuePair(4, record.LevelString),
-                new IndexValuePair(5, Check(record.Logger)),
-                new IndexValuePair(6, Check(record.Method)),
-                new IndexValuePair(7, record.Message),
-                new IndexValuePair(8, GetJsonProperties(record.Json)),
+                new IndexValuePair(1, record.ConnectionId),
+                new IndexValuePair(2, record.LevelString),
+                new IndexValuePair(3, Check(record.Logger)),
+                new IndexValuePair(4, Check(record.Method)),
+                new IndexValuePair(5, record.Message),
+                new IndexValuePair(6, GetJsonProperties(record.Json)),
             };
             return list;
         }
@@ -138,14 +134,12 @@ namespace SmartLogReader
             switch (PropertyIndex)
             {
                 case 0: return Test(record.UtcTime);
-                case 1: return Test(record.ProcessId);
-                case 2: return Test(record.AppDomainId);
-                case 3: return Test(record.ThreadId);
-                case 4: return Test(record.LevelString);
-                case 5: return Test(Check(record.Logger));
-                case 6: return Test(Check(record.Method));
-                case 7: return Test(record.Message);
-                case 8: return Test(record.Json);
+                case 1: return Test(record.ConnectionId);
+                case 2: return Test(record.LevelString);
+                case 3: return Test(Check(record.Logger));
+                case 4: return Test(Check(record.Method));
+                case 5: return Test(record.Message);
+                case 6: return Test(record.Json);
             }
             return true;
         }

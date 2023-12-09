@@ -73,7 +73,7 @@ namespace SmartLogReader
 
             DateTime t = DateTime.Parse(logEntry.Time);
             record.TimeString = t.ToUniversalTime().ToStringN();
-            record.ThreadIds = logEntry.ThreadIds;
+            record.ConnectionId = logEntry.ThreadIds;
             record.LevelString = logEntry.Level;
             record.Logger = logEntry.Class;
             record.Method = logEntry.Method;
