@@ -236,7 +236,10 @@ namespace SmartLogReader
 
         public string PropertyName
         {
-            get { return PropertyNames[PropertyIndex]; }
+            get 
+            {
+                return PropertyNames.IsValidIndex(PropertyIndex) ? PropertyNames[PropertyIndex] : "error";
+            }
         }
 
         public int OpCodeIndex { get; set; }

@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
+using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -202,6 +203,11 @@ namespace SmartLogReader
         public static int Clamp(int x, int xMin, int xMax)
         {
             return Math.Min(Math.Max(x, xMin), xMax);
+        }
+
+        public static bool IsValidIndex(this IList list, int index)
+        {
+            return index >= 0 && index < list.Count;
         }
 
         #region ExtendFrameIntoClientArea
