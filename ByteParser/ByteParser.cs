@@ -26,6 +26,7 @@ namespace SmartLogReader
         protected static readonly byte CR = 0x0D; // '\r'
         protected static readonly byte LF = 0x0A; // '\n'
         protected static readonly byte Space = 0x20; // ' '
+        protected static readonly byte Pipe = 0x7C; // '|'
         protected static readonly byte Plus = 0x2B; // '+'
         protected static readonly byte Minus = 0x2D; // '-'
         protected static readonly byte Colon = 0x3A; // ':'

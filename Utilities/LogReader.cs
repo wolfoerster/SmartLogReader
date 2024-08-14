@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -400,7 +400,10 @@ namespace SmartLogReader
         /// </summary>
         protected virtual bool IsNewSession(Record record)
         {
-            return record.Message.StartsWith("Start logging");
+            if (record.Message.StartsWith("Start logging"))
+                return true;
+
+            return record.Message.StartsWith("Application started");
         }
 
 #region BackgroundWorker

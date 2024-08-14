@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2021 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -23,16 +23,18 @@ namespace SmartLogReader
     /// A byte parser for a plain text based logger (e.g. the SimpleLogger used in this app).
     /// 
     /// A log entry has to look like this:
-    /// 2021-04-02 15:37:14.516 FATAL SmartLogReader.App 9760/1/1 .ctor Start logging
+    /// 2021-04-02 15:37:14.516 9760/1/1 FATAL SmartLogReader.App .ctor Start logging
     /// 
     /// In general:
-    /// Date Time Level ClassName ProcessId/AppDomainId/ThreadId MethodName Message
+    /// Date Time ProcessId/AppDomainId/ThreadId LogLevel ClassName MethodName Message
     /// 
     /// The message might span several lines. Everything from the begin of the message up to
     /// the next Date field is considered as message (including line feeds and spaces).
     /// </summary>
     public class ByteParserPlainText : ByteParser
     {
+        private bool lookForPipe;
+
         public ByteParserPlainText(byte[] bytes)
         {
             if (CheckTime(bytes, 0))
@@ -44,11 +46,20 @@ namespace SmartLogReader
         protected override void FillRecord(Record record)
         {
             record.TimeString = GetTime();
-            record.ConnId = GetNext();
+            record.ConnId = lookForPipe ? "" : GetNext();
             record.LevelString = GetNext();
             record.Class = GetNext();
-            record.Method = GetNext();
-            record.Message = GetRest();
+
+            if (lookForPipe)
+            {
+                var rest = GetRest();
+                (record.Method, record.Message) = Split(rest);
+            }
+            else
+            {
+                record.Method = GetNext();
+                record.Message = GetRest();
+            }
         }
 
         protected override string GetNext(int numBytes = -1)
@@ -56,14 +67,15 @@ namespace SmartLogReader
             if (lastPos == bytes.Length)
                 return null;
 
-            int i = numBytes < 0 ? GetIndexOfNext(Space, CR, LF) : lastPos + numBytes;
+            var delim = lookForPipe ? Pipe : Space;
+            int i = numBytes < 0 ? GetIndexOfNext(delim, CR, LF) : lastPos + numBytes;
             string result = GetString(i - lastPos);
 
             if (numBytes > 0)
                 result = result.Trim();
 
-            if (bytes[i] == Space)
-                lastPos = GetIndexOfNextNot(Space);
+            if (bytes[i] == delim)
+                lastPos = GetIndexOfNextNot(delim);
 
             return result;
         }
@@ -128,6 +140,9 @@ namespace SmartLogReader
                     return false;
 
                 timeLength = i - index;
+                lookForPipe = array[i] == Pipe;
+                if (lookForPipe)
+                    isLocalTime = true;
 
                 //--- is there a time zone shift "2017-07-23 16:48:18.123 +01:00" ?
                 if (IsAt(array, i + 1, Plus) || IsAt(array, i + 1, Minus))
@@ -156,7 +171,7 @@ namespace SmartLogReader
             for (; i < array.Length; i++)
             {
                 var b = array[i];
-                if (b == Space || b == CR || b == LF)
+                if (b == Pipe || b == Space || b == CR || b == LF)
                     return i;
             }
 
@@ -209,6 +224,39 @@ namespace SmartLogReader
             }
 
             return j;
+        }
+
+        private (string Method, string Message) Split(string rest)
+        {
+            var index = rest.IndexOf((char)Pipe);
+            if (index < 1)
+                return (string.Empty, rest);
+
+            var name = rest.Substring(0, index);
+            return IsMethodName(name) ? (name, rest.Substring(index + 1)) : (string.Empty, rest);
+        }
+
+        private bool IsMethodName(string name)
+        {
+            if (name == ".ctor")
+                return true;
+
+            var c = name[0];
+
+            if (char.IsWhiteSpace(c))
+                return false;
+
+            if (c != '_' && !char.IsLetter(c))
+                return false;
+
+            for (int i = 1; i < name.Length; i++)
+            {
+                c = name[i];
+                if (c != '_' && !char.IsLetterOrDigit(c))
+                    return false;
+            }
+
+            return true;
         }
     }
 }
