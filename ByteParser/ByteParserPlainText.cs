@@ -46,17 +46,20 @@ namespace SmartLogReader
         protected override void FillRecord(Record record)
         {
             record.TimeString = GetTime();
-            record.ConnId = lookForPipe ? "" : GetNext();
-            record.LevelString = GetNext();
-            record.Class = GetNext();
 
             if (lookForPipe)
             {
-                var rest = GetRest();
-                (record.Method, record.Message) = Split(rest);
+                record.LevelString = GetNext();
+                record.Class = GetNext();
+                var split = Split(GetRest());
+                record.Method = split.Method;
+                record.Message = split.Message;
             }
             else
             {
+                record.ConnId = GetNext();
+                record.LevelString = GetNext();
+                record.Class = GetNext();
                 record.Method = GetNext();
                 record.Message = GetRest();
             }
