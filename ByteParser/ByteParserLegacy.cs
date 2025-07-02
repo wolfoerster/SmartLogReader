@@ -17,10 +17,15 @@
 
 namespace SmartLogReader
 {
+    using System;
+
     public class ByteParserLegacy : ByteParser
     {
         private static readonly string LegacyKey1 = "TrimbleNo";
         private static readonly string LegacyKey2 = "novaSuite";
+
+        private static readonly DateTime FixedFallbackDateTime = new DateTime(2025, 7, 1, 12, 0, 0, DateTimeKind.Local);
+        private static readonly string FixedFallbackTimeString = FixedFallbackDateTime.ToUniversalTime().ToStringN();
 
         public ByteParserLegacy(byte[] bytes)
         {
@@ -59,6 +64,9 @@ namespace SmartLogReader
             token = GetNext();
             token = GetNext();
             record.Class = GetNext().TrimEnd(new char[] { ':' });
+
+            // fallback to have always a TimeString, because it seems to be mandatory for versions > version 2.3.1.
+            record.TimeString = FixedFallbackTimeString;
 
             record.Message = GetNextLine();
             record.Method = " ";
