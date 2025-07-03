@@ -414,9 +414,12 @@ namespace SmartLogReader
             {
                 newSpec("Debug", 1),
                 newSpec("Information", 0),
+                newSpec("Info", 0),
                 newSpec("Warning", 3),
+                newSpec("Warn", 3),
                 newSpec("Error", 2),
                 newSpec("Fatal", 11),
+                newSpec("Critical", 11),
                 newSpec("None", 6)
             };
 
