@@ -51,8 +51,8 @@ namespace SmartLogReader
             {
                 case 'C': record.LevelString = "Fatal"; break;
                 case 'E': record.LevelString = "Error"; break;
-                case 'W': record.LevelString = "Warn"; break;
-                case 'I': record.LevelString = "Info"; break;
+                case 'W': record.LevelString = "Warning"; break;
+                case 'I': record.LevelString = "Information"; break;
                 case 'V': record.LevelString = "Debug"; break;
             }
 

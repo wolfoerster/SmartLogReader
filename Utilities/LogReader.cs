@@ -128,7 +128,7 @@ namespace SmartLogReader
                     if (record == null)
                         break;
 
-                    if (record.TimeString == null)
+                    if (record.TimeString == null && byteParser is ByteParserJsonLogger)
                         continue;
 
                     if (watch.ElapsedMilliseconds > 60)
