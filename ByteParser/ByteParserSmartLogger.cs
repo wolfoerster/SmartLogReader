@@ -26,6 +26,8 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserSmartLogger : ByteParser
     {
+        private readonly string smartLoggerVersion;
+
         public ByteParserSmartLogger()
         {
         }
@@ -34,6 +36,17 @@ namespace SmartLogReader
         {
             if (this.IsEntryStart(bytes, 0))
             {
+                string line = Utils.BytesToString(bytes, 0, 120);
+
+                if (line.Contains("ThreadIds"))
+                    smartLoggerVersion = "0.9";
+
+                else if (line.Contains("ThreadId"))
+                    smartLoggerVersion = "1.0";
+
+                else // no SmartLogger at all
+                    return;
+
                 Bytes = bytes;
             }
         }
@@ -69,21 +82,46 @@ namespace SmartLogReader
 
         private void GetJsonRecord1(Record record, string json)
         {
-            var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
+            if (smartLoggerVersion == "0.9")
+            {
+                var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
-            DateTime t = DateTime.Parse(logEntry.Time);
-            record.TimeString = t.ToUniversalTime().ToStringN();
-            record.ConnId = logEntry.ThreadIds;
-            record.LevelString = logEntry.Level;
-            record.Class = logEntry.Class;
-            record.Method = logEntry.Method;
-            record.Message = logEntry.Message ?? string.Empty;
+                DateTime t = DateTime.Parse(logEntry.Time);
+                record.TimeString = t.ToUniversalTime().ToStringN();
+                record.ConnId = logEntry.ThreadIds;
+                record.LevelString = logEntry.Level;
+                record.Class = logEntry.Class;
+                record.Method = logEntry.Method;
+                record.Message = logEntry.Message ?? string.Empty;
+            }
+            else //if (smartLoggerVersion == "1.0")
+            {
+                var logEntry = JsonConvert.DeserializeObject<LogEntry1>(json);
+
+                DateTime t = DateTime.Parse(logEntry.Time);
+                record.TimeString = t.ToUniversalTime().ToStringN();
+                record.ConnId = logEntry.ThreadId.ToString();
+                record.LevelString = logEntry.Level;
+                record.Class = logEntry.Class;
+                record.Method = logEntry.Method;
+                record.Message = logEntry.Message ?? string.Empty;
+            }
         }
 
         private class LogEntry
         {
             public string Time { get; set; }
             public string ThreadIds { get; set; }
+            public string Level { get; set; }
+            public string Class { get; set; }
+            public string Method { get; set; }
+            public string Message { get; set; }
+        }
+
+        private class LogEntry1
+        {
+            public string Time { get; set; }
+            public int ThreadId { get; set; }
             public string Level { get; set; }
             public string Class { get; set; }
             public string Method { get; set; }
