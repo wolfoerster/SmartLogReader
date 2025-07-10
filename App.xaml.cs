@@ -25,6 +25,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace SmartLogReader
 {
@@ -34,6 +35,7 @@ namespace SmartLogReader
     public partial class App : Application
     {
         private static readonly SimpleLogger log = new SimpleLogger();
+        public static IConfiguration Config { get; private set; }
 
         /// <summary>
         /// 
@@ -72,6 +74,10 @@ namespace SmartLogReader
         /// </summary>
         public App()
         {
+            Config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
             //--- get the name of the executable and optional parameter
             string[] args = Environment.GetCommandLineArgs();
             string option = args.Length > 1 ? args[1] : null;
@@ -138,7 +144,9 @@ namespace SmartLogReader
         /// </summary>
         LogLevel GetMinimumLogLevel()
         {
-            string str = ConfigurationManager.AppSettings["MinimumLogLevel"];
+            //string str = ConfigurationManager.AppSettings["MinimumLogLevel"];
+            string str = App.Config.GetSection("MinimumLogLevel").Value;
+
             if (Enum.TryParse<LogLevel>(str, out LogLevel logLevel))
                 return logLevel;
 
@@ -306,7 +314,7 @@ namespace SmartLogReader
         /// </summary>
         FileInfo GetRemoteFileInfo()
         {
-            string remoteDir = ConfigurationManager.AppSettings["RemoteDir"];
+            string remoteDir = "";// ConfigurationManager.AppSettings["RemoteDir"];
             if (string.IsNullOrWhiteSpace(remoteDir))
             {
                 log.Debug("Did not find RemoteDir in appSettings");

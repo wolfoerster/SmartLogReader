@@ -61,6 +61,8 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
+#warning hier
+#if false
             if (Properties.Settings.Default.IsMaximized)
                 this.WindowState = WindowState.Maximized;
 
@@ -74,16 +76,20 @@ namespace SmartLogReader
                 smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(null);
                 smartLogControl.ViewModel.LoadFileFromCommandLine(App.OpenFileName);
             }
+#endif
         }
 
         private void MeClosing(object sender, CancelEventArgs e)
         {
-            Properties.Settings.Default.LastWorkspace = smartLogControl.ViewModel.Shutdown();
+#warning hier
+            //Properties.Settings.Default.LastWorkspace = smartLogControl.ViewModel.Shutdown();
             StoreSizeAndPosition();
         }
 
         private void RestoreSizeAndPosition()
         {
+#warning hier
+#if false
             var name = Properties.Settings.Default.ScreenName;
             var screen = Screen.LookUpByName(name);
             if (screen == null) 
@@ -95,10 +101,13 @@ namespace SmartLogReader
             this.Height = Properties.Settings.Default.Height;
             this.WindowState = WindowState.Normal;
             this.WindowStartupLocation = WindowStartupLocation.Manual;
+#endif
         }
 
         private void StoreSizeAndPosition()
         {
+#warning hier
+#if false
             Properties.Settings.Default.IsMaximized = this.WindowState == WindowState.Maximized;
 
             if (this.WindowState != WindowState.Normal)
@@ -113,6 +122,7 @@ namespace SmartLogReader
             Properties.Settings.Default.Width = this.Width;
             Properties.Settings.Default.Height = this.Height;
             Properties.Settings.Default.Save();
+#endif
         }
     }
 }
