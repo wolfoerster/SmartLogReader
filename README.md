@@ -1,2 +1,2 @@
-# SmartLogging
-A .NET log file viewer
+# SmartLogReader
+Another log file viewer.
