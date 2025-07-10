@@ -18,6 +18,7 @@
 namespace SmartLogReader
 {
     using System;
+    using System.Globalization;
     using System.Text;
     using Newtonsoft.Json;
 
@@ -42,7 +43,7 @@ namespace SmartLogReader
                     smartLoggerVersion = "0.9";
 
                 else if (line.Contains("ThreadId"))
-                    smartLoggerVersion = "1.0";
+                    smartLoggerVersion = "2.0";
 
                 else // no SmartLogger at all
                     return;
@@ -94,15 +95,15 @@ namespace SmartLogReader
                 record.Method = logEntry.Method;
                 record.Message = logEntry.Message ?? string.Empty;
             }
-            else //if (smartLoggerVersion == "1.0")
+            else //if (smartLoggerVersion == "2.0")
             {
-                var logEntry = JsonConvert.DeserializeObject<LogEntry1>(json);
+                var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
 
-                DateTime t = DateTime.Parse(logEntry.Time);
+                DateTime t = DateTime.ParseExact(logEntry.Time, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
                 record.TimeString = t.ToUniversalTime().ToStringN();
                 record.ConnId = logEntry.ThreadId.ToString();
                 record.LevelString = logEntry.Level;
-                record.Class = logEntry.Class;
+                record.Class = logEntry.Context;
                 record.Method = logEntry.Method;
                 record.Message = logEntry.Message ?? string.Empty;
             }
@@ -118,12 +119,12 @@ namespace SmartLogReader
             public string Message { get; set; }
         }
 
-        private class LogEntry1
+        private class LogEntry2
         {
             public string Time { get; set; }
             public int ThreadId { get; set; }
             public string Level { get; set; }
-            public string Class { get; set; }
+            public string Context { get; set; }
             public string Method { get; set; }
             public string Message { get; set; }
         }
