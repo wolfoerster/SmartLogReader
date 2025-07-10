@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml.Serialization;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -31,7 +32,7 @@ namespace SmartLogReader
     /// </summary>
     public class SmartLogControlVM : SplitGridViewModel3
     {
-        private static readonly SimpleLogger log = new SimpleLogger();
+        private static readonly SmartLogger log = new SmartLogger();
 
         /// <summary>
         /// Fill some static lists.

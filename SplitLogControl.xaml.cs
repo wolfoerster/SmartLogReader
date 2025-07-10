@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -31,12 +32,12 @@ namespace SmartLogReader
         /// </summary>
         public SplitLogControl()
         {
-            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
+            log = new SmartLogger($"{GetType().Name}.{++instanceCounter}");
             InitializeComponent();
             AllowDrop = true;
             Drop += MeDrop;
         }
-        private readonly SimpleLogger log;
+        private readonly SmartLogger log;
         private static int instanceCounter;
 
         /// <summary>

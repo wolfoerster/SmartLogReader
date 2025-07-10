@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -212,8 +213,7 @@ namespace SmartLogReader
             }
             catch (Exception exception)
             {
-                var message = SimpleLogger.GetMessage(exception);
-                Trace.WriteLine(message);
+                Trace.WriteLine(exception.ToString());
             }
 
             return json;

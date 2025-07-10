@@ -21,6 +21,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using Microsoft.Win32;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -34,12 +35,12 @@ namespace SmartLogReader
         /// </summary>
         public SplitLogControlVM()
         {
-            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
+            log = new SmartLogger($"{GetType().Name}.{++instanceCounter}");
             GridLength0 = 1;
             GridLength2 = 0;
             InitCommands();
         }
-        private readonly SimpleLogger log;
+        private readonly SmartLogger log;
         private static int instanceCounter;
 
         #region Sub viewmodels

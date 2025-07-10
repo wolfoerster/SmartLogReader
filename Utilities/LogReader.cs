@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -558,7 +559,7 @@ namespace SmartLogReader
                 }
                 catch (Exception e)
                 {
-                    log.Exception(e);
+                    log.Error(e.ToString());
                 }
             }
 

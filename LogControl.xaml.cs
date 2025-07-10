@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -32,11 +33,11 @@ namespace SmartLogReader
         /// </summary>
         public LogControl()
         {
-            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
+            log = new SmartLogger($"{GetType().Name}.{++instanceCounter}");
             InitializeComponent();
             SnapsToDevicePixels = true;
         }
-        private readonly SimpleLogger log;
+        private readonly SmartLogger log;
         private static int instanceCounter;
 
         /// <summary>

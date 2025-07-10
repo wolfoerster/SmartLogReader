@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -25,11 +26,11 @@ namespace SmartLogReader
     {
         public RollingFileReader()
         {
-            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
+            log = new SmartLogger($"{GetType().Name}.{++instanceCounter}");
             log.Debug();
         }
         private static int instanceCounter;
-        protected readonly SimpleLogger log;
+        protected readonly SmartLogger log;
 
         /// <summary>
         /// The name of the related file.
@@ -111,7 +112,7 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return null;
         }
@@ -134,7 +135,7 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return null;
         }
@@ -152,7 +153,7 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return null;
         }

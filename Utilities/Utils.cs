@@ -28,12 +28,13 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Serialization;
+using SmartLogging;
 
 namespace SmartLogReader
 {
     public static class Utils
     {
-        private static readonly SimpleLogger log = new SimpleLogger();
+        private static readonly SmartLogger log = new SmartLogger();
 
         public static Point ToPixel(this Point pointInDip, Visual visual)
         {
@@ -145,7 +146,7 @@ namespace SmartLogReader
                 }
                 catch (Exception e)
                 {
-                    log.Exception(e);
+                    log.Error(e.ToString());
                 }
             }
             return obj as T;
@@ -166,7 +167,7 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return false;
         }
@@ -183,7 +184,7 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return false;
         }
@@ -447,7 +448,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return null;
         }

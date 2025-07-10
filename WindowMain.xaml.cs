@@ -19,12 +19,13 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using SmartLogging;
 
 namespace SmartLogReader
 {
     public partial class WindowMain : Window
     {
-        private static readonly SimpleLogger log = new SimpleLogger();
+        private static readonly SmartLogger log = new SmartLogger();
         private readonly DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
 
         public WindowMain()
@@ -80,6 +81,7 @@ namespace SmartLogReader
         {
             Properties.Settings.Default.LastWorkspace = smartLogControl.ViewModel.Shutdown();
             StoreSizeAndPosition();
+            LogWriter.Exit();
         }
 
         private void RestoreSizeAndPosition()

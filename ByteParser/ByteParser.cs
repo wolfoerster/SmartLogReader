@@ -18,10 +18,11 @@
 namespace SmartLogReader
 {
     using System;
+    using SmartLogging;
 
     public class ByteParser : IByteParser
     {
-        private static readonly SimpleLogger log = new SimpleLogger();
+        private static readonly SmartLogger log = new SmartLogger();
 
         protected static readonly byte CR = 0x0D; // '\r'
         protected static readonly byte LF = 0x0A; // '\n'
@@ -70,7 +71,7 @@ namespace SmartLogReader
             }
             catch (Exception ex)
             {
-                log.Exception(ex);
+                log.Error(ex.ToString());
                 return null;
             }
         }

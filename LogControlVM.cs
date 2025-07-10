@@ -18,6 +18,7 @@ using System;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -31,11 +32,11 @@ namespace SmartLogReader
         /// </summary>
         public LogControlVM()
         {
-            log = new SimpleLogger($"{GetType().Name}.{++instanceCounter}");
+            log = new SmartLogger($"{GetType().Name}.{++instanceCounter}");
             IncludeList = new FilterCollection();
             ExcludeList = new FilterCollection();
         }
-        private readonly SimpleLogger log;
+        private readonly SmartLogger log;
         private static int instanceCounter;
 
         /// <summary>
@@ -152,7 +153,7 @@ namespace SmartLogReader
                 }
                 catch (Exception e)
                 {
-                    log.Exception(e);
+                    log.Error(e.ToString());
                 }
             }
 
@@ -172,7 +173,7 @@ namespace SmartLogReader
                 }
                 catch (Exception e)
                 {
-                    log.Exception(e);
+                    log.Error(e.ToString());
                 }
             }
         }

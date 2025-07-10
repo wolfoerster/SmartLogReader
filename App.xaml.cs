@@ -25,6 +25,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -33,7 +34,8 @@ namespace SmartLogReader
     /// </summary>
     public partial class App : Application
     {
-        private static readonly SimpleLogger log = new SimpleLogger();
+        private static readonly SmartLogger log = new SmartLogger();
+        public static Version Version;
 
         /// <summary>
         /// 
@@ -59,11 +61,10 @@ namespace SmartLogReader
             ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(UIElement), new FrameworkPropertyMetadata(30000));
             ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(UIElement), new FrameworkPropertyMetadata(true));
 
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            AssemblyName name = assembly.GetName();
+            var assembly = Assembly.GetExecutingAssembly();
+            var name = assembly.GetName();
             Version = name.Version;
         }
-        public static Version Version;
 
         /// <summary>
         /// If a command line parameter is specified it must be either "/nocheck", "/restart" or a file name. 
@@ -80,8 +81,8 @@ namespace SmartLogReader
             blockingFile = localDir + "\\SmartLogReader.blocking";
 
             //--- initialize logging
-            SimpleLogger.Init();
-            SimpleLogger.MinimumLogLevel = GetMinimumLogLevel();
+            LogWriter.Init();
+            LogWriter.MinimumLogLevel = GetMinimumLogLevel();
 
             //--- don't start twice
             String myprocessname = Process.GetCurrentProcess().ProcessName;
@@ -151,7 +152,7 @@ namespace SmartLogReader
         void MeDomainUnhandledException(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            log.Exception(e);
+            log.Error(e.ToString());
             log.Debug($"args.IsTerminating = {args.IsTerminating}");
             MessageBox.Show(e.Message, "DomainUnhandledException");
         }
@@ -162,7 +163,7 @@ namespace SmartLogReader
         void MeDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.Exception;
-            log.Exception(e);
+            log.Error(e.ToString());
             MessageBox.Show(e.Message, "DispatcherUnhandledException");
             args.Handled = true;
         }
@@ -341,7 +342,7 @@ namespace SmartLogReader
             }
             catch (Exception e)
             {
-                log.Exception(e);
+                log.Error(e.ToString());
             }
             return null;
         }

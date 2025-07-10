@@ -17,6 +17,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using SmartLogging;
 
 namespace SmartLogReader
 {
@@ -25,7 +26,7 @@ namespace SmartLogReader
     /// </summary>
     public partial class SmartLogControl : UserControl
     {
-        private static readonly SimpleLogger log = new SimpleLogger();
+        private static readonly SmartLogger log = new SmartLogger();
 
         /// <summary>
         /// 
