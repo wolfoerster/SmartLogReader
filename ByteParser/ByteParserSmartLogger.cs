@@ -21,6 +21,7 @@ namespace SmartLogReader
     using System.Globalization;
     using System.Text;
     using Newtonsoft.Json;
+    using SmartLogging;
 
     /// <summary>
     /// A byte parser for JSON based logger (e.g. the SmartLogger found in WFTools).
@@ -85,7 +86,7 @@ namespace SmartLogReader
         {
             if (smartLoggerVersion == "0.9")
             {
-                var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
+                var logEntry = JsonConvert.DeserializeObject<LogEntryOld>(json);
 
                 DateTime t = DateTime.Parse(logEntry.Time);
                 record.TimeString = t.ToUniversalTime().ToStringN();
@@ -97,7 +98,7 @@ namespace SmartLogReader
             }
             else //if (smartLoggerVersion == "2.0")
             {
-                var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
+                var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
                 DateTime t = DateTime.ParseExact(logEntry.Time, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
                 record.TimeString = t.ToUniversalTime().ToStringN();
@@ -109,22 +110,12 @@ namespace SmartLogReader
             }
         }
 
-        private class LogEntry
+        private class LogEntryOld
         {
             public string Time { get; set; }
             public string ThreadIds { get; set; }
             public string Level { get; set; }
             public string Class { get; set; }
-            public string Method { get; set; }
-            public string Message { get; set; }
-        }
-
-        private class LogEntry2
-        {
-            public string Time { get; set; }
-            public int ThreadId { get; set; }
-            public string Level { get; set; }
-            public string Context { get; set; }
             public string Method { get; set; }
             public string Message { get; set; }
         }
