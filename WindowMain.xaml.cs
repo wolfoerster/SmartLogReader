@@ -81,7 +81,7 @@ namespace SmartLogReader
         {
             Properties.Settings.Default.LastWorkspace = smartLogControl.ViewModel.Shutdown();
             StoreSizeAndPosition();
-            LogWriter.Exit();
+            LogWriter.Flush();
         }
 
         private void RestoreSizeAndPosition()
