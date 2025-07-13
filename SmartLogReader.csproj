@@ -124,16 +124,16 @@
     <Compile Include="Xaml\SearchControl.xaml.cs">
       <DependentUpon>SearchControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LogControl.xaml.cs">
+    <Compile Include="LogControls\LogControl.xaml.cs">
       <DependentUpon>LogControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\LogControlVM.cs" />
-    <Compile Include="SplitLogControl.xaml.cs">
+    <Compile Include="LogControls\SplitLogControl.xaml.cs">
       <DependentUpon>SplitLogControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\SplitLogControlVM.cs" />
     <Compile Include="Utilities\SplitGrid.cs" />
-    <Compile Include="SmartLogControl.xaml.cs">
+    <Compile Include="LogControls\SmartLogControl.xaml.cs">
       <DependentUpon>SmartLogControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\SmartLogControlVM.cs" />
@@ -188,15 +188,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="LogControl.xaml">
+    <Page Include="LogControls\LogControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SplitLogControl.xaml">
+    <Page Include="LogControls\SplitLogControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SmartLogControl.xaml">
+    <Page Include="LogControls\SmartLogControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -255,8 +255,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
-    <Folder Include="ViewModels\" />
+    <Folder Include="LogControls\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
