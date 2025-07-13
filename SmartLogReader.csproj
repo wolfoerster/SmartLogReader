@@ -99,7 +99,7 @@
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
+    <Compile Include="Properties\Settings.cs" />
     <Compile Include="Utilities\ColorBox.cs" />
     <Compile Include="Utilities\RollingFileReader.cs" />
     <Compile Include="Utilities\WidthConverter.cs" />
