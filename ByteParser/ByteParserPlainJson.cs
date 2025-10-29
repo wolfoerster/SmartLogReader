@@ -15,15 +15,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
-using System;
-
-namespace SmartLogReader.ByteParser
+namespace SmartLogReader
 {
+    using System;
+    using System.Globalization;
+    using SmartLogging;
+
     /// <summary>
     /// A byte parser for a plain text based logger with messages in JSON format.
     /// 
     /// A log entry has to look like this:
-    /// 2025-10-28T11:16:04.2881241Z|1|Info|Basics.Logging.LogManager|CreateLoggerFactory|Start logging
+    /// 2025-10-28T11:16:04.2881241Z|1|Info|Common.Queries.SimpleQuery|CreateQuery|{"name":"foo","depth"=4}
     /// 
     /// In general:
     /// UTC DateTime|ThreadId|LogLevel|ClassName|MethodName|Message
@@ -35,10 +37,131 @@ namespace SmartLogReader.ByteParser
     {
         public ByteParserPlainJson(byte[] bytes)
         {
-            if (false)
+            var record = new Record();
+
+            if (CheckBytes(bytes, 0, record, out _))
             {
                 Bytes = bytes;
             }
+        }
+
+        protected override void FillRecord(Record record)
+        {
+            if (CheckBytes(bytes, lastPos, record, out int nextPos))
+                lastPos = nextPos;
+            else
+                lastPos = MoveToNextDateTime(bytes, lastPos);
+        }
+
+        private bool CheckTime(byte[] bytes, int index, out string timeString)
+        {
+            //var test = Utils.BytesToString(bytes, index, 200);
+            timeString = "";
+            var i0 = index;
+            var i1 = MoveToNextPipe(bytes, i0);
+            if (i1 - i0 != 28)
+                return false;
+
+            var text = Utils.BytesToString(bytes, i0, i1 - i0);
+            if (!IsDateTimeInvariant(text, out var time))
+                return false;
+
+            timeString = text;
+            return true;
+        }
+
+        private bool CheckBytes(byte[] bytes, int index, Record record, out int nextPos)
+        {
+            nextPos = lastPos;
+
+            var i0 = index;
+            if (!CheckTime(bytes, index, out string timeString))
+            {
+                return false;
+            }
+
+            var i1 = i0 + 28;
+            record.TimeString = timeString;
+
+            i0 = i1 + 1;
+            i1 = MoveToNextPipe(bytes, i0); // thread id
+            if (i1 - i0 < 1)
+                return false;
+
+            var text = Utils.BytesToString(bytes, i0, i1 - i0);
+            record.ConnId = text;
+
+            i0 = i1 + 1;
+            i1 = MoveToNextPipe(bytes, i0); // log level
+            if (i1 - i0 < 3)
+                return false;
+
+            text = Utils.BytesToString(bytes, i0, i1 - i0);
+            if (Record.TryParseLevel(text) == LogLevel.None)
+                return false;
+
+            record.LevelString = text;
+
+            i0 = i1 + 1;
+            i1 = MoveToNextPipe(bytes, i0); // class name
+            if (i1 - i0 < 1)
+                return false;
+
+            record.Class = Utils.BytesToString(bytes, i0, i1 - i0);
+
+            i0 = i1 + 1;
+            i1 = MoveToNextPipe(bytes, i0); // method name
+            if (i1 - i0 < 1)
+                return false;
+
+            record.Method = Utils.BytesToString(bytes, i0, i1 - i0);
+
+            i0 = i1 + 1;
+            i1 = MoveToNextDateTime(bytes, i0); // message
+            if (i1 - i0 < 1)
+                return false;
+
+            record.Message = Utils.BytesToString(bytes, i0, i1 - i0);
+
+            nextPos = i1;
+            return true;
+        }
+
+        private int MoveToNextDateTime(byte[] array, int i)
+        {
+            for (; i < array.Length; i++)
+            {
+                if (CheckTime(array, i, out _))
+                    return i;
+            }
+
+            return i;
+        }
+
+        private static bool IsDateTimeInvariant(string value, out DateTime time)
+        {
+            time = DateTime.MinValue;
+
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            if (!DateTimeOffset.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var offset))
+                return false;
+
+            time = offset.UtcDateTime;
+            return true;
+        }
+
+        private int MoveToNextPipe(byte[] array, int i)
+        {
+            for (; i < array.Length; i++)
+            {
+                var b = array[i];
+                if (b == Pipe || b == CR || b == LF)
+                    return i;
+            }
+
+            return -1;
         }
     }
 }

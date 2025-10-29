@@ -130,7 +130,7 @@ namespace SmartLogReader
             }
         }
 
-        private LogLevel TryParseLevel(string value)
+        public static LogLevel TryParseLevel(string value)
         {
             if (value.contains("verbose") || value.contains("trace"))
                 return LogLevel.Verbose;

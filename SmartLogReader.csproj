@@ -93,6 +93,7 @@
     <Compile Include="ByteParser\ByteParserJsonLogger.cs" />
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
+    <Compile Include="ByteParser\ByteParserPlainJson.cs" />
     <Compile Include="ByteParser\IByteParser.cs" />
     <Compile Include="Utilities\FilterWarning.cs" />
     <Compile Include="Utilities\Screen.cs" />
