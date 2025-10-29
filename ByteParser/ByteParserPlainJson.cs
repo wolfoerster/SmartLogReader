@@ -50,7 +50,7 @@ namespace SmartLogReader
             if (CheckBytes(bytes, lastPos, record, out int nextPos))
                 lastPos = nextPos;
             else
-                lastPos = MoveToNextDateTime(bytes, lastPos);
+                lastPos = MoveToNextDateTime(bytes, lastPos + 1);
         }
 
         private bool CheckTime(byte[] bytes, int index, out string timeString)
@@ -73,6 +73,7 @@ namespace SmartLogReader
         private bool CheckBytes(byte[] bytes, int index, Record record, out int nextPos)
         {
             nextPos = lastPos;
+            record.Message = "";
 
             var i0 = index;
             if (!CheckTime(bytes, index, out string timeString))
@@ -85,7 +86,7 @@ namespace SmartLogReader
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // thread id
-            if (i1 - i0 < 1)
+            if (i1 - i0 < 0)
                 return false;
 
             var text = Utils.BytesToString(bytes, i0, i1 - i0);
@@ -93,7 +94,7 @@ namespace SmartLogReader
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // log level
-            if (i1 - i0 < 3)
+            if (i1 - i0 < 0)
                 return false;
 
             text = Utils.BytesToString(bytes, i0, i1 - i0);
@@ -104,24 +105,24 @@ namespace SmartLogReader
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // class name
-            if (i1 - i0 < 1)
+            if (i1 - i0 < 0)
                 return false;
 
             record.Class = Utils.BytesToString(bytes, i0, i1 - i0);
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // method name
-            if (i1 - i0 < 1)
+            if (i1 - i0 < 0)
                 return false;
 
             record.Method = Utils.BytesToString(bytes, i0, i1 - i0);
 
             i0 = i1 + 1;
             i1 = MoveToNextDateTime(bytes, i0); // message
-            if (i1 - i0 < 1)
+            if (i1 - i0 < 0)
                 return false;
 
-            record.Message = Utils.BytesToString(bytes, i0, i1 - i0);
+            record.Message = Utils.BytesToString(bytes, i0, i1 - i0).TrimEnd('\r', '\n');
 
             nextPos = i1;
             return true;
