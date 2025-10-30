@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -16,8 +16,6 @@
 //******************************************************************************************
 using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using SmartLogging;
 
 namespace SmartLogReader
@@ -82,33 +80,11 @@ namespace SmartLogReader
                 if (fileInfo.Length == prevLength)
                     return null;
 
-                //--- if the file is smaller now, check the rolled file
-                byte[] rolledBytes = null;
-                if (fileInfo.Length < prevLength)
-                {
-                    string rolledFile = path + ".1";
-                    if (File.Exists(rolledFile))
-                    {
-                        log.Debug($"reading rolled file {rolledFile}");
-                        rolledBytes = ReadNextBytes(rolledFile);
-                        log.Debug($"found {rolledBytes?.Length} bytes in rolled file");
-                    }
-                    else
-                    {
-                        IsNewLogFile = true;
-                    }
-                    prevLength = 0;
-                }
-
-                //--- now go on with the current file
+                //--- now read the next bytes
                 int count = (int)(fileInfo.Length - prevLength);
                 var bytes = ReadBytes(path, prevLength, count);
                 prevLength = fileInfo.Length;
-
-                if (rolledBytes == null || rolledBytes.Length == 0)
-                    return bytes;
-
-                return rolledBytes.Concat(bytes).ToArray();
+                return bytes;
             }
             catch (Exception e)
             {

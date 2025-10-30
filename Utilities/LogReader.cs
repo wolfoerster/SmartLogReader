@@ -491,12 +491,12 @@ namespace SmartLogReader
         private void DoContinuousWork(DoWorkEventArgs e)
         {
             //--- first check if there is a rolled file
-            string rolledFile = fileName + ".1";
-            if (File.Exists(rolledFile))
-            {
-                byte[] bytes = ReadBytes(rolledFile);
-                ExtractRecords(bytes);
-            }
+            //string rolledFile = fileName + ".1";
+            //if (File.Exists(rolledFile))
+            //{
+            //    byte[] bytes = ReadBytes(rolledFile);
+            //    ExtractRecords(bytes);
+            //}
 
             //--- go into an endless loop and check the file every second
             for (int count = 0; ; ++count)
