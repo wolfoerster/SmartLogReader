@@ -61,7 +61,7 @@ namespace SmartLogReader
     /// <summary>
     /// 
     /// </summary>
-    public class LogReader : RollingFileReader
+    public class LogReader : FileReader
     {
         private readonly BackgroundWorker worker;
         private FileOrigin fileOrigin;

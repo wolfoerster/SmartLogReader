@@ -20,9 +20,9 @@ using SmartLogging;
 
 namespace SmartLogReader
 {
-    public class RollingFileReader
+    public class FileReader
     {
-        public RollingFileReader()
+        public FileReader()
         {
             log = new SmartLogger($"{GetType().Name}.{++instanceCounter}");
             log.Debug();

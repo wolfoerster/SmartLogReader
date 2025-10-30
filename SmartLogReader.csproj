@@ -102,7 +102,7 @@
     </Compile>
     <Compile Include="Properties\Settings.cs" />
     <Compile Include="Utilities\ColorBox.cs" />
-    <Compile Include="Utilities\RollingFileReader.cs" />
+    <Compile Include="Utilities\FileReader.cs" />
     <Compile Include="Utilities\WidthConverter.cs" />
     <Compile Include="Xaml\DetailsControl.xaml.cs">
       <DependentUpon>DetailsControl.xaml</DependentUpon>
