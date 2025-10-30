@@ -80,6 +80,13 @@ namespace SmartLogReader
                 if (fileInfo.Length == prevLength)
                     return null;
 
+                //--- if the file is smaller now it most probably has been deleted in the meantime
+                if (fileInfo.Length < prevLength)
+                {
+                    IsNewLogFile = true;
+                    prevLength = 0;
+                }
+
                 //--- now read the next bytes
                 int count = (int)(fileInfo.Length - prevLength);
                 var bytes = ReadBytes(path, prevLength, count);
