@@ -655,5 +655,18 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         {
             return time.ToString("yyyy-MM-dd HH:mm:ss.fff");
         }
+
+        public static bool IsDateTimeOffset(this string value, out DateTimeOffset time)
+        {
+            time = DateTimeOffset.MinValue;
+
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            if (!DateTimeOffset.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out time))
+                return false;
+
+            return true;
+        }
     }
 }

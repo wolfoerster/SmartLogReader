@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using SmartLogging;
+using System.Globalization;
 
 namespace SmartLogReader
 {
@@ -85,15 +86,24 @@ namespace SmartLogReader
             set
             {
                 timeString = value.Replace(',', '.');
-                timeString = timeString.Replace('T', ' ');
-                timeString = timeString.Replace('Z', ' ');
-                if (DateTime.TryParse(timeString, out DateTime time))
+
+                if (timeString.IsDateTimeOffset(out var timeOffset))
                 {
-                    UtcTime = DateTime.SpecifyKind(time, DateTimeKind.Utc);
-                    time = UtcTime.ToLocalTime();
-                    //--- even if the log file has more than 3 digits for the seconds, 
-                    //--- the resolution will not be higher than a millisecond!!!
-                    timeString = time.ToStringN();
+                    timeString = timeOffset.LocalDateTime.ToStringN();
+                }
+                else
+                {
+                    timeString = timeString.Replace('T', ' ');
+                    timeString = timeString.Replace('Z', ' ');
+
+                    if (DateTime.TryParse(timeString, out DateTime time))
+                    {
+                        UtcTime = DateTime.SpecifyKind(time, DateTimeKind.Utc);
+                        time = UtcTime.ToLocalTime();
+                        //--- even if the log file has more than 3 digits for the seconds, 
+                        //--- the resolution will not be higher than a millisecond!!!
+                        timeString = time.ToStringN();
+                    }
                 }
             }
         }

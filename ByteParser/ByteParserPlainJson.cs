@@ -59,11 +59,11 @@ namespace SmartLogReader
             timeString = "";
             var i0 = index;
             var i1 = MoveToNextPipe(bytes, i0);
-            if (i1 - i0 != 28)
+            if (i1 - i0 < 0)
                 return false;
 
             var text = Utils.BytesToString(bytes, i0, i1 - i0);
-            if (!IsDateTimeInvariant(text, out var time))
+            if (!text.IsDateTimeOffset(out var _))
                 return false;
 
             timeString = text;
@@ -81,7 +81,7 @@ namespace SmartLogReader
                 return false;
             }
 
-            var i1 = i0 + 28;
+            var i1 = i0 + timeString.Length;
             record.TimeString = timeString;
 
             i0 = i1 + 1;
@@ -137,20 +137,6 @@ namespace SmartLogReader
             }
 
             return i;
-        }
-
-        private static bool IsDateTimeInvariant(string value, out DateTime time)
-        {
-            time = DateTime.MinValue;
-
-            if (string.IsNullOrWhiteSpace(value))
-                return false;
-
-            if (!DateTimeOffset.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var offset))
-                return false;
-
-            time = offset.UtcDateTime;
-            return true;
         }
 
         private int MoveToNextPipe(byte[] array, int i)
