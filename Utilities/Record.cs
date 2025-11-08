@@ -89,6 +89,7 @@ namespace SmartLogReader
 
                 if (timeString.IsDateTimeOffset(out var timeOffset))
                 {
+                    UtcTime = timeOffset.UtcDateTime;
                     timeString = timeOffset.LocalDateTime.ToStringN();
                 }
                 else
