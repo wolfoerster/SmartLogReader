@@ -100,6 +100,8 @@ namespace SmartLogReader
         }
         LogControlVM myCurrentVM;
 
+        public LogControlVM CurrentVM => myCurrentVM;
+
         #endregion Sub viewmodels
 
         #region Public Properties

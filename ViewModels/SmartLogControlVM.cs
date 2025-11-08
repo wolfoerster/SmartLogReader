@@ -233,6 +233,7 @@ namespace SmartLogReader
                     myClientControlVM.SyncFollowTail(vm);
                     myServerControlVM.SyncFollowTail(vm);
                     myAdditionalControlVM.SyncFollowTail(vm);
+                    vm.CurrentVM.SetFocusOnSelected();
                 }
             }
             else if (e.PropertyName == "NoLastFile")
