@@ -449,7 +449,7 @@ namespace SmartLogReader
             if (view2 == null || SelectedRecord == null)
                 return;
 
-            Record match = FindMatching(view2, x => x.RecordNum >= SelectedRecord.RecordNum);
+            var(match, matchIndex) = FindMatching(view2, x => x.RecordNum >= SelectedRecord.RecordNum);
             if (match != null)
                 HighlightRecord(view2, match);
         }
@@ -473,32 +473,53 @@ namespace SmartLogReader
         {
             if (view != null)
             {
-                Record match = FindMatching(view, x => x.UtcTime >= extRecord.UtcTime);
+                var (match, matchIndex) = FindMatching(view, x => x.UtcTime >= extRecord.UtcTime);
                 if (match != null)
+                {
+                    for (var i = matchIndex; i < view.Count; i++)
+                    {
+                        var record = view.GetItemAt(i) as Record;
+                        if (record.UtcTime > extRecord.UtcTime)
+                            break;
+
+                        if (record.Message == extRecord.Message)
+                        {
+                            match = record;
+                            break;
+                        }
+                    }
+
                     HighlightRecord(view, match);
+                }
             }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private Record FindMatching(ListCollectionView view, Predicate<Record> predicate)
+        private (Record Match, int MatchIndex) FindMatching(ListCollectionView view, Predicate<Record> predicate)
         {
             Record match = null;
+            var matchIndex = -1;
+
             for (int i = 0; i < view.Count; i++)
             {
                 Record record = view.GetItemAt(i) as Record;
                 if (predicate.Invoke(record))
                 {
                     match = record;
+                    matchIndex = i;
                     break;
                 }
             }
 
             if (match == null && view.Count > 0)
-                match = view.GetItemAt(view.Count - 1) as Record;
+            {
+                matchIndex = view.Count - 1;
+                match = view.GetItemAt(matchIndex) as Record;
+            }
 
-            return match;
+            return (match, matchIndex);
         }
 
         /// <summary>
