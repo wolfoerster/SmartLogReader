@@ -26,7 +26,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wolfgang Foerster")]
 [assembly: AssemblyProduct("SmartLogReader")]
-[assembly: AssemblyCopyright("Copyright © 2017 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)")]
+[assembly: AssemblyCopyright("Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -54,4 +54,4 @@ using System.Windows;
                                               // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: AssemblyVersion("2.7.0")]
+[assembly: AssemblyVersion("2.8.0")]
