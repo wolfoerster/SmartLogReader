@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -15,14 +15,13 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Media;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 using SmartLogging;
-using System.Globalization;
 
 namespace SmartLogReader
 {
@@ -36,10 +35,8 @@ namespace SmartLogReader
         /// </summary>
         public Record()
         {
-            RecordNum = ++count;
             Level = LogLevel.None;
         }
-        static ulong count;
 
         /// <summary>
         /// 
@@ -75,6 +72,31 @@ namespace SmartLogReader
         /// 
         /// </summary>
         public ulong RecordNum { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj is Record record)
+                return record.TimeString == this.TimeString
+                    && record.ConnId == this.ConnId
+                    && record.Level == this.Level
+                    && record.Class == this.Class
+                    && record.Method == this.Method
+                    && record.Message == this.Message;
+
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return TimeString.GetHashCode() ^ ConnId.GetHashCode() ^ Level.GetHashCode()
+                ^ Class.GetHashCode() ^ Method.GetHashCode() ^ Message.GetHashCode();
+        }
 
         /// <summary>
         /// On set, the string is assumed to hold the time in UTC.

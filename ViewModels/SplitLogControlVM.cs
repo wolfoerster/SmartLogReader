@@ -442,14 +442,14 @@ namespace SmartLogReader
         /// </summary>
         void FindMatchingInternal(ListCollectionView view1, bool theOtherView)
         {
-            ListCollectionView view2 = view1;
+            var view2 = view1;
             if (theOtherView)
                 view2 = view1 == MyLogControlVM1.RecordsView ? MyLogControlVM2.RecordsView : MyLogControlVM1.RecordsView;
 
             if (view2 == null || SelectedRecord == null)
                 return;
 
-            var(match, matchIndex) = FindMatching(view2, x => x.RecordNum >= SelectedRecord.RecordNum);
+            var match = FindMatchingRecord(view2, SelectedRecord);
             if (match != null)
                 HighlightRecord(view2, match);
         }
@@ -473,53 +473,49 @@ namespace SmartLogReader
         {
             if (view != null)
             {
-                var (match, matchIndex) = FindMatching(view, x => x.UtcTime >= extRecord.UtcTime);
+                var match = FindMatchingRecord(view, extRecord);
                 if (match != null)
-                {
-                    for (var i = matchIndex; i < view.Count; i++)
-                    {
-                        var record = view.GetItemAt(i) as Record;
-                        if (record.UtcTime > extRecord.UtcTime)
-                            break;
-
-                        if (record.Message == extRecord.Message)
-                        {
-                            match = record;
-                            break;
-                        }
-                    }
-
                     HighlightRecord(view, match);
-                }
             }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private (Record Match, int MatchIndex) FindMatching(ListCollectionView view, Predicate<Record> predicate)
+        private Record FindMatchingRecord(ListCollectionView view, Record record)
         {
             Record match = null;
-            var matchIndex = -1;
 
             for (int i = 0; i < view.Count; i++)
             {
-                Record record = view.GetItemAt(i) as Record;
-                if (predicate.Invoke(record))
+                var candidate = view.GetItemAt(i) as Record;
+
+                if (candidate.UtcTime >= record.UtcTime)
                 {
-                    match = record;
-                    matchIndex = i;
+                    match = candidate;
+
+                    for (var j = i + 1; j < view.Count; j++)
+                    {
+                        candidate = view.GetItemAt(j) as Record;
+
+                        if (candidate.UtcTime > record.UtcTime)
+                            break;
+
+                        if (candidate.Equals(record))
+                        {
+                            match = candidate;
+                            break;
+                        }
+                    }
+
                     break;
                 }
             }
 
             if (match == null && view.Count > 0)
-            {
-                matchIndex = view.Count - 1;
-                match = view.GetItemAt(matchIndex) as Record;
-            }
+                match = view.GetItemAt(view.Count - 1) as Record;
 
-            return (match, matchIndex);
+            return match;
         }
 
         /// <summary>
