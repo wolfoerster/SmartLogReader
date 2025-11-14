@@ -54,13 +54,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MessageTemplates">
-      <HintPath>References\MessageTemplates.dll</HintPath>
+      <HintPath>..\References\MessageTemplates.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>References\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SmartLogging">
-      <HintPath>References\SmartLogging.dll</HintPath>
+      <HintPath>..\References\SmartLogging.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
