@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -14,27 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
-namespace SmartLogReader
+namespace SmartLogReader.Common;
+
+public interface IByteParser
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class Notifier : INotifyPropertyChanged
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+    byte[] Bytes { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
+    int CurrentPosition { get; }
+
+    Record GetNextRecord();
 }

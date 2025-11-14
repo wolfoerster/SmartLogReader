@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2021 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -24,6 +24,7 @@ namespace SmartLogReader
     using MessageTemplates.Structure;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using SmartLogReader.Common;
 
     /// <summary>
     /// A byte parser for JSON based logger (e.g. JsonLogger)

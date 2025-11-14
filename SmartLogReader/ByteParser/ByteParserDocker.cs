@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2021 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -16,6 +16,7 @@
 //******************************************************************************************
 
 using System;
+using SmartLogReader.Common;
 
 namespace SmartLogReader
 {

@@ -84,7 +84,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ByteParser\ByteParser.cs" />
     <Compile Include="ByteParser\ByteParserDocker.cs" />
     <Compile Include="ByteParser\ByteParserNewRelic.cs" />
     <Compile Include="ByteParser\ByteParserSumoLogic.cs" />
@@ -94,14 +93,12 @@
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\ByteParserPlainJson.cs" />
-    <Compile Include="ByteParser\IByteParser.cs" />
     <Compile Include="Utilities\FilterWarning.cs" />
     <Compile Include="Utilities\Screen.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.cs" />
-    <Compile Include="Utilities\ColorBox.cs" />
     <Compile Include="Utilities\FileReader.cs" />
     <Compile Include="Utilities\WidthConverter.cs" />
     <Compile Include="Xaml\DetailsControl.xaml.cs">
@@ -138,12 +135,9 @@
       <DependentUpon>SmartLogControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\SmartLogControlVM.cs" />
-    <Compile Include="Utilities\Filter.cs" />
     <Compile Include="Utilities\LogReader.cs" />
-    <Compile Include="Utilities\Record.cs" />
     <Compile Include="Utilities\ViewModel.cs" />
     <Compile Include="Utilities\Dialog.cs" />
-    <Compile Include="Utilities\Notifier.cs" />
     <Compile Include="Utilities\NumberBox.cs" />
     <Compile Include="Utilities\UICommand.cs" />
     <Compile Include="Utilities\Utils.cs" />
@@ -255,7 +249,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SmartLogReader.Common\SmartLogReader.Common.csproj">
+      <Project>{7fa744a3-3085-417e-8e95-fe9128799d38}</Project>
+      <Name>SmartLogReader.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

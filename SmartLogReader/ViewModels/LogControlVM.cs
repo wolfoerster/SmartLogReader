@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017-2021 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -19,13 +19,14 @@ using System.Windows.Data;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using SmartLogging;
+using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
     /// <summary>
     /// 
     /// </summary>
-    public class LogControlVM : ViewModel
+    public class LogControlVM : ViewModel, IListInclExclViewModel
     {
         /// <summary>
         /// 
