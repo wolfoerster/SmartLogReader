@@ -596,6 +596,7 @@ namespace SmartLogReader
             CommandBindings.Add(new CommandBinding(HighlightingCmd, ExecuteHighlightingCmd, CanExecuteHighlightingCmd));
             CommandBindings.Add(new CommandBinding(NewWorkspaceCmd, ExecuteNewWorkspaceCmd, CanExecuteNewWorkspaceCmd));
             CommandBindings.Add(new CommandBinding(DeleteWorkspaceCmd, ExecuteDeleteWorkspaceCmd, CanExecuteDeleteWorkspaceCmd));
+            CommandBindings.Add(new CommandBinding(ConfigurePluginsCmd, ExecuteConfigurePluginsCmd, CanExecuteConfigurePluginsCmd));
         }
 
         /// <summary>
@@ -837,6 +838,20 @@ namespace SmartLogReader
         void ExecuteDeleteWorkspaceCmd(object sender, ExecutedRoutedEventArgs e)
         {
             DeleteWorkspace();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void CanExecuteConfigurePluginsCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void ExecuteConfigurePluginsCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dlg = new ConfigurePluginsDialog();
+            var ok = dlg.ShowDialog(ConfigurePluginsCmd.Text);
         }
 
         /// <summary>

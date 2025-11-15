@@ -611,7 +611,7 @@ namespace SmartLogReader
             CommandBindings.Add(new CommandBinding(OpenCmd, ExecuteOpenCmd, CanExecuteOpenCmd));
             CommandBindings.Add(new CommandBinding(CloseCmd, ExecuteCloseCmd, CanExecuteCloseCmd));
             CommandBindings.Add(new CommandBinding(SplitCmd, ExecuteSplitCmd, CanExecuteSplitCmd));
-            CommandBindings.Add(new CommandBinding(ConfigureCmd, ExecuteConfigureCmd, CanExecuteConfigureCmd));
+            CommandBindings.Add(new CommandBinding(ConfigureFilterCmd, ExecuteConfigureFilterCmd, CanExecuteConfigureFilterCmd));
         }
 
         /// <summary>
@@ -664,14 +664,14 @@ namespace SmartLogReader
         }
 
         /// <summary>
-        /// ConfigureCmd
+        /// ConfigureFilterCmd
         /// </summary>
-        void CanExecuteConfigureCmd(object sender, CanExecuteRoutedEventArgs e)
+        void CanExecuteConfigureFilterCmd(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
 
-        void ExecuteConfigureCmd(object sender, ExecutedRoutedEventArgs e)
+        void ExecuteConfigureFilterCmd(object sender, ExecutedRoutedEventArgs e)
         {
             FilterDialog dlg = new FilterDialog(myCurrentVM);
 

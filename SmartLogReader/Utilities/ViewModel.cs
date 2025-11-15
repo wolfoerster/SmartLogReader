@@ -66,7 +66,7 @@ namespace SmartLogReader
             CopyCmd = new UICommand("Copy selected", "Copy", Key.C, ModifierKeys.Control, "Ctrl+C");
             OpenCmd = new UICommand("Open file", "Open", Key.O, ModifierKeys.Control, "Ctrl+O");
             CloseCmd = new UICommand("Close file", "Close", Key.X, ModifierKeys.Control, "Ctrl+X");
-            ConfigureCmd = new UICommand("Configure filter", "Configure", Key.C, ModifierKeys.Alt, "Alt+C");
+            ConfigureFilterCmd = new UICommand("Configure filter", "ConfigureFilter", Key.C, ModifierKeys.Alt, "Alt+C");
             HighlightingCmd = new UICommand("Select colors", "Highlighting", Key.H, ModifierKeys.Control, "Ctrl+H");
 
             SplitCmd = new UICommand("Split log (TODO)", "Split", Key.S, ModifierKeys.Control, "Ctrl+S");
@@ -75,12 +75,13 @@ namespace SmartLogReader
             SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
             NewWorkspaceCmd = new UICommand("New workspace (Ctrl+Enter)", "New", Key.Return, ModifierKeys.Control, "Ctrl+Return");
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
+            ConfigurePluginsCmd = new UICommand("Configure plugins (Ctrl+P)", "ConfigurePlugins", Key.P, ModifierKeys.Control, "Ctrl+P");
         }
 
         static public UICommand CopyCmd { get; set; }
         static public UICommand OpenCmd { get; set; }
         static public UICommand CloseCmd { get; set; }
-        static public UICommand ConfigureCmd { get; set; }
+        static public UICommand ConfigureFilterCmd { get; set; }
         static public UICommand HighlightingCmd { get; set; }
 
         static public UICommand SplitCmd { get; set; }
@@ -89,6 +90,7 @@ namespace SmartLogReader
         static public UICommand SearchDownCmd { get; set; }
         static public UICommand NewWorkspaceCmd { get; set; }
         static public UICommand DeleteWorkspaceCmd { get; set; }
+        static public UICommand ConfigurePluginsCmd { get; set; }
     }
 
     /// <summary>

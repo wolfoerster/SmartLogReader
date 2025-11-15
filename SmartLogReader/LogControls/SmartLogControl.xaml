@@ -26,6 +26,7 @@
       <ComboBox Width="160" Margin="12,0,0,0" ToolTip="Select a workspace name" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="False" IsReadOnly="True"/>
       <Button Content="N" ToolTip="{Binding NewWorkspaceCmd.Text}" Command="{Binding NewWorkspaceCmd}" Width="20"/>
       <Button Content="D" ToolTip="{Binding DeleteWorkspaceCmd.Text}" Command="{Binding DeleteWorkspaceCmd}" Width="20"/>
+      <Button Content="P" ToolTip="{Binding ConfigurePluginsCmd.Text}" Command="{Binding ConfigurePluginsCmd}" Width="20" Margin="12,0,0,0"/>
     </StackPanel>
     <!-- -->
     <my:SplitGrid Grid.Row="1" x:Name="splitGrid" Margin="0,4,0,0" TextElement.FontSize="{Binding SelectedSize}" TextElement.FontFamily="{Binding SelectedFamily}" TextOptions.TextRenderingMode="ClearType">

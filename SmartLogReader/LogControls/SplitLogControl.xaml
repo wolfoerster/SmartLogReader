@@ -14,7 +14,7 @@
         <Button Content="{Binding ReaderFileInfo}" ToolTip="{Binding ReaderFileName}" Command="{Binding OpenCmd}" MinWidth="20" Focusable="false"/>
         <ToggleButton Content="F" ToolTip="Follow tail" IsChecked="{Binding FollowTail}" Width="20" Margin="4,0,0,0" Focusable="false"/>
         <ToggleButton Content="E" ToolTip="Enable filter" IsChecked="{Binding IsFilterEnabled}" Width="20" Margin="4,0,0,0" Focusable="false"/>
-        <Button Content="C" ToolTip="{Binding ConfigureCmd.Text}" Command="{Binding ConfigureCmd}" Width="20" Margin="4,0,0,0" Focusable="false"/>
+        <Button Content="C" ToolTip="{Binding ConfigureFilterCmd.Text}" Command="{Binding ConfigureFilterCmd}" Width="20" Margin="4,0,0,0" Focusable="false"/>
         <ToggleButton Content="S" ToolTip="Split log" IsChecked="{Binding IsSplitLog}" Width="20" Margin="4,0,0,0" Focusable="false"/>
         <ToggleButton Content="Y" ToolTip="Sync selection" IsChecked="{Binding IsSyncSelection}" Width="20" Margin="4,0,0,0" Focusable="false"/>
         <Button Content="X" ToolTip="{Binding CloseCmd.Text}" Command="{Binding CloseCmd}" Width="20" Margin="4,0,0,0" Focusable="false"/>

@@ -15,30 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
-using System.Windows.Input;
-
 namespace SmartLogReader
 {
-    /// <summary>
-    /// Interaction logic for NewWorkspaceDialog.xaml
-    /// </summary>
-    public partial class NewWorkspaceDialog : Dialog
+    public partial class ConfigurePluginsDialog : Dialog
     {
-        public NewWorkspaceDialog()
+        public ConfigurePluginsDialog()
         {
             InitializeComponent();
             DataContext = this;
-        }
-
-        public string Workspace { get; set; }
-
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            if (e.Key == Key.Enter)
-            {
-                DialogResult = true;
-            }
         }
     }
 }

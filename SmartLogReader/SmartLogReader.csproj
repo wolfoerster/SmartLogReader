@@ -100,6 +100,9 @@
     <Compile Include="Utilities\Notifier.cs" />
     <Compile Include="Utilities\Record.cs" />
     <Compile Include="Utilities\Screen.cs" />
+    <Compile Include="Xaml\ConfigurePluginsDialog.xaml.cs">
+      <DependentUpon>ConfigurePluginsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
     <Compile Include="Xaml\WaitControl.xaml.cs">
       <DependentUpon>WaitControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Xaml\ConfigurePluginsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Xaml\NewWorkspaceDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
