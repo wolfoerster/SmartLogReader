@@ -20,6 +20,7 @@ using SmartLogReader.Common;
 namespace SmartLogReader
 {
     using System;
+    using SmartLogging;
 
     /// <summary>
     /// A byte parser for a plain text based logger (e.g. the SimpleLogger used in this app).
@@ -45,25 +46,25 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
-            record.TimeString = GetTime();
+            entry.Time = GetTime();
 
             if (lookForPipe)
             {
-                record.LevelString = GetNext();
-                record.Class = GetNext();
+                entry.Level = GetNext();
+                entry.Context = GetNext();
                 var split = Split(GetRest());
-                record.Method = split.Method;
-                record.Message = split.Message;
+                entry.Method = split.Method;
+                entry.Message = split.Message;
             }
             else
             {
-                record.ConnId = GetNext();
-                record.LevelString = GetNext();
-                record.Class = GetNext();
-                record.Method = GetNext();
-                record.Message = GetRest();
+                entry.Annex = GetNext();
+                entry.Level = GetNext();
+                entry.Context = GetNext();
+                entry.Method = GetNext();
+                entry.Message = GetRest();
             }
         }
 

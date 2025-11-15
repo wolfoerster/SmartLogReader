@@ -21,7 +21,6 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using SmartLogging;
-
 using SmartLogReader.Common;
 
 namespace SmartLogReader

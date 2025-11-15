@@ -16,6 +16,7 @@
 //******************************************************************************************
 
 using System;
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
@@ -32,10 +33,10 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
             lastPos = GetIndexOfNext((byte)'{');
-            base.FillRecord(record);
+            base.FillRecord(entry);
         }
 
         private static bool IsNewDocker(byte[] bytes)

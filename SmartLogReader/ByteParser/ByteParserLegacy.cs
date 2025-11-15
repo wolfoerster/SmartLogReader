@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
@@ -33,12 +34,12 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
-            GetLegacyRecord(record);
+            GetLegacyRecord(entry);
         }
 
-        private void GetLegacyRecord(Record record)
+        private void GetLegacyRecord(LogEntry entry)
         {
             string token = GetNext();
 #if false
@@ -51,27 +52,27 @@ namespace SmartLogReader
             token = GetNext();
             switch (token[0])
             {
-                case 'C': record.LevelString = "Fatal"; break;
-                case 'E': record.LevelString = "Error"; break;
-                case 'W': record.LevelString = "Warning"; break;
-                case 'I': record.LevelString = "Information"; break;
-                case 'V': record.LevelString = "Debug"; break;
+                case 'C': entry.Level = "Fatal"; break;
+                case 'E': entry.Level = "Error"; break;
+                case 'W': entry.Level = "Warning"; break;
+                case 'I': entry.Level = "Information"; break;
+                case 'V': entry.Level = "Debug"; break;
             }
 
             token = GetNext();
             token = GetNext();
-            record.Class = GetNext().TrimEnd(new char[] { ':' });
+            entry.Context = GetNext().TrimEnd(new char[] { ':' });
 
-            record.Message = GetNextLine();
-            record.Method = " ";
-            int index = record.Message.IndexOf(':');
+            entry.Message = GetNextLine();
+            entry.Method = " ";
+            int index = entry.Message.IndexOf(':');
             if (index > 0)
             {
-                token = record.Message.Substring(0, index);
+                token = entry.Message.Substring(0, index);
                 if (token.IndexOf(' ') < 0)
                 {
-                    record.Method = token;
-                    record.Message = record.Message.Substring(index + 1).TrimStart();
+                    entry.Method = token;
+                    entry.Message = entry.Message.Substring(index + 1).TrimStart();
                 }
             }
 
@@ -93,12 +94,12 @@ namespace SmartLogReader
                 var str = "    DateTime=";
                 if (line.StartsWith(str))
                 {
-                    record.TimeString = line.Substring(str.Length);
+                    entry.Time = line.Substring(str.Length);
                     return;
                 }
                 else
                 {
-                    record.Message += "\r\n" + line;
+                    entry.Message += "\r\n" + line;
                 }
             }
         }

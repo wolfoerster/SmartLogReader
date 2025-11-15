@@ -54,11 +54,12 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
-            GetJsonRecord1(record, GetNextEntry());
+            GetJsonRecord1(entry, GetNextEntry());
         }
 
+#warning TODO???
         private string GetNextEntry()
         {
             var sb = new StringBuilder();
@@ -83,31 +84,31 @@ namespace SmartLogReader
             return CheckForString("{\"Time\"", bytes, position);
         }
 
-        private void GetJsonRecord1(Record record, string json)
+        private void GetJsonRecord1(LogEntry entry, string json)
         {
             if (smartLoggerVersion == "0.9")
             {
                 var logEntry = JsonConvert.DeserializeObject<LogEntryOld>(json);
 
                 DateTime t = DateTime.Parse(logEntry.Time);
-                record.TimeString = t.ToUniversalTime().ToStringN();
-                record.ConnId = logEntry.ThreadIds;
-                record.LevelString = logEntry.Level;
-                record.Class = logEntry.Class;
-                record.Method = logEntry.Method;
-                record.Message = logEntry.Message ?? string.Empty;
+                entry.Time = t.ToUniversalTime().ToStringN();
+                entry.Annex = logEntry.ThreadIds;
+                entry.Level = logEntry.Level;
+                entry.Context = logEntry.Class;
+                entry.Method = logEntry.Method;
+                entry.Message = logEntry.Message ?? string.Empty;
             }
             else //if (smartLoggerVersion == "2.0")
             {
                 var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
                 DateTime t = DateTime.ParseExact(logEntry.Time, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-                record.TimeString = t.ToUniversalTime().ToStringN();
-                record.ConnId = logEntry.ThreadId.ToString();
-                record.LevelString = logEntry.Level;
-                record.Class = logEntry.Context;
-                record.Method = logEntry.Method;
-                record.Message = logEntry.Message ?? string.Empty;
+                entry.Time = t.ToUniversalTime().ToStringN();
+                entry.Annex = logEntry.Annex.ToString();
+                entry.Level = logEntry.Level;
+                entry.Context = logEntry.Context;
+                entry.Method = logEntry.Method;
+                entry.Message = logEntry.Message ?? string.Empty;
             }
         }
 

@@ -15,6 +15,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using SmartLogging;
+
 namespace SmartLogReader.Common;
 
 public interface IByteParser
@@ -23,5 +25,5 @@ public interface IByteParser
 
     int CurrentPosition { get; }
 
-    Record GetNextRecord();
+    LogEntry GetNextEntry();
 }

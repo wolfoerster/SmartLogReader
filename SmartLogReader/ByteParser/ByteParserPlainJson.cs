@@ -39,17 +39,17 @@ namespace SmartLogReader
     {
         public ByteParserPlainJson(byte[] bytes)
         {
-            var record = new Record();
+            var entry = new LogEntry();
 
-            if (CheckBytes(bytes, 0, record, out _))
+            if (CheckBytes(bytes, 0, entry, out _))
             {
                 Bytes = bytes;
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
-            if (CheckBytes(bytes, lastPos, record, out int nextPos))
+            if (CheckBytes(bytes, lastPos, entry, out int nextPos))
                 lastPos = nextPos;
             else
                 lastPos = MoveToNextDateTime(bytes, lastPos + 1);
@@ -72,10 +72,10 @@ namespace SmartLogReader
             return true;
         }
 
-        private bool CheckBytes(byte[] bytes, int index, Record record, out int nextPos)
+        private bool CheckBytes(byte[] bytes, int index, LogEntry entry, out int nextPos)
         {
             nextPos = lastPos;
-            record.Message = "";
+            entry.Message = "";
 
             var i0 = index;
             if (!CheckTime(bytes, index, out string timeString))
@@ -84,7 +84,7 @@ namespace SmartLogReader
             }
 
             var i1 = i0 + timeString.Length;
-            record.TimeString = timeString;
+            entry.Time = timeString;
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // thread id
@@ -92,7 +92,7 @@ namespace SmartLogReader
                 return false;
 
             var text = Utils.BytesToString(bytes, i0, i1 - i0);
-            record.ConnId = text;
+            entry.Annex = text;
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // log level
@@ -103,28 +103,28 @@ namespace SmartLogReader
             if (Record.TryParseLevel(text) == LogLevel.None)
                 return false;
 
-            record.LevelString = text;
+            entry.Level = text;
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // class name
             if (i1 - i0 < 0)
                 return false;
 
-            record.Class = Utils.BytesToString(bytes, i0, i1 - i0);
+            entry.Context = Utils.BytesToString(bytes, i0, i1 - i0);
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // method name
             if (i1 - i0 < 0)
                 return false;
 
-            record.Method = Utils.BytesToString(bytes, i0, i1 - i0);
+            entry.Method = Utils.BytesToString(bytes, i0, i1 - i0);
 
             i0 = i1 + 1;
             i1 = MoveToNextDateTime(bytes, i0); // message
             if (i1 - i0 < 0)
                 return false;
 
-            record.Message = Utils.BytesToString(bytes, i0, i1 - i0).TrimEnd('\r', '\n');
+            entry.Message = Utils.BytesToString(bytes, i0, i1 - i0).TrimEnd('\r', '\n');
 
             nextPos = i1;
             return true;

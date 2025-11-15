@@ -24,6 +24,7 @@ namespace SmartLogReader
     using MessageTemplates.Structure;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using SmartLogging;
     using SmartLogReader.Common;
 
     /// <summary>
@@ -43,12 +44,12 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
-            GetJsonRecord2(record, GetNextLine());
+            GetJsonRecord2(entry, GetNextLine());
         }
 
-        protected void GetJsonRecord2(Record record, string json)
+        protected void GetJsonRecord2(LogEntry entry, string json)
         {
             var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
             if (logEntry?.Timestamp == null)
@@ -57,14 +58,14 @@ namespace SmartLogReader
             }
 
             DateTime t = DateTime.Parse(logEntry.Timestamp);
-            record.TimeString = t.ToUniversalTime().ToStringN();
-            record.LevelString = logEntry.Level;
-
-            record.Class = logEntry.GetProperty("SourceContext");
-            record.Method = logEntry.GetProperty("MethodName");
-            record.Message = logEntry.GetMessage();
-            record.ConnId = logEntry.GetProperty("ConnectionId");
-            record.Json = JObject.Parse(json);
+            entry.Time = t.ToUniversalTime().ToStringN();
+            entry.Level = logEntry.Level;
+            entry.Context = logEntry.GetProperty("SourceContext");
+            entry.Method = logEntry.GetProperty("MethodName");
+            entry.Message = logEntry.GetMessage();
+            entry.Annex = logEntry.GetProperty("ConnectionId");
+#warning TODO
+            //entry.Json = JObject.Parse(json);
         }
 
         private class LogEntry2

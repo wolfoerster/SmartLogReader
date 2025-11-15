@@ -487,7 +487,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         return index > -1;
     }
 
-    internal static void OnlyOnce(object field, object value)
+    public static void OnlyOnce(object field, object value)
     {
         if (field != null)
             throw new Exception("Field must be null!");

@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
@@ -33,18 +34,18 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
-            GetJsonRecord3(record, GetNextLine());
+            GetJsonRecord3(entry, GetNextLine());
         }
 
-        private void GetJsonRecord3(Record record, string json)
+        private void GetJsonRecord3(LogEntry entry, string json)
         {
             var i = json.IndexOf("{\"\"Timestamp");
             json = json.Substring(i, json.Length - i - 1);
             json = json.Replace("\"\"", "\"");
             json = json.TrimEnd(new[] { '\"' });
-            GetJsonRecord2(record, json);
+            GetJsonRecord2(entry, json);
         }
     }
 }

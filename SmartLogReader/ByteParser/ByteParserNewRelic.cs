@@ -21,6 +21,7 @@ namespace SmartLogReader
 {
     using System;
     using Newtonsoft.Json.Linq;
+    using SmartLogging;
 
     /// <summary>
     /// A byte parser for JSON based logger (here: JsonLogger exported from NewRelic)
@@ -36,7 +37,7 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(Record record)
+        protected override void FillRecord(LogEntry entry)
         {
             var json = GetNextLine();
             var jobj = JObject.Parse(json);
@@ -53,15 +54,16 @@ namespace SmartLogReader
             {
                 var offSet = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
                 var dateTime = offSet.LocalDateTime;
-                record.TimeString = dateTime.ToUniversalTime().ToStringN();
+                entry.Time = dateTime.ToUniversalTime().ToStringN();
             }
 
-            record.LevelString = GetValue("level");
-            record.Class = GetValue("SourceContext");
-            record.Method = GetValue("MethodName");
-            record.Message = GetValue("message");
-            record.ConnId = GetValue("ConnectionId");
-            record.Json = jobj;
+            entry.Level = GetValue("level");
+            entry.Context = GetValue("SourceContext");
+            entry.Method = GetValue("MethodName");
+            entry.Message = GetValue("message");
+            entry.Annex = GetValue("ConnectionId");
+#warning TODO
+            //entry.Json = jobj;
         }
     }
 }

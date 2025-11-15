@@ -18,23 +18,24 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SmartLogReader.Common;
-
-/// <summary>
-/// 
-/// </summary>
-public class Notifier : INotifyPropertyChanged
+namespace SmartLogReader
 {
     /// <summary>
     /// 
     /// </summary>
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
+    public class Notifier : INotifyPropertyChanged
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        /// <summary>
+        /// 
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

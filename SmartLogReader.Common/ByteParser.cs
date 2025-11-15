@@ -55,19 +55,19 @@ public class ByteParser : IByteParser
     public int CurrentPosition => lastPos;
 
     /// <summary>
-    /// Reads the next log entry and converts it to a Record.
+    /// Reads the next log entry.
     /// </summary>
-    public Record GetNextRecord()
+    public LogEntry GetNextEntry()
     {
         int nRemain = bytes.Length - lastPos;
         if (nRemain < 1)
             return null;
 
-        Record record = new Record();
+        var entry = new LogEntry();
         try
         {
-            FillRecord(record);
-            return record;
+            FillRecord(entry);
+            return entry;
         }
         catch (Exception ex)
         {
@@ -77,11 +77,11 @@ public class ByteParser : IByteParser
     }
 
     /// <summary>
-    /// Override this method in derived classes to read the next log entry and fill the record.
+    /// Override this method in derived classes to read the next log entry.
     /// </summary>
-    protected virtual void FillRecord(Record record)
+    protected virtual void FillRecord(LogEntry entry)
     {
-        record.Message = GetNextLine();
+        entry.Message = GetNextLine();
     }
 
     /// <summary>

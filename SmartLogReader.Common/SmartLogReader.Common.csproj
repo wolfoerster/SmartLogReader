@@ -6,12 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SmartLogging">
-      <HintPath>..\References\SmartLogging.dll</HintPath>
-    </Reference>
+    <PackageReference Include="SmartLogging" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

@@ -56,13 +56,13 @@
     <Reference Include="MessageTemplates">
       <HintPath>..\References\MessageTemplates.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SmartLogging">
-      <HintPath>..\References\SmartLogging.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="SmartLogging, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartLogging.3.0.0\lib\net48\SmartLogging.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -93,7 +93,12 @@
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\ByteParserPlainJson.cs" />
+    <Compile Include="Utilities\ColorBox.cs" />
+    <Compile Include="Utilities\Filter.cs" />
     <Compile Include="Utilities\FilterWarning.cs" />
+    <Compile Include="Utilities\IndexValuePair.cs" />
+    <Compile Include="Utilities\Notifier.cs" />
+    <Compile Include="Utilities\Record.cs" />
     <Compile Include="Utilities\Screen.cs" />
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
@@ -140,7 +145,6 @@
     <Compile Include="Utilities\Dialog.cs" />
     <Compile Include="Utilities\NumberBox.cs" />
     <Compile Include="Utilities\UICommand.cs" />
-    <Compile Include="Utilities\Utils.cs" />
     <Compile Include="WindowMain.xaml.cs">
       <DependentUpon>WindowMain.xaml</DependentUpon>
     </Compile>
@@ -222,6 +226,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
