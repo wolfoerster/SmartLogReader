@@ -647,7 +647,9 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 
     public static string BytesToString(byte[] bytes, int index, int count)
     {
-        //string result = ASCIIEncoding.ASCII.GetString(bytes, index, count);
+        if (count < 0)
+            count = bytes.Length - index;
+
         string result = Encoding.Default.GetString(bytes, index, count);
         return result;
     }

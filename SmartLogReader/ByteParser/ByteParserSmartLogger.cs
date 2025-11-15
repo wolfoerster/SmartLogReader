@@ -29,7 +29,9 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserSmartLogger : ByteParser
     {
-        private readonly string smartLoggerVersion;
+        enum LoggerVersion { V1, V2, V3 }
+
+        private readonly LoggerVersion loggerVersion;
 
         public ByteParserSmartLogger()
         {
@@ -39,13 +41,16 @@ namespace SmartLogReader
         {
             if (this.IsEntryStart(bytes, 0))
             {
-                string line = Utils.BytesToString(bytes, 0, 120);
+                string line = Utils.BytesToString(bytes, 0, -1);
 
                 if (line.Contains("ThreadIds"))
-                    smartLoggerVersion = "0.9";
+                    loggerVersion = LoggerVersion.V1;
 
                 else if (line.Contains("ThreadId"))
-                    smartLoggerVersion = "2.0";
+                    loggerVersion = LoggerVersion.V2;
+
+                else if (line.Contains("Annex"))
+                    loggerVersion = LoggerVersion.V3;
 
                 else // no SmartLogger at all
                     return;
@@ -56,11 +61,10 @@ namespace SmartLogReader
 
         protected override void FillRecord(LogEntry entry)
         {
-            GetJsonRecord1(entry, GetNextEntry());
+            GetJsonRecord(entry, ReadEntry());
         }
 
-#warning TODO???
-        private string GetNextEntry()
+        private string ReadEntry()
         {
             var sb = new StringBuilder();
 
@@ -71,7 +75,6 @@ namespace SmartLogReader
                 && !this.IsEntryStart(this.bytes, this.lastPos))
             {
                 line = GetNextLine();
-                //sb.Append("\r\n");
                 sb.Append(" ");
                 sb.Append(line);
             }
@@ -84,35 +87,53 @@ namespace SmartLogReader
             return CheckForString("{\"Time\"", bytes, position);
         }
 
-        private void GetJsonRecord1(LogEntry entry, string json)
+        private void GetJsonRecord(LogEntry entry, string json)
         {
-            if (smartLoggerVersion == "0.9")
+            if (loggerVersion == LoggerVersion.V1)
             {
-                var logEntry = JsonConvert.DeserializeObject<LogEntryOld>(json);
-
+                var logEntry = JsonConvert.DeserializeObject<LogEntryV1>(json);
                 DateTime t = DateTime.Parse(logEntry.Time);
                 entry.Time = t.ToUniversalTime().ToStringN();
-                entry.Annex = logEntry.ThreadIds;
                 entry.Level = logEntry.Level;
                 entry.Context = logEntry.Class;
                 entry.Method = logEntry.Method;
                 entry.Message = logEntry.Message ?? string.Empty;
+                entry.Annex = logEntry.ThreadIds;
+                return;
             }
-            else //if (smartLoggerVersion == "2.0")
-            {
-                var logEntry = JsonConvert.DeserializeObject<LogEntry>(json);
 
-                DateTime t = DateTime.ParseExact(logEntry.Time, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-                entry.Time = t.ToUniversalTime().ToStringN();
-                entry.Annex = logEntry.Annex.ToString();
+            if (loggerVersion == LoggerVersion.V2)
+            {
+                var logEntry = JsonConvert.DeserializeObject<LogEntryV2>(json);
+                entry.Time = Convert(logEntry.Time);
+                entry.Level = logEntry.Level;
+                entry.Context = logEntry.Class;
+                entry.Method = logEntry.Method;
+                entry.Message = logEntry.Message ?? string.Empty;
+                entry.Annex = logEntry.ThreadId.ToString();
+                return;
+            }
+
+            if (loggerVersion == LoggerVersion.V3)
+            {
+                var logEntry = JsonConvert.DeserializeObject<LogEntryV3>(json);
+                entry.Time = Convert(logEntry.Time);
                 entry.Level = logEntry.Level;
                 entry.Context = logEntry.Context;
                 entry.Method = logEntry.Method;
                 entry.Message = logEntry.Message ?? string.Empty;
+                entry.Annex = logEntry.Annex;
+                return;
+            }
+
+            string Convert(string value)
+            {
+                var dt = DateTime.ParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                return dt.ToUniversalTime().ToStringN();
             }
         }
 
-        private class LogEntryOld
+        private class LogEntryV1
         {
             public string Time { get; set; }
             public string ThreadIds { get; set; }
@@ -120,6 +141,26 @@ namespace SmartLogReader
             public string Class { get; set; }
             public string Method { get; set; }
             public string Message { get; set; }
+        }
+
+        private class LogEntryV2
+        {
+            public string Time { get; set; }
+            public int ThreadId { get; set; }
+            public string Level { get; set; }
+            public string Class { get; set; }
+            public string Method { get; set; }
+            public string Message { get; set; }
+        }
+
+        private class LogEntryV3
+        {
+            public string Time { get; set; }
+            public string Level { get; set; }
+            public string Context { get; set; }
+            public string Method { get; set; }
+            public string Message { get; set; }
+            public string Annex { get; set; }
         }
     }
 }

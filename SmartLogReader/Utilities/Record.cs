@@ -35,9 +35,14 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public Record(LogEntry logEntry)
+        public Record(LogEntry entry)
         {
-            Level = LogLevel.None;
+            TimeString = entry.Time;
+            LevelString = entry.Level;
+            ConnId = entry.Annex;
+            Class = entry.Context;
+            Method = entry.Method;
+            Message = entry.Message;
         }
 
         /// <summary>
@@ -96,8 +101,10 @@ namespace SmartLogReader
         /// </summary>
         public override int GetHashCode()
         {
-            return TimeString.GetHashCode() ^ ConnId.GetHashCode() ^ Level.GetHashCode()
-                ^ Class.GetHashCode() ^ Method.GetHashCode() ^ Message.GetHashCode();
+            int GetHashCode(object obj) => obj == null ? 0 : obj.GetHashCode();
+
+            return GetHashCode(TimeString) ^ GetHashCode(ConnId) ^ GetHashCode(Level)
+                ^ GetHashCode(Class) ^ GetHashCode(Method) ^ GetHashCode(Message);
         }
 
         /// <summary>
@@ -109,6 +116,9 @@ namespace SmartLogReader
             get { return timeString; }
             set
             {
+                if (value == null)
+                    return;
+
                 timeString = value.Replace(',', '.');
 
                 if (timeString.IsDateTimeOffset(out var timeOffset))
@@ -167,6 +177,9 @@ namespace SmartLogReader
 
         public static LogLevel TryParseLevel(string value)
         {
+            if (value == null)
+                return LogLevel.None;
+
             if (value.contains("verbose") || value.contains("trace"))
                 return LogLevel.Verbose;
 

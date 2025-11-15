@@ -127,11 +127,11 @@ namespace SmartLogReader
 
                 while (true)
                 {
-                    Record record = byteParser.GetNextRecord();
-                    if (record == null)
+                    var entry = byteParser.GetNextEntry();
+                    if (entry == null)
                         break;
 
-                    if (record.TimeString == null && byteParser is ByteParserJsonLogger)
+                    if (entry.Time == null && byteParser is ByteParserJsonLogger)
                         continue;
 
                     if (watch.ElapsedMilliseconds > 60)
@@ -140,6 +140,8 @@ namespace SmartLogReader
                         Progress = byteParser.CurrentPosition / (double)bytes.Length;
                         ReportStatus(ReaderStatus.ProgressChanged);
                     }
+
+                    var record = new Record(entry);
 
                     if (ReadMode == LogReadMode.LastSession && IsNewSession(record) && Records.Count > 0)
                         Records.Clear();
