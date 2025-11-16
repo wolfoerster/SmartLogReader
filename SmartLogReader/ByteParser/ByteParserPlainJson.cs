@@ -47,12 +47,16 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry ReadEntry()
         {
+            var entry = new LogEntry();
+
             if (CheckBytes(bytes, lastPos, entry, out int nextPos))
                 lastPos = nextPos;
             else
                 lastPos = MoveToNextDateTime(bytes, lastPos + 1);
+
+            return entry;
         }
 
         private bool CheckTime(byte[] bytes, int index, out string timeString)

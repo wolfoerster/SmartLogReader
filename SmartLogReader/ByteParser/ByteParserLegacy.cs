@@ -34,9 +34,11 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry ReadEntry()
         {
+            var entry = new LogEntry();
             GetLegacyRecord(entry);
+            return entry;
         }
 
         private void GetLegacyRecord(LogEntry entry)

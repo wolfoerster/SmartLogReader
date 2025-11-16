@@ -59,19 +59,12 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry ReadEntry()
         {
-            GetJsonRecord(entry, ReadEntry());
-        }
-
-        private string ReadEntry()
-        {
-            var sb = new StringBuilder();
-
             var line = GetNextLine();
-            sb.Append(line);
+            var sb = new StringBuilder(line);
 
-            while (this.lastPos < this.bytes.Length 
+            while (this.lastPos < this.bytes.Length
                 && !this.IsEntryStart(this.bytes, this.lastPos))
             {
                 line = GetNextLine();
@@ -79,7 +72,9 @@ namespace SmartLogReader
                 sb.Append(line);
             }
 
-            return sb.ToString();
+            var entry = new LogEntry();
+            GetJsonRecord(entry, sb.ToString());
+            return entry;
         }
 
         private bool IsEntryStart(byte[] bytes, int position)

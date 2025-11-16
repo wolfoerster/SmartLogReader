@@ -33,10 +33,10 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry ReadEntry()
         {
             lastPos = GetIndexOfNext((byte)'{');
-            base.FillRecord(entry);
+            return base.ReadEntry();
         }
 
         private static bool IsNewDocker(byte[] bytes)

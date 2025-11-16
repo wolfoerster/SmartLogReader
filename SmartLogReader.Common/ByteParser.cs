@@ -65,7 +65,7 @@ public class ByteParser : IByteParser
 
         try
         {
-            var entry = CreateEntry();
+            var entry = ReadEntry();
             return entry;
         }
         catch (Exception ex)
@@ -75,19 +75,14 @@ public class ByteParser : IByteParser
         }
     }
 
-    protected virtual LogEntry CreateEntry()
-    {
-        var entry = new LogEntry();
-        FillRecord(entry);
-        return entry;
-    }
-
     /// <summary>
     /// Override this method in derived classes to read the next log entry.
     /// </summary>
-    protected virtual void FillRecord(LogEntry entry)
+    protected virtual LogEntry ReadEntry()
     {
+        var entry = new LogEntry();
         entry.Message = GetNextLine();
+        return entry;
     }
 
     /// <summary>

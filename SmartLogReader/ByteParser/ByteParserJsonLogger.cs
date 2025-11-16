@@ -45,7 +45,7 @@ namespace SmartLogReader
             }
         }
 
-        protected override LogEntry CreateEntry()
+        protected override LogEntry ReadEntry()
         {
             var entry = new LogEntryJson();
             GetJsonRecord2(entry, GetNextLine());

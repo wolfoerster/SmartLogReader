@@ -46,9 +46,9 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry ReadEntry()
         {
-            entry.Time = GetTime();
+            var entry = new LogEntryJson { Time = GetTime() };
 
             if (lookForPipe)
             {
@@ -66,6 +66,8 @@ namespace SmartLogReader
                 entry.Method = GetNext();
                 entry.Message = GetRest();
             }
+
+            return entry;
         }
 
         protected override string GetNext(int numBytes = -1)

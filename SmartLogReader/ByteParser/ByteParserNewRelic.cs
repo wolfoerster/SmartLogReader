@@ -37,8 +37,9 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry ReadEntry()
         {
+            var entry = new LogEntryJson();
             var json = GetNextLine();
             var jobj = JObject.Parse(json);
 
@@ -62,8 +63,9 @@ namespace SmartLogReader
             entry.Method = GetValue("MethodName");
             entry.Message = GetValue("message");
             entry.Annex = GetValue("ConnectionId");
-#warning TODO
-            //entry.Json = jobj;
+            entry.Json = jobj;
+
+            return entry;
         }
     }
 }
