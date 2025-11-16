@@ -34,12 +34,14 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry CreateEntry()
         {
+            var entry = new LogEntryJson();
             GetJsonRecord3(entry, GetNextLine());
+            return entry;
         }
 
-        private void GetJsonRecord3(LogEntry entry, string json)
+        private void GetJsonRecord3(LogEntryJson entry, string json)
         {
             var i = json.IndexOf("{\"\"Timestamp");
             json = json.Substring(i, json.Length - i - 1);

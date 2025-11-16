@@ -43,6 +43,9 @@ namespace SmartLogReader
             Class = entry.Context;
             Method = entry.Method;
             Message = entry.Message;
+
+            if (entry is LogEntryJson jsonEntry)
+                Json = jsonEntry.Json;
         }
 
         /// <summary>

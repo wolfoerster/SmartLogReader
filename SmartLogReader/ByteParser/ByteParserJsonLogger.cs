@@ -28,7 +28,8 @@ namespace SmartLogReader
     using SmartLogReader.Common;
 
     /// <summary>
-    /// A byte parser for JSON based logger (e.g. JsonLogger)
+    /// A byte parser for JSON based logger (e.g. JsonLogger). Example:
+    /// {"Timestamp":"2025-11-16 10:32:58.278","Level":"Warning","MessageTemplate":"{@Message}","Properties":{"SourceContext":"MyClass","MethodName":"MyMethod","ConnectionId":"4711","Message":"{\"IsValid\":true,\"HasChild\":false,\"Result\":3.14}"}}
     /// </summary>
     public class ByteParserJsonLogger : ByteParserSmartLogger
     {
@@ -44,14 +45,17 @@ namespace SmartLogReader
             }
         }
 
-        protected override void FillRecord(LogEntry entry)
+        protected override LogEntry CreateEntry()
         {
+            var entry = new LogEntryJson();
             GetJsonRecord2(entry, GetNextLine());
+            return entry;
         }
 
-        protected void GetJsonRecord2(LogEntry entry, string json)
+        protected void GetJsonRecord2(LogEntryJson entry, string json)
         {
             var logEntry = JsonConvert.DeserializeObject<LogEntry2>(json);
+
             if (logEntry?.Timestamp == null)
             {
                 return;
@@ -64,8 +68,7 @@ namespace SmartLogReader
             entry.Method = logEntry.GetProperty("MethodName");
             entry.Message = logEntry.GetMessage();
             entry.Annex = logEntry.GetProperty("ConnectionId");
-#warning TODO
-            //entry.Json = JObject.Parse(json);
+            entry.Json = JObject.Parse(json);
         }
 
         private class LogEntry2

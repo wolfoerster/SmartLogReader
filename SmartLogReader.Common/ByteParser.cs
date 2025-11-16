@@ -63,10 +63,9 @@ public class ByteParser : IByteParser
         if (nRemain < 1)
             return null;
 
-        var entry = new LogEntry();
         try
         {
-            FillRecord(entry);
+            var entry = CreateEntry();
             return entry;
         }
         catch (Exception ex)
@@ -74,6 +73,13 @@ public class ByteParser : IByteParser
             log.Error(ex.ToString());
             return null;
         }
+    }
+
+    protected virtual LogEntry CreateEntry()
+    {
+        var entry = new LogEntry();
+        FillRecord(entry);
+        return entry;
     }
 
     /// <summary>
