@@ -15,14 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
-    using System;
-    using System.Globalization;
-    using SmartLogging;
-
     /// <summary>
     /// A byte parser for a plain text based logger with messages in JSON format.
     /// 
@@ -37,14 +34,21 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserPlainJson : ByteParser
     {
+        public ByteParserPlainJson()
+        {
+        }
+
         public ByteParserPlainJson(byte[] bytes)
         {
-            var entry = new LogEntry();
+            Bytes = bytes;
+        }
 
-            if (CheckBytes(bytes, 0, entry, out _))
-            {
-                Bytes = bytes;
-            }
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
+        {
+            newFileName = null;
+
+            var entry = new LogEntry();
+            return CheckBytes(bytes, 0, entry, out _);
         }
 
         protected override LogEntry ReadEntry()

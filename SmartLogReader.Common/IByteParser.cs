@@ -21,13 +21,25 @@ namespace SmartLogReader.Common;
 
 public interface IByteParser
 {
-    string CheckFile(string fileName);
+    /// <summary>
+    /// Check if there are log entries of known format.
+    /// If yes, the ByteParser can preprocess the file and store the result in a new file
+    /// which is then opened with the LogReader. This step is optional.
+    /// </summary>
+    bool CheckFormat(byte[] bytes, out string newFileName);
 
-    bool IsValidFormat(byte[] bytes);
-
+    /// <summary>
+    /// The bytes which contain the log entries.
+    /// </summary>
     byte[] Bytes { get; set; }
 
+    /// <summary>
+    /// Gets the current position, i.e. the position of the next log entry.
+    /// </summary>
     int CurrentPosition { get; }
 
-    LogEntry GetNextEntry();
+    /// <summary>
+    /// Reads the next log entry and updates the current position.
+    /// </summary>
+    LogEntry ReadNextEntry();
 }

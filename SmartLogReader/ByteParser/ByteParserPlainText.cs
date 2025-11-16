@@ -15,15 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
-    using System;
-    using SmartLogging;
-
     /// <summary>
-    /// A byte parser for a plain text based logger (e.g. the SimpleLogger used in this app).
+    /// A byte parser for a plain text based logger.
     /// 
     /// A log entry has to look like this:
     /// 2021-04-02 15:37:14.516 9760/1/1 FATAL SmartLogReader.App .ctor Start logging
@@ -38,12 +37,19 @@ namespace SmartLogReader
     {
         private bool lookForPipe;
 
+        public ByteParserPlainText()
+        {
+        }
+
         public ByteParserPlainText(byte[] bytes)
         {
-            if (CheckTime(bytes, 0))
-            {
-                Bytes = bytes;
-            }
+            Bytes = bytes;
+        }
+
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
+        {
+            newFileName = null;
+            return CheckTime(bytes, 0);
         }
 
         protected override LogEntry ReadEntry()

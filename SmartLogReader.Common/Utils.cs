@@ -35,7 +35,7 @@ namespace SmartLogReader.Common;
 
 public static class Utils
 {
-    private static readonly SmartLogger log = new SmartLogger();
+    private static readonly SmartLogger log = new();
 
     public static Point ToPixel(this Point pointInDip, Visual visual)
     {
@@ -647,7 +647,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 
     public static string BytesToString(byte[] bytes, int index, int count)
     {
-        if (count < 0)
+        if (count < 0 || count + index > bytes.Length)
             count = bytes.Length - index;
 
         string result = Encoding.Default.GetString(bytes, index, count);
@@ -670,5 +670,31 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
             return false;
 
         return true;
+    }
+
+    /// <summary>
+    /// Read some bytes from the specified file.
+    /// </summary>
+    public static byte[] ReadBytes(string path, long startPosition = 0, long count = 0)
+    {
+        try
+        {
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = new BinaryReader(fs);
+
+            if (startPosition > 0)
+                reader.BaseStream.Seek(startPosition, SeekOrigin.Begin);
+
+            if (count <= 0)
+                count = fs.Length - startPosition;
+
+            return reader.ReadBytes((int)count);
+        }
+        catch (Exception e)
+        {
+            log.Error(e.ToString());
+        }
+
+        return null;
     }
 }

@@ -15,18 +15,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using System.Linq;
+using MessageTemplates.Core;
+using MessageTemplates.Parsing;
+using MessageTemplates.Structure;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SmartLogging;
+using SmartLogReader.Common;
+
 namespace SmartLogReader
 {
-    using System;
-    using System.Linq;
-    using MessageTemplates.Core;
-    using MessageTemplates.Parsing;
-    using MessageTemplates.Structure;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using SmartLogging;
-    using SmartLogReader.Common;
-
     /// <summary>
     /// A byte parser for JSON based logger (e.g. JsonLogger). Example:
     /// {"Timestamp":"2025-11-16 10:32:58.278","Level":"Warning","MessageTemplate":"{@Message}","Properties":{"SourceContext":"MyClass","MethodName":"MyMethod","ConnectionId":"4711","Message":"{\"IsValid\":true,\"HasChild\":false,\"Result\":3.14}"}}
@@ -39,14 +39,12 @@ namespace SmartLogReader
 
         public ByteParserJsonLogger(byte[] bytes)
         {
-            if (CheckForString("{\"Timestamp\"", bytes, 0))
-            {
-                Bytes = bytes;
-            }
+            Bytes = bytes;
         }
 
-        public override bool IsValidFormat(byte[] bytes)
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
         {
+            newFileName = null;
             return CheckForString("{\"Timestamp\"", bytes, 0);
         }
 

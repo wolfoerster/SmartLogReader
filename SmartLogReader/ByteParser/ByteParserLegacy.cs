@@ -25,13 +25,19 @@ namespace SmartLogReader
         private static readonly string LegacyKey1 = "TrimbleNo";
         private static readonly string LegacyKey2 = "novaSuite";
 
+        public ByteParserLegacy()
+        {
+        }
+
         public ByteParserLegacy(byte[] bytes)
         {
-            if (CheckForString(LegacyKey1, bytes, 0) 
-                || CheckForString(LegacyKey2, bytes, 0))
-            {
-                Bytes = bytes;
-            }
+            Bytes = bytes;
+        }
+
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
+        {
+            newFileName = null;
+            return CheckForString(LegacyKey1, bytes, 0) || CheckForString(LegacyKey2, bytes, 0);
         }
 
         protected override LogEntry ReadEntry()

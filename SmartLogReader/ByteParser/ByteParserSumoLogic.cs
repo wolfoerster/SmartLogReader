@@ -15,6 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using System.IO;
+using System.Linq;
 using SmartLogging;
 using SmartLogReader.Common;
 
@@ -27,11 +30,29 @@ namespace SmartLogReader
     {
         public ByteParserSumoLogic(byte[] bytes)
         {
-            if (CheckForString("\"_messagetimems\"", bytes, 0))
-            {
-                Bytes = bytes;
-                _ = GetNextLine();
-            }
+            Bytes = bytes;
+            //_ = GetNextLine();
+        }
+
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
+        {
+            newFileName = null;
+
+            var text = Utils.BytesToString(bytes, 0, bytes.Length);
+            if (!text.startsWith("\"_messagetimems\""))
+                return false;
+
+            newFileName = Path.GetTempFileName();
+
+            var lines = text.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var reversed = lines.Reverse().ToList();
+            var i = reversed.Count - 1;
+            var line = reversed[i];
+            reversed.RemoveAt(i);
+            //reversed.Insert(0, line);
+
+            File.WriteAllLines(newFileName, reversed);
+            return true;
         }
 
         protected override LogEntry ReadEntry()

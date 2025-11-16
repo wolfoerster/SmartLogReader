@@ -16,8 +16,6 @@
 //******************************************************************************************
 
 using System;
-using System.IO;
-using System.Windows;
 using SmartLogging;
 using SmartLogReader.Common;
 
@@ -27,108 +25,78 @@ namespace SmartLogReader
     {
         private static readonly SmartLogger Log = new SmartLogger();
 
-        public static string CreateParser(string path, out IByteParser parser)
+        public static string CreateParser(string path, out IByteParser byteParser)
         {
-            parser = null;
-            var bytes = new byte[0];
-
-            try
-            {
-                var fileInfo = new FileInfo(path);
-                if (fileInfo.Length > 0)
-                {
-                    using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    {
-                        using (var reader = new BinaryReader(fs))
-                        {
-                            bytes = reader.ReadBytes(Math.Min((int)fileInfo.Length, 16 * 1024));
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.ToString());
-                return path;
-            }
+            byteParser = null;
+            var bytes = Utils.ReadBytes(path);
 
             if (bytes.Length == 0)
                 return path;
 
-            if (Check(typeof(ByteParserSmartLogger)))
-                parser = new ByteParserSmartLogger(bytes);
-
-            else if (Check(typeof(ByteParserJsonLogger)))
-                parser = new ByteParserJsonLogger(bytes);
-
-            else if (Check(typeof(ByteParserNewRelic)))
-                parser = new ByteParserNewRelic(bytes);
-
-            else if (Check(typeof(ByteParserSumoLogic)))
-                parser = new ByteParserSumoLogic(bytes);
-
-            else if (Check(typeof(ByteParserDocker)))
-                parser = new ByteParserDocker(bytes);
-
-            else if (Check(typeof(ByteParserPlainJson)))
-                parser = new ByteParserPlainJson(bytes);
-
-            else if (Check(typeof(ByteParserPlainText)))
-                parser = new ByteParserPlainText(bytes);
-
-            else if (Check(typeof(ByteParserLegacy)))
-                parser = new ByteParserLegacy(bytes);
-
-            else 
-                parser = new ByteParser { Bytes = bytes };
-
-            return path;
+            string newPath = null;
 
             bool Check(Type type)
             {
                 var obj = Activator.CreateInstance(type);
 
-                if (obj is IByteParser byteParser)
-                    return byteParser.IsValidFormat(bytes);
+                if (obj is IByteParser parser) 
+                    return parser.CheckFormat(bytes, out newPath);
 
                 return false;
             }
-        }
 
-        public static IByteParser CreateParser(byte[] bytes)
-        {
-            IByteParser parser;
+            if (Check(typeof(ByteParserSmartLogger)))
+            {
+                byteParser = new ByteParserSmartLogger(bytes);
+                return path;
+            }
 
-            if (IsOK(parser = new ByteParserSmartLogger(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserJsonLogger)))
+            {
+                byteParser = new ByteParserJsonLogger(bytes);
+                return path;
+            }
 
-            if (IsOK(parser = new ByteParserJsonLogger(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserNewRelic)))
+            {
+                bytes = Utils.ReadBytes(newPath);
+                byteParser = new ByteParserNewRelic(bytes);
+                return newPath;
+            }
 
-            if (IsOK(parser = new ByteParserNewRelic(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserSumoLogic)))
+            {
+                bytes = Utils.ReadBytes(newPath);
+                byteParser = new ByteParserSumoLogic(bytes);
+                return newPath;
+            }
 
-            if (IsOK(parser = new ByteParserSumoLogic(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserDocker)))
+            {
+                byteParser = new ByteParserDocker(bytes);
+                return path;
+            }
 
-            if (IsOK(parser = new ByteParserDocker(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserPlainJson)))
+            {
+                byteParser = new ByteParserPlainJson(bytes);
+                return path;
+            }
 
-            if (IsOK(parser = new ByteParserPlainJson(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserPlainText)))
+            {
+                byteParser = new ByteParserPlainText(bytes);
+                return path;
+            }
 
-            if (IsOK(parser = new ByteParserPlainText(bytes)))
-                return parser;
+            if (Check(typeof(ByteParserLegacy)))
+            {
+                byteParser = new ByteParserLegacy(bytes);
+                return path;
+            }
 
-            if (IsOK(parser = new ByteParserLegacy(bytes)))
-                return parser;
-
-            return new ByteParser { Bytes = bytes };
-        }
-
-        private static bool IsOK(IByteParser parser)
-        {
-            return parser.Bytes != null;
+            byteParser = new ByteParser(bytes);
+            return path;
         }
     }
 }

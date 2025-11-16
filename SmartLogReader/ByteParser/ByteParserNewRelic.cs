@@ -15,26 +15,64 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
-    using System;
-    using Newtonsoft.Json.Linq;
-    using SmartLogging;
-
     /// <summary>
     /// A byte parser for JSON based logger (here: JsonLogger exported from NewRelic)
     /// </summary>
     public class ByteParserNewRelic : ByteParser
     {
+        public ByteParserNewRelic()
+        {
+        }
+
         public ByteParserNewRelic(byte[] bytes)
         {
-            if (CheckForString("extracted from NewRelic", bytes, 0))
+            Bytes = bytes;
+        }
+
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
+        {
+            newFileName = null;
+
+            var text = Utils.BytesToString(bytes, 0, bytes.Length);
+            if (!text.startsWith("[{\"Timestamp\":"))
+                return false;
+
+            var jtok = JToken.Parse(text);
+            if (jtok.Type != JTokenType.Array)
+                return false;
+
+            var lines = new List<string>();
+
+            foreach (var item in jtok)
             {
-                Bytes = bytes;
-                _ = GetNextLine();
+                if (item is JObject jobj)
+                {
+                    lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
+                }
             }
+
+            newFileName = Path.GetTempFileName();
+
+            using (var stream = File.OpenWrite(newFileName))
+            using (var writer = new StreamWriter(stream))
+            {
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    writer.WriteLine(lines[i]);
+                }
+            }
+
+            return true;
         }
 
         protected override LogEntry ReadEntry()
@@ -45,7 +83,7 @@ namespace SmartLogReader
 
             string GetValue(string name)
             {
-                if (jobj.TryGetValue(name, out JToken value))
+                if (jobj.TryGetValue(name, StringComparison.OrdinalIgnoreCase, out JToken value))
                     return value.ToString();
 
                 return string.Empty;

@@ -122,7 +122,7 @@ namespace SmartLogReader
 
                 while (true)
                 {
-                    var entry = byteParser.GetNextEntry();
+                    var entry = byteParser.ReadNextEntry();
                     if (entry == null)
                         break;
 
@@ -240,48 +240,6 @@ namespace SmartLogReader
             worker.RunWorkerAsync();
         }
 
-        FileOrigin IsFileExportedFromNewRelic()
-        {
-            try
-            {
-                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (var reader = new StreamReader(stream))
-                {
-                    var buffer = new char[64];
-                    reader.Read(buffer, 0, buffer.Length);
-                    var text = new string(buffer);
-#warning hier
-                    var isNewRelic = text.StartsWith("[{\"");
-                    return isNewRelic ? FileOrigin.NewRelic : FileOrigin.Local;
-                }
-            }
-            catch
-            {
-            }
-
-            return FileOrigin.Local;
-        }
-
-        FileOrigin IsFileExportedFromSumoLogic()
-        {
-            try
-            {
-                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (var reader = new StreamReader(stream))
-                {
-                    var line1 = reader.ReadLine();
-#warning hier
-                    var isSumoLogic = line1.startsWith("\"_messagetimems\"");
-                    return isSumoLogic ? FileOrigin.SumoLogic : FileOrigin.Local;
-                }
-            }
-            catch
-            {
-            }
-
-            return FileOrigin.Local;
-        }
-
         private void ReadExportedFile()
 #warning hier
         {
@@ -308,40 +266,6 @@ namespace SmartLogReader
             byte[] bytes = ReadBytes(tempFile);
             ExtractRecords(bytes);
             File.Delete(tempFile);
-        }
-
-        /// <summary>
-        /// NewRelic files have log entries in reverse order (last first)
-        /// </summary>
-        string ReadExportedNewRelic()
-#warning hier
-        {
-            var json = File.ReadAllText(fileName);
-            var jtok = JToken.Parse(json);
-            if (jtok.Type != JTokenType.Array)
-                return null;
-
-            var lines = new List<string>();
-            foreach (var item in jtok)
-            {
-                if (item is JObject jobj)
-                {
-                    lines.Add(JsonConvert.SerializeObject(jobj, Formatting.None));
-                }
-            }
-
-            var newFile = Path.GetTempFileName();
-            using (var stream = File.OpenWrite(newFile))
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.WriteLine("extracted from NewRelic");
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    writer.WriteLine(lines[i]);
-                }
-            }
-
-            return newFile;
         }
 
         /// <summary>

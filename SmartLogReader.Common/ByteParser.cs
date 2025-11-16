@@ -22,8 +22,7 @@ using SmartLogging;
 
 public class ByteParser : IByteParser
 {
-    private static readonly SmartLogger log = new();
-
+    protected static readonly SmartLogger log = new();
     protected static readonly byte CR = 0x0D; // '\r'
     protected static readonly byte LF = 0x0A; // '\n'
     protected static readonly byte Space = 0x20; // ' '
@@ -33,10 +32,18 @@ public class ByteParser : IByteParser
     protected static readonly byte Colon = 0x3A; // ':'
     protected static readonly byte Comma = 0x2C; // ','
     protected static readonly byte Point = 0x2E; // '.'
+    protected byte[] bytes;
+    protected int lastPos;
 
-    /// <summary>
-    /// Gets or sets the bytes which contain the log entries.
-    /// </summary>
+    public ByteParser()
+    {
+    }
+
+    public ByteParser(byte[] bytes)
+    {
+        Bytes = bytes;
+    }
+
     public byte[] Bytes
     {
         get => bytes;
@@ -46,29 +53,16 @@ public class ByteParser : IByteParser
             lastPos = 0;
         }
     }
-    protected byte[] bytes;
-    protected int lastPos;
 
-    /// <summary>
-    /// Gets the current position, i.e. the position of the next log entry.
-    /// </summary>
     public int CurrentPosition => lastPos;
 
-    public virtual string CheckFile(string fileName)
+    public virtual bool CheckFormat(byte[] bytes, out string newFileName)
     {
-#warning hier
-        return fileName;
+        newFileName = null;
+        return true;
     }
 
-    /// <summary>
-    /// Override this method in derived classes to check the format.
-    /// </summary>
-    public virtual bool IsValidFormat(byte[] bytes) => bytes.Length >= 0;
-
-    /// <summary>
-    /// Reads the next log entry.
-    /// </summary>
-    public LogEntry GetNextEntry()
+    public LogEntry ReadNextEntry()
     {
         int nRemain = bytes.Length - lastPos;
         if (nRemain < 1)

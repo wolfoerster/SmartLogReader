@@ -17,6 +17,7 @@
 using System;
 using System.IO;
 using SmartLogging;
+using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
@@ -73,6 +74,7 @@ namespace SmartLogReader
         private byte[] ReadNextBytes(string path)
         {
             IsNewLogFile = false;
+
             try
             {
                 //--- if the file size did not change, we're done
@@ -89,7 +91,7 @@ namespace SmartLogReader
 
                 //--- now read the next bytes
                 int count = (int)(fileInfo.Length - prevLength);
-                var bytes = ReadBytes(path, prevLength, count);
+                var bytes = Utils.ReadBytes(path, prevLength, count);
                 prevLength = fileInfo.Length;
                 return bytes;
             }
@@ -97,29 +99,7 @@ namespace SmartLogReader
             {
                 log.Error(e.ToString());
             }
-            return null;
-        }
 
-        /// <summary>
-        /// Read some bytes from a specified file.
-        /// </summary>
-        private byte[] ReadBytes(string path, long startPosition, long count)
-        {
-            try
-            {
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    using (var reader = new BinaryReader(fs))
-                    {
-                        reader.BaseStream.Seek(startPosition, SeekOrigin.Begin);
-                        return reader.ReadBytes((int)count);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.ToString());
-            }
             return null;
         }
 
@@ -132,7 +112,7 @@ namespace SmartLogReader
             {
                 FileInfo fileInfo = new FileInfo(path);
                 prevLength = fileInfo.Length;
-                return ReadBytes(path, 0, fileInfo.Length);
+                return Utils.ReadBytes(path, 0, fileInfo.Length);
             }
             catch (Exception e)
             {

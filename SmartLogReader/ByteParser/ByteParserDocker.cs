@@ -25,12 +25,14 @@ namespace SmartLogReader
     {
         public ByteParserDocker(byte[] bytes)
         {
-            if (CheckForString("Attaching to", bytes, 0)
-                || IsNewDocker(bytes))
-            {
-                Bytes = bytes;
-                _ = GetNextLine();
-            }
+            Bytes = bytes;
+            _ = GetNextLine();
+        }
+
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
+        {
+            newFileName = null;
+            return CheckForString("Attaching to", bytes, 0) || IsNewDocker(bytes);
         }
 
         protected override LogEntry ReadEntry()

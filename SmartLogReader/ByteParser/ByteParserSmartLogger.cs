@@ -15,17 +15,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using System.Globalization;
+using System.Text;
+using Newtonsoft.Json;
+using SmartLogging;
+using SmartLogReader.Common;
+
 namespace SmartLogReader
 {
-    using System;
-    using System.Globalization;
-    using System.Text;
-    using Newtonsoft.Json;
-    using SmartLogging;
-    using SmartLogReader.Common;
-
     /// <summary>
-    /// A byte parser for JSON based logger (e.g. the SmartLogger found in WFTools).
+    /// A byte parser for SmartLogging.SmartLogger.
     /// </summary>
     public class ByteParserSmartLogger : ByteParser
     {
@@ -39,28 +39,26 @@ namespace SmartLogReader
 
         public ByteParserSmartLogger(byte[] bytes)
         {
-            if (this.IsEntryStart(bytes, 0))
-            {
-                string line = Utils.BytesToString(bytes, 0, -1);
+            string line = Utils.BytesToString(bytes, 0, -1);
 
-                if (line.Contains("ThreadIds"))
-                    loggerVersion = LoggerVersion.V1;
+            if (line.Contains("ThreadIds"))
+                loggerVersion = LoggerVersion.V1;
 
-                else if (line.Contains("ThreadId"))
-                    loggerVersion = LoggerVersion.V2;
+            else if (line.Contains("ThreadId"))
+                loggerVersion = LoggerVersion.V2;
 
-                else if (line.Contains("Annex"))
-                    loggerVersion = LoggerVersion.V3;
+            else if (line.Contains("Annex"))
+                loggerVersion = LoggerVersion.V3;
 
-                else // no SmartLogger at all
-                    return;
+            else // no SmartLogger at all
+                return;
 
-                Bytes = bytes;
-            }
+            Bytes = bytes;
         }
 
-        public override bool IsValidFormat(byte[] bytes)
+        public override bool CheckFormat(byte[] bytes, out string newFileName)
         {
+            newFileName = null;
             return IsEntryStart(bytes, 0);
         }
 
