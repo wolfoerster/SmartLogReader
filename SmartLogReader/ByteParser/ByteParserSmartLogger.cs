@@ -59,6 +59,11 @@ namespace SmartLogReader
             }
         }
 
+        public override bool IsValidFormat(byte[] bytes)
+        {
+            return IsEntryStart(bytes, 0);
+        }
+
         protected override LogEntry ReadEntry()
         {
             var line = GetNextLine();

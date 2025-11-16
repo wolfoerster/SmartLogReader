@@ -21,6 +21,10 @@ namespace SmartLogReader.Common;
 
 public interface IByteParser
 {
+    string CheckFile(string fileName);
+
+    bool IsValidFormat(byte[] bytes);
+
     byte[] Bytes { get; set; }
 
     int CurrentPosition { get; }

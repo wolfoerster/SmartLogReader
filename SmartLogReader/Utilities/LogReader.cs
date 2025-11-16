@@ -66,7 +66,6 @@ namespace SmartLogReader
     public class LogReader : FileReader
     {
         private readonly BackgroundWorker worker;
-        private FileOrigin fileOrigin;
 
         /// <summary>
         /// 
@@ -118,12 +117,8 @@ namespace SmartLogReader
             bool hasChanges = false;
             if (bytes != null)
             {
-                Stopwatch watch = Stopwatch.StartNew();
-
-                if (byteParser == null)
-                    byteParser = ParserFactory.CreateParser(bytes);
-                else
-                    byteParser.Bytes = bytes;
+                byteParser.Bytes = bytes;
+                var watch = Stopwatch.StartNew();
 
                 while (true)
                 {
@@ -196,6 +191,8 @@ namespace SmartLogReader
                 if (!didExist)
                 {
                     log.Debug($"Found again file for {FileName}");
+                    if (byteParser == null)
+                        ParserFactory.CreateParser(FileName, out byteParser);
                 }
             }
 
@@ -230,28 +227,17 @@ namespace SmartLogReader
             if (IsBusy)
                 throw new Exception("LoadFile IsBusy");
 
+            IByteParser parser = null;
             fileExists = File.Exists(path);
+
+            if (fileExists)
+                path = ParserFactory.CreateParser(path, out parser);
+
             firstCall = true;
             Reset(path);
 
-            fileOrigin = GetFileOrigin();
+            byteParser = parser;
             worker.RunWorkerAsync();
-        }
-
-        FileOrigin GetFileOrigin()
-        {
-            if (!File.Exists(fileName))
-                return FileOrigin.Local;
-
-            var ext = Path.GetExtension(fileName);
-
-            if (ext.equals(".csv"))
-                return IsFileExportedFromSumoLogic();
-
-            if (ext.equals(".json"))
-                return IsFileExportedFromNewRelic();
-
-            return FileOrigin.Local;
         }
 
         FileOrigin IsFileExportedFromNewRelic()
@@ -264,6 +250,7 @@ namespace SmartLogReader
                     var buffer = new char[64];
                     reader.Read(buffer, 0, buffer.Length);
                     var text = new string(buffer);
+#warning hier
                     var isNewRelic = text.StartsWith("[{\"");
                     return isNewRelic ? FileOrigin.NewRelic : FileOrigin.Local;
                 }
@@ -283,6 +270,7 @@ namespace SmartLogReader
                 using (var reader = new StreamReader(stream))
                 {
                     var line1 = reader.ReadLine();
+#warning hier
                     var isSumoLogic = line1.startsWith("\"_messagetimems\"");
                     return isSumoLogic ? FileOrigin.SumoLogic : FileOrigin.Local;
                 }
@@ -295,12 +283,13 @@ namespace SmartLogReader
         }
 
         private void ReadExportedFile()
+#warning hier
         {
             var tempFile = (string)null;
 
             try
             {
-                tempFile = fileOrigin == FileOrigin.NewRelic ? ReadExportedNewRelic() : ReadExportedSumoLogic();
+                //tempFile = fileOrigin == FileOrigin.NewRelic ? ReadExportedNewRelic() : ReadExportedSumoLogic();
             }
             catch
             {
@@ -325,6 +314,7 @@ namespace SmartLogReader
         /// NewRelic files have log entries in reverse order (last first)
         /// </summary>
         string ReadExportedNewRelic()
+#warning hier
         {
             var json = File.ReadAllText(fileName);
             var jtok = JToken.Parse(json);
@@ -358,6 +348,7 @@ namespace SmartLogReader
         /// SumoLogic files have log entries in reverse order (last first)
         /// </summary>
         string ReadExportedSumoLogic()
+#warning hier
         {
             var lines = File.ReadAllLines(fileName);
             if (lines.Length < 2)
@@ -454,46 +445,6 @@ namespace SmartLogReader
             log.Debug("begin");
             ReportStatus(ReaderStatus.StartedWork);
 
-            if (fileOrigin == FileOrigin.Local)
-                DoContinuousWork(e);
-            else
-                DoDiscontinuousWork(e);
-
-            log.Debug("end");
-        }
-
-        private void DoDiscontinuousWork(DoWorkEventArgs e)
-        {
-            var lastModified = new DateTime(0, DateTimeKind.Utc);
-
-            //--- go into an endless loop and check the file every second
-            for (int count = 0; ; ++count)
-            {
-                if (count == 0 && FileExists())
-                {
-                    var modified = File.GetLastWriteTimeUtc(fileName);
-                    if (modified > lastModified)
-                    {
-                        lastModified = modified;
-                        ReadExportedFile();
-                    }
-                }
-
-                if (worker.CancellationPending)
-                {
-                    log.Debug("break");
-                    e.Cancel = true;
-                    break;
-                }
-
-                Thread.Sleep(50);
-                if (count > 19)
-                    count = -1;
-            }
-        }
-
-        private void DoContinuousWork(DoWorkEventArgs e)
-        {
             //--- go into an endless loop and check the file every second
             for (int count = 0; ; ++count)
             {
@@ -514,6 +465,8 @@ namespace SmartLogReader
                 if (count > 19)
                     count = -1;
             }
+
+            log.Debug("end");
         }
 
         /// <summary>

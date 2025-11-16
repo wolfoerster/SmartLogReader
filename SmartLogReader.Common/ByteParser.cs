@@ -54,6 +54,17 @@ public class ByteParser : IByteParser
     /// </summary>
     public int CurrentPosition => lastPos;
 
+    public virtual string CheckFile(string fileName)
+    {
+#warning hier
+        return fileName;
+    }
+
+    /// <summary>
+    /// Override this method in derived classes to check the format.
+    /// </summary>
+    public virtual bool IsValidFormat(byte[] bytes) => bytes.Length >= 0;
+
     /// <summary>
     /// Reads the next log entry.
     /// </summary>

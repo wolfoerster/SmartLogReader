@@ -15,12 +15,86 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using System.IO;
+using System.Windows;
+using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
     public static class ParserFactory
     {
+        private static readonly SmartLogger Log = new SmartLogger();
+
+        public static string CreateParser(string path, out IByteParser parser)
+        {
+            parser = null;
+            var bytes = new byte[0];
+
+            try
+            {
+                var fileInfo = new FileInfo(path);
+                if (fileInfo.Length > 0)
+                {
+                    using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        using (var reader = new BinaryReader(fs))
+                        {
+                            bytes = reader.ReadBytes(Math.Min((int)fileInfo.Length, 16 * 1024));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.ToString());
+                return path;
+            }
+
+            if (bytes.Length == 0)
+                return path;
+
+            if (Check(typeof(ByteParserSmartLogger)))
+                parser = new ByteParserSmartLogger(bytes);
+
+            else if (Check(typeof(ByteParserJsonLogger)))
+                parser = new ByteParserJsonLogger(bytes);
+
+            else if (Check(typeof(ByteParserNewRelic)))
+                parser = new ByteParserNewRelic(bytes);
+
+            else if (Check(typeof(ByteParserSumoLogic)))
+                parser = new ByteParserSumoLogic(bytes);
+
+            else if (Check(typeof(ByteParserDocker)))
+                parser = new ByteParserDocker(bytes);
+
+            else if (Check(typeof(ByteParserPlainJson)))
+                parser = new ByteParserPlainJson(bytes);
+
+            else if (Check(typeof(ByteParserPlainText)))
+                parser = new ByteParserPlainText(bytes);
+
+            else if (Check(typeof(ByteParserLegacy)))
+                parser = new ByteParserLegacy(bytes);
+
+            else 
+                parser = new ByteParser { Bytes = bytes };
+
+            return path;
+
+            bool Check(Type type)
+            {
+                var obj = Activator.CreateInstance(type);
+
+                if (obj is IByteParser byteParser)
+                    return byteParser.IsValidFormat(bytes);
+
+                return false;
+            }
+        }
+
         public static IByteParser CreateParser(byte[] bytes)
         {
             IByteParser parser;

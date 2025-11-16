@@ -45,6 +45,11 @@ namespace SmartLogReader
             }
         }
 
+        public override bool IsValidFormat(byte[] bytes)
+        {
+            return CheckForString("{\"Timestamp\"", bytes, 0);
+        }
+
         protected override LogEntry ReadEntry()
         {
             var entry = new LogEntryJson();
