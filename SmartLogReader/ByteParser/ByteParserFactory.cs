@@ -21,7 +21,7 @@ using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
-    public static class ParserFactory
+    public static class ByteParserFactory
     {
         private static readonly SmartLogger Log = new SmartLogger();
 

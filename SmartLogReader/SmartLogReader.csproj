@@ -87,7 +87,7 @@
     <Compile Include="ByteParser\ByteParserDocker.cs" />
     <Compile Include="ByteParser\ByteParserNewRelic.cs" />
     <Compile Include="ByteParser\ByteParserSumoLogic.cs" />
-    <Compile Include="ByteParser\ParserFactory.cs" />
+    <Compile Include="ByteParser\ByteParserFactory.cs" />
     <Compile Include="ByteParser\ByteParserSmartLogger.cs" />
     <Compile Include="ByteParser\ByteParserJsonLogger.cs" />
     <Compile Include="ByteParser\ByteParserLegacy.cs" />
