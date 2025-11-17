@@ -28,7 +28,7 @@ namespace SmartLogReader
     /// </summary>
     public partial class SmartLogControl : UserControl
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SmartLogger Log = new SmartLogger();
 
         /// <summary>
         /// 
@@ -36,6 +36,7 @@ namespace SmartLogReader
         public SmartLogControl()
         {
             InitializeComponent();
+            ByteParserFactory.Initialize();
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace SmartLogReader
         /// </summary>
         void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            log.Debug(e.PropertyName);
+            Log.Debug(e.PropertyName);
             if (splitGrid.ColumnDefinitions.Count > 4)
             {
                 if (e.PropertyName == "GetGridLengths")

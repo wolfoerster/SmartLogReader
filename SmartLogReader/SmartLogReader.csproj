@@ -53,9 +53,6 @@
     <ApplicationIcon>App.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MessageTemplates">
-      <HintPath>..\References\MessageTemplates.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -84,13 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ByteParser\ByteParserDocker.cs" />
-    <Compile Include="ByteParser\ByteParserNewRelic.cs" />
-    <Compile Include="ByteParser\ByteParserSumoLogic.cs" />
     <Compile Include="ByteParser\ByteParserFactory.cs" />
-    <Compile Include="ByteParser\ByteParserSmartLogger.cs" />
-    <Compile Include="ByteParser\ByteParserJsonLogger.cs" />
-    <Compile Include="ByteParser\ByteParserLegacy.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\ByteParserPlainJson.cs" />
     <Compile Include="Utilities\ColorBox.cs" />

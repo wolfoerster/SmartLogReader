@@ -35,16 +35,7 @@ public class ByteParser : IByteParser
     protected byte[] bytes;
     protected int lastPos;
 
-    public ByteParser()
-    {
-    }
-
-    public ByteParser(byte[] bytes)
-    {
-        Bytes = bytes;
-    }
-
-    public byte[] Bytes
+    public virtual byte[] Bytes
     {
         get => bytes;
         set

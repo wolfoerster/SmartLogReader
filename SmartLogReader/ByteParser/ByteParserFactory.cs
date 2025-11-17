@@ -16,14 +16,82 @@
 //******************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using SmartLogging;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
-    public static class ByteParserFactory
+    internal static class ByteParserFactory
     {
         private static readonly SmartLogger Log = new SmartLogger();
+        private static readonly List<IByteParser> byteParsers = new List<IByteParser>();
+
+        public static void Initialize()
+        {
+            var plugins = LoadPlugins();
+
+            void Add(Type parsertType)
+            {
+                var instance = Activator.CreateInstance(parsertType);
+                if (instance is IByteParser parser)
+                {
+                    byteParsers.Add(parser);
+                }
+            }
+
+            void AddIf(string name)
+            {
+                var plugin = plugins.FirstOrDefault(x => x.Name == name);
+                if (plugin != null)
+                {
+                    Add(plugin);
+                }
+            }
+
+            Add(typeof(ByteParserSmartLogger));
+            AddIf("ByteParserJsonLogger");
+            AddIf("ByteParserNewRelic");
+            AddIf("ByteParserSumoLogic");
+            AddIf("ByteParserDocker");
+            Add(typeof(ByteParserPlainJson));
+            Add(typeof(ByteParserPlainText));
+            AddIf("ByteParserLegacy");
+        }
+
+        private static List<Type> LoadPlugins()
+        {
+            var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Plugins");
+            var files = Directory.GetFiles(dir, "*.dll");
+            var list = new List<Type>();
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    var assembly = Assembly.LoadFile(file);
+                    var types = assembly.GetExportedTypes();
+
+                    foreach (var type in types)
+                    {
+                        if (typeof(IByteParser).IsAssignableFrom(type))
+                        {
+                            Log.Information(new { type.FullName });
+                            list.Add(type);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
+            }
+
+            return list;
+        }
 
         public static string CreateParser(string path, out IByteParser byteParser)
         {
@@ -33,69 +101,17 @@ namespace SmartLogReader
             if (bytes.Length == 0)
                 return path;
 
-            string newPath = null;
-
-            bool Check(Type type)
+            foreach(var parser in byteParsers)
             {
-                var obj = Activator.CreateInstance(type);
-
-                if (obj is IByteParser parser) 
-                    return parser.CheckFormat(bytes, out newPath);
-
-                return false;
+                var ok = parser.CheckFormat(bytes, out var newPath);
+                if (ok)
+                {
+                    byteParser = parser;
+                    return newPath ?? path;
+                }
             }
 
-            if (Check(typeof(ByteParserSmartLogger)))
-            {
-                byteParser = new ByteParserSmartLogger(bytes);
-                return path;
-            }
-
-            if (Check(typeof(ByteParserJsonLogger)))
-            {
-                byteParser = new ByteParserJsonLogger(bytes);
-                return path;
-            }
-
-            if (Check(typeof(ByteParserNewRelic)))
-            {
-                bytes = Utils.ReadBytes(newPath);
-                byteParser = new ByteParserNewRelic(bytes);
-                return newPath;
-            }
-
-            if (Check(typeof(ByteParserSumoLogic)))
-            {
-                bytes = Utils.ReadBytes(newPath);
-                byteParser = new ByteParserSumoLogic(bytes);
-                return newPath;
-            }
-
-            if (Check(typeof(ByteParserDocker)))
-            {
-                byteParser = new ByteParserDocker(bytes);
-                return path;
-            }
-
-            if (Check(typeof(ByteParserPlainJson)))
-            {
-                byteParser = new ByteParserPlainJson(bytes);
-                return path;
-            }
-
-            if (Check(typeof(ByteParserPlainText)))
-            {
-                byteParser = new ByteParserPlainText(bytes);
-                return path;
-            }
-
-            if (Check(typeof(ByteParserLegacy)))
-            {
-                byteParser = new ByteParserLegacy(bytes);
-                return path;
-            }
-
-            byteParser = new ByteParser(bytes);
+            byteParser = new ByteParser() { Bytes = bytes };
             return path;
         }
     }

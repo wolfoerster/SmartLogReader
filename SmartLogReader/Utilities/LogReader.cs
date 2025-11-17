@@ -126,8 +126,9 @@ namespace SmartLogReader
                     if (entry == null)
                         break;
 
-                    if (entry.Time == null && byteParser is ByteParserJsonLogger)
-                        continue;
+#warning do we still need it?
+                    //if (entry.Time == null && byteParser is ByteParserJsonLogger)
+                    //    continue;
 
                     if (watch.ElapsedMilliseconds > 60)
                     {
@@ -238,57 +239,6 @@ namespace SmartLogReader
 
             byteParser = parser;
             worker.RunWorkerAsync();
-        }
-
-        private void ReadExportedFile()
-#warning hier
-        {
-            var tempFile = (string)null;
-
-            try
-            {
-                //tempFile = fileOrigin == FileOrigin.NewRelic ? ReadExportedNewRelic() : ReadExportedSumoLogic();
-            }
-            catch
-            {
-            }
-
-            firstCall = true;
-            byteParser = null;
-            Records.Clear();
-
-            if (tempFile == null)
-            {
-                ReportStatus(ReaderStatus.RecordsChanged);
-                return;
-            }
-
-            byte[] bytes = ReadBytes(tempFile);
-            ExtractRecords(bytes);
-            File.Delete(tempFile);
-        }
-
-        /// <summary>
-        /// SumoLogic files have log entries in reverse order (last first)
-        /// </summary>
-        string ReadExportedSumoLogic()
-#warning hier
-        {
-            var lines = File.ReadAllLines(fileName);
-            if (lines.Length < 2)
-                return null;
-
-            if (!lines[0].startsWith("\"_messagetimems"))
-                return null;
-
-            var newFile = Path.GetTempFileName();
-            var list = lines.Reverse().ToList();
-            int i = list.Count - 1;
-            string line = list[i];
-            list.RemoveAt(i);
-            list.Insert(0, line);
-            File.WriteAllLines(newFile, list);
-            return newFile;
         }
 
         /// <summary>

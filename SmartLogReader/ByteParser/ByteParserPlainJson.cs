@@ -34,15 +34,6 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserPlainJson : ByteParser
     {
-        public ByteParserPlainJson()
-        {
-        }
-
-        public ByteParserPlainJson(byte[] bytes)
-        {
-            Bytes = bytes;
-        }
-
         public override bool CheckFormat(byte[] bytes, out string newFileName)
         {
             newFileName = null;
