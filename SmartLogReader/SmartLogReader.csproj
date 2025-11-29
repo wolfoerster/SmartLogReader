@@ -82,6 +82,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ByteParser\ByteParserFactory.cs" />
+    <Compile Include="ByteParser\ByteParserManager.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\ByteParserPlainJson.cs" />
     <Compile Include="Utilities\ColorBox.cs" />

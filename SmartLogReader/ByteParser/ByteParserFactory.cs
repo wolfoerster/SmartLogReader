@@ -32,6 +32,8 @@ namespace SmartLogReader
 
         public static void Initialize()
         {
+            ByteParserManager.Initialize();
+#if false
             var plugins = LoadPlugins();
 
             void Add(Type parsertType)
@@ -60,37 +62,7 @@ namespace SmartLogReader
             Add(typeof(ByteParserPlainJson));
             Add(typeof(ByteParserPlainText));
             AddIf("ByteParserLegacy");
-        }
-
-        private static List<Type> LoadPlugins()
-        {
-            var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Plugins");
-            var files = Directory.GetFiles(dir, "*.dll");
-            var list = new List<Type>();
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    var assembly = Assembly.LoadFile(file);
-                    var types = assembly.GetExportedTypes();
-
-                    foreach (var type in types)
-                    {
-                        if (typeof(IByteParser).IsAssignableFrom(type))
-                        {
-                            Log.Information(new { type.FullName });
-                            list.Add(type);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.ToString());
-                }
-            }
-
-            return list;
+#endif
         }
 
         public static string CreateParser(string path, out IByteParser byteParser)
