@@ -18,6 +18,7 @@
         AutoGenerateColumns="False">
         <DataGrid.Columns>
           <DataGridCheckBoxColumn Header="Select" Width="Auto" Binding="{Binding IsSelected}"/>
+          <DataGridTextColumn Header="Name" Width="Auto" Binding="{Binding Name}"/>
         </DataGrid.Columns>
       </DataGrid>
     </Border>

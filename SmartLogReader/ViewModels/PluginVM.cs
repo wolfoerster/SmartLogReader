@@ -23,13 +23,13 @@ namespace SmartLogReader.ViewModels
     {
         private readonly IByteParser parser;
         private bool isSelected;
+        private string name;
 
-        public PluginVM(IByteParser type)
+        public PluginVM(IByteParser parser)
         {
-            this.parser = type;
+            this.parser = parser;
+            this.name = parser.GetType().FullName;
         }
-
-        public IByteParser Parser => parser;
 
         public bool IsSelected
         {
@@ -43,5 +43,7 @@ namespace SmartLogReader.ViewModels
                 }
             }
         }
+
+        public string Name => name;
     }
 }
