@@ -16,6 +16,7 @@
 //******************************************************************************************
 
 using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using SmartLogReader.Common;
@@ -93,11 +94,11 @@ namespace SmartLogReader
 
         private void CenterUnderneathMouse()
         {
-            var mousePos = Mouse.GetPosition(this); // in dips
-            var screenPos = PointToScreen(mousePos); // in pixel
+            var screenPos = Utils.GetMousePosition(); // in pixel
+            var mousePos = screenPos.ToDip(Application.Current.MainWindow); // in dip
 
             // get the actual size and calculate a position in pixel
-            var winSize = new Point(ActualWidth, ActualHeight); // in dips
+            var winSize = new Point(ActualWidth, ActualHeight); // in dip
             winSize = winSize.ToPixel(this); // in pixel
             var topLeft = new Point(screenPos.X - winSize.X / 2, screenPos.Y - winSize.Y / 2);
 
@@ -111,7 +112,7 @@ namespace SmartLogReader
             topLeft.X = Math.Min(topLeft.X, workArea.Right - winSize.X);
             topLeft.Y = Math.Min(topLeft.Y, workArea.Bottom - winSize.Y);
 
-            // transform to dips and set position
+            // transform to dip and set position
             topLeft = topLeft.ToDip(this);
             Top = topLeft.Y;
             Left = topLeft.X;

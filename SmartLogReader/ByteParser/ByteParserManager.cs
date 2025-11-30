@@ -74,6 +74,12 @@ namespace SmartLogReader
             return path;
         }
 
+        public static void ConfigurePlugins()
+        {
+            var dlg = new ConfigurePluginsDialog { ViewModel = new ConfigurePluginsVM(byteParsers) };
+            dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text);
+        }
+
         private static void GetParsers(Assembly assembly)
         {
             Log.Information(new { assembly.Location });
@@ -95,12 +101,6 @@ namespace SmartLogReader
                     }
                 }
             }
-        }
-
-        internal static void ConfigurePlugins()
-        {
-            var dlg = new ConfigurePluginsDialog { ViewModel = new ConfigurePluginsVM(byteParsers) };
-            dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text);
         }
     }
 }

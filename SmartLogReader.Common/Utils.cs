@@ -697,4 +697,34 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
 
         return null;
     }
+
+    struct POINT
+    {
+        public int X;
+        public int Y;
+    }
+
+    [DllImport("User32.dll", CharSet = CharSet.Auto)]
+    static extern bool GetCursorPos(ref POINT lpPoint);
+
+    /// <summary>
+    /// Gets the mouse position in screen coordinates.
+    /// </summary>
+    static public Point GetMousePosition()
+    {
+        POINT pt = new POINT();
+        GetCursorPos(ref pt);
+        return new Point(pt.X, pt.Y);
+    }
+
+    [DllImport("User32.dll", CharSet = CharSet.Auto)]
+    static extern bool SetCursorPos(int X, int Y);
+
+    /// <summary>
+    /// Sets the mouse position in screen coordinates.
+    /// </summary>
+    static public void SetMousePosition(Point pt)
+    {
+        SetCursorPos((int)Math.Round(pt.X), (int)Math.Round(pt.Y));
+    }
 }

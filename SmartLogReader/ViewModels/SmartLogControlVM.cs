@@ -850,8 +850,7 @@ namespace SmartLogReader
 
         void ExecuteConfigurePluginsCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            var dlg = new ConfigurePluginsDialog();
-            var ok = dlg.ShowDialog(ConfigurePluginsCmd.Text);
+            ByteParserManager.ConfigurePlugins();
         }
 
         /// <summary>
