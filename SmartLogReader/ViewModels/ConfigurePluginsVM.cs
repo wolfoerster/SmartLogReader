@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -15,28 +15,25 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using SmartLogReader.Common;
-using SmartLogReader.ViewModels;
 
-namespace SmartLogReader
+namespace SmartLogReader.ViewModels
 {
-    public partial class ConfigurePluginsDialog : Dialog
+    public class ConfigurePluginsVM
     {
-        private ConfigurePluginsVM viewModel;
-
-        public ConfigurePluginsDialog()
+        public ConfigurePluginsVM(IEnumerable<IByteParser> parsers)
         {
-            InitializeComponent();
-        }
-
-        public ConfigurePluginsVM ViewModel
-        {
-            get { return viewModel; }
-            set
+            foreach (var parser in parsers)
             {
-                Utils.OnlyOnce(viewModel, value);
-                DataContext = viewModel = value;
+                Plugins.Add(new PluginVM(parser));
             }
         }
+
+        public ObservableCollection<PluginVM> Plugins { get; } = new ObservableCollection<PluginVM>();
+
+        public PluginVM SelectedPlugin { get; set; }
     }
 }

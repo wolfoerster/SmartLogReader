@@ -19,8 +19,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 
-using SmartLogReader.Common;
-
 namespace SmartLogReader
 {
     /// <summary>

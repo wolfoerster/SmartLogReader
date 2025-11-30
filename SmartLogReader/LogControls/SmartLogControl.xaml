@@ -20,13 +20,15 @@
       <Button Width="120" Margin="12,0,0,0" ToolTip="{Binding HighlightingCmd.Text}" Command="{Binding HighlightingCmd}" HorizontalContentAlignment="Left">
         <TextBlock Text="{Binding HighlightingCmd.Name}" Margin="4,0,4,0"/>
       </Button>
+      <Button Width="80" Margin="12,0,0,0" ToolTip="{Binding ConfigurePluginsCmd.Text}" Command="{Binding ConfigurePluginsCmd}" HorizontalContentAlignment="Left">
+        <TextBlock Text="{Binding ConfigurePluginsCmd.Name}" Margin="4,0,4,0"/>
+      </Button>
       <ComboBox Width="120" Margin="12,0,0,0" ItemsSource="{Binding Fonts}" SelectedIndex="{Binding SelectedFont}" ToolTip="Select display font"/>
       <my:NumberBox Width="44" Number="{Binding SelectedSize}" Minimum="4" Maximum="48" Margin="4,0,0,0" ToolTip="Select font size"/>
       <my:SearchControl Margin="12,0,0,0" ToolTip="Search records"/>
       <ComboBox Width="160" Margin="12,0,0,0" ToolTip="Select a workspace name" ItemsSource="{Binding Workspaces}" SelectedIndex="{Binding SelectedWorkspace}" IsEditable="False" IsReadOnly="True"/>
       <Button Content="N" ToolTip="{Binding NewWorkspaceCmd.Text}" Command="{Binding NewWorkspaceCmd}" Width="20"/>
       <Button Content="D" ToolTip="{Binding DeleteWorkspaceCmd.Text}" Command="{Binding DeleteWorkspaceCmd}" Width="20"/>
-      <Button Content="P" ToolTip="{Binding ConfigurePluginsCmd.Text}" Command="{Binding ConfigurePluginsCmd}" Width="20" Margin="12,0,0,0"/>
     </StackPanel>
     <!-- -->
     <my:SplitGrid Grid.Row="1" x:Name="splitGrid" Margin="0,4,0,0" TextElement.FontSize="{Binding SelectedSize}" TextElement.FontFamily="{Binding SelectedFamily}" TextOptions.TextRenderingMode="ClearType">

@@ -17,11 +17,13 @@
 
 using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.ViewModels;
 
 namespace SmartLogReader
 {
@@ -77,6 +79,9 @@ namespace SmartLogReader
                 smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(null);
                 smartLogControl.ViewModel.LoadFileFromCommandLine(App.OpenFileName);
             }
+
+#warning weg damit:
+            ByteParserManager.ConfigurePlugins();
         }
 
         private void MeClosing(object sender, CancelEventArgs e)

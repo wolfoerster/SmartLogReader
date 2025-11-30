@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -16,26 +16,31 @@
 //******************************************************************************************
 
 using SmartLogReader.Common;
-using SmartLogReader.ViewModels;
 
-namespace SmartLogReader
+namespace SmartLogReader.ViewModels
 {
-    public partial class ConfigurePluginsDialog : Dialog
+    public class PluginVM : ViewModel
     {
-        private ConfigurePluginsVM viewModel;
+        private readonly IByteParser parser;
+        private bool isSelected;
 
-        public ConfigurePluginsDialog()
+        public PluginVM(IByteParser type)
         {
-            InitializeComponent();
+            this.parser = type;
         }
 
-        public ConfigurePluginsVM ViewModel
+        public IByteParser Parser => parser;
+
+        public bool IsSelected
         {
-            get { return viewModel; }
+            get => isSelected;
             set
             {
-                Utils.OnlyOnce(viewModel, value);
-                DataContext = viewModel = value;
+                if (isSelected != value)
+                {
+                    isSelected = value;
+                    OnPropertyChanged();
+                }
             }
         }
     }

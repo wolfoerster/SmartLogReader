@@ -20,11 +20,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.ViewModels;
 
 namespace SmartLogReader
 {
@@ -35,90 +33,74 @@ namespace SmartLogReader
 
         public static void Initialize()
         {
-            var byteParsers = GetByteParsers(Assembly.GetExecutingAssembly());
-            byteParsers.AddRange(GetByteParsers("."));
-            byteParsers.AddRange(GetByteParsers("Plugins"));   // warum ist SmartLogReader.Common.dll auch darin???
-        }
+            var executable = typeof(ByteParserManager).Assembly;
+            GetParsers(executable);
+            GetParsers(typeof(IByteParser).Assembly);
 
-        private static List<Type> GetByteParsers(Assembly assembly)
-        {
-            var list = new List<Type>();
-            var types = assembly.GetExportedTypes();
-            var targetName = typeof(IByteParser).FullName;
-
-            foreach (var type in types)
-            {
-                foreach (var interfaceType in type.GetInterfaces())
-                {
-                    if (interfaceType.FullName == targetName)
-                    {
-                        Log.Information(new { type.FullName });
-                        list.Add(type);
-                    }
-                }
-                //if (type.GetInterfaces().Contains(typeof(IByteParser)))
-                ////if (typeof(IByteParser).IsAssignableFrom(type))
-                //{
-                //    Log.Information(new { type.FullName });
-                //    list.Add(type);
-                //}
-            }
-
-            return list;
-        }
-
-        private static List<Type> GetByteParsers(string subDir)
-        {
-            var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), subDir);
-            var files = Directory.GetFiles(dir, "*.dll");
-            var list = new List<Type>();
-
-            foreach (var file in files)
+            var dir = Path.Combine(Path.GetDirectoryName(executable.Location), "Plugins");
+            foreach (var file in Directory.GetFiles(dir, "*.dll"))
             {
                 try
                 {
                     var assembly = Assembly.LoadFile(file);
-                    list.AddRange(GetByteParsers(assembly));
+                    GetParsers(assembly);
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex.ToString());
                 }
             }
-
-            return list;
         }
 
-        private static List<Type> LoadPlugins()
+        public static string CreateParser(string path, out IByteParser byteParser)
         {
-            var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Plugins");
-            var files = Directory.GetFiles(dir, "*.dll");
-            var list = new List<Type>();
+            byteParser = null;
+            var bytes = Utils.ReadBytes(path);
 
-            foreach (var file in files)
+            if (bytes.Length == 0)
+                return path;
+
+            foreach (var parser in byteParsers)
             {
-                try
+                var ok = parser.CheckFormat(bytes, out var newPath);
+                if (ok)
                 {
-                    var assembly = Assembly.LoadFile(file);
-                    var types = assembly.GetExportedTypes();
+                    byteParser = parser;
+                    return newPath ?? path;
+                }
+            }
 
-                    foreach (var type in types)
+            byteParser = new ByteParser() { Bytes = bytes };
+            return path;
+        }
+
+        private static void GetParsers(Assembly assembly)
+        {
+            Log.Information(new { assembly.Location });
+            var types = assembly.GetExportedTypes();
+
+            foreach (var type in types.Where(x => !x.IsInterface))
+            {
+                if (typeof(IByteParser).IsAssignableFrom(type))
+                {
+                    var existingParser = byteParsers.Find(x => x.GetType().FullName == type.FullName);
+                    if (existingParser == null)
                     {
-                        if (typeof(IByteParser).IsAssignableFrom(type))
+                        Log.Information(new { type.FullName });
+                        var instance = Activator.CreateInstance(type);
+                        if (instance is IByteParser parser)
                         {
-                            Log.Information(new { type.FullName });
-                            list.Add(type);
+                            byteParsers.Add(parser);
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.ToString());
-                }
             }
-
-            return list;
         }
 
+        internal static void ConfigurePlugins()
+        {
+            var dlg = new ConfigurePluginsDialog { ViewModel = new ConfigurePluginsVM(byteParsers) };
+            dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text);
+        }
     }
 }

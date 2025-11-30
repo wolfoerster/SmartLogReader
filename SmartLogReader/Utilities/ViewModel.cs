@@ -75,7 +75,7 @@ namespace SmartLogReader
             SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
             NewWorkspaceCmd = new UICommand("New workspace (Ctrl+Enter)", "New", Key.Return, ModifierKeys.Control, "Ctrl+Return");
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
-            ConfigurePluginsCmd = new UICommand("Configure plugins (Ctrl+P)", "ConfigurePlugins", Key.P, ModifierKeys.Control, "Ctrl+P");
+            ConfigurePluginsCmd = new UICommand("Configure plugins (Ctrl+P)", "Plugins", Key.P, ModifierKeys.Control, "Ctrl+P");
         }
 
         static public UICommand CopyCmd { get; set; }

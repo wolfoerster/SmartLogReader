@@ -193,7 +193,7 @@ namespace SmartLogReader
                 {
                     log.Debug($"Found again file for {FileName}");
                     if (byteParser == null)
-                        ByteParserFactory.CreateParser(FileName, out byteParser);
+                        ByteParserManager.CreateParser(FileName, out byteParser);
                 }
             }
 
@@ -232,7 +232,7 @@ namespace SmartLogReader
             fileExists = File.Exists(path);
 
             if (fileExists)
-                path = ByteParserFactory.CreateParser(path, out parser);
+                path = ByteParserManager.CreateParser(path, out parser);
 
             firstCall = true;
             Reset(path);

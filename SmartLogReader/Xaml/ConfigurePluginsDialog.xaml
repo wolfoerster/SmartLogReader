@@ -6,7 +6,31 @@
         xmlns:my="clr-namespace:SmartLogReader"
         mc:Ignorable="d"
         Title="ConfigurePluginsDialog" Height="450" Width="800">
-    <Grid>
-        
+  <Grid Margin="4">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Padding="4,4,0,4">
+      <DataGrid
+        ItemsSource="{Binding Plugins}"
+        SelectedItem="{Binding SelectedPlugin}"
+        AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridCheckBoxColumn Header="Select" Width="Auto" Binding="{Binding IsSelected}"/>
+        </DataGrid.Columns>
+      </DataGrid>
+    </Border>
+    <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="2" x:Name="okButton" MinWidth="80" IsDefault="True" Click="OnButtonOK" Content="OK"/>
+      <Button Grid.Column="4" x:Name="btnCancel" MinWidth="80" IsCancel="True" Content="Cancel"/>
     </Grid>
+  </Grid>
 </my:Dialog>

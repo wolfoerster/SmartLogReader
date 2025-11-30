@@ -81,7 +81,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ByteParser\ByteParserFactory.cs" />
     <Compile Include="ByteParser\ByteParserManager.cs" />
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\ByteParserPlainJson.cs" />
@@ -92,6 +91,8 @@
     <Compile Include="Utilities\Notifier.cs" />
     <Compile Include="Utilities\Record.cs" />
     <Compile Include="Utilities\Screen.cs" />
+    <Compile Include="ViewModels\ConfigurePluginsVM.cs" />
+    <Compile Include="ViewModels\PluginVM.cs" />
     <Compile Include="Xaml\ConfigurePluginsDialog.xaml.cs">
       <DependentUpon>ConfigurePluginsDialog.xaml</DependentUpon>
     </Compile>
