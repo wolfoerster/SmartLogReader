@@ -5,22 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:my="clr-namespace:SmartLogReader"
         mc:Ignorable="d"
+           SizeToContent="Width"
         Title="ConfigurePluginsDialog" Height="450" Width="800">
   <Grid Margin="4">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Padding="4,4,0,4">
-      <DataGrid
-        ItemsSource="{Binding Plugins}"
-        SelectedItem="{Binding SelectedPlugin}"
-        AutoGenerateColumns="False">
-        <DataGrid.Columns>
-          <DataGridCheckBoxColumn Header="Select" Width="Auto" Binding="{Binding IsSelected}"/>
-          <DataGridTextColumn Header="Name" Width="Auto" Binding="{Binding Name}"/>
-        </DataGrid.Columns>
-      </DataGrid>
+    <DataGrid
+      ItemsSource="{Binding Plugins}"
+      SelectedItem="{Binding SelectedPlugin}"
+      Margin="0,0,4,0"
+      AutoGenerateColumns="False">
+      <DataGrid.Columns>
+        <DataGridTemplateColumn Header="Select" Width="Auto">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <CheckBox IsChecked="{Binding IsSelected}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTextColumn Header="Name" Width="Auto" Binding="{Binding Name}"/>
+      </DataGrid.Columns>
+    </DataGrid>
+    <Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Padding="4">
+      <StackPanel Orientation="Vertical">
+        <Button Content="Move up"/>
+        <Button Content="Move down" Margin="0,4,0,0"/>
+      </StackPanel>
     </Border>
     <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">
       <Grid.ColumnDefinitions>
