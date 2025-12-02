@@ -77,26 +77,26 @@ namespace SmartLogReader
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
 
             ConfigurePluginsCmd = new UICommand("Configure plugins (Ctrl+P)", "Plugins", Key.P, ModifierKeys.Control, "Ctrl+P");
-            MoveUpCmd = new UICommand("Move selected up", "Move up", Key.Up, ModifierKeys.Control, "Ctrl+Up");
-            MoveDownCmd = new UICommand("Move selected down", "Move down", Key.Down, ModifierKeys.Control, "Ctrl+Down");
+            MoveUpCmd = new UICommand("Move selected up", "Move up", Key.Up, ModifierKeys.Alt, "Alt+Up");
+            MoveDownCmd = new UICommand("Move selected down", "Move down", Key.Down, ModifierKeys.Alt, "Alt+Down");
         }
 
-        static public UICommand CopyCmd { get; set; }
-        static public UICommand OpenCmd { get; set; }
-        static public UICommand CloseCmd { get; set; }
-        static public UICommand ConfigureFilterCmd { get; set; }
-        static public UICommand HighlightingCmd { get; set; }
+        public static UICommand CopyCmd { get; set; }
+        public static UICommand OpenCmd { get; set; }
+        public static UICommand CloseCmd { get; set; }
+        public static UICommand ConfigureFilterCmd { get; set; }
+        public static UICommand HighlightingCmd { get; set; }
 
-        static public UICommand SplitCmd { get; set; }
-        static public UICommand SearchUpCmd { get; set; }
-        static public UICommand FindCmd { get; set; }
-        static public UICommand SearchDownCmd { get; set; }
-        static public UICommand NewWorkspaceCmd { get; set; }
-        static public UICommand DeleteWorkspaceCmd { get; set; }
+        public static UICommand SplitCmd { get; set; }
+        public static UICommand SearchUpCmd { get; set; }
+        public static UICommand FindCmd { get; set; }
+        public static UICommand SearchDownCmd { get; set; }
+        public static UICommand NewWorkspaceCmd { get; set; }
+        public static UICommand DeleteWorkspaceCmd { get; set; }
 
-        static public UICommand ConfigurePluginsCmd { get; set; }
-        static public UICommand MoveUpCmd { get; set; }
-        static public UICommand MoveDownCmd { get; set; }
+        public static UICommand ConfigurePluginsCmd { get; set; }
+        public static UICommand MoveUpCmd { get; set; }
+        public static UICommand MoveDownCmd { get; set; }
     }
 
     /// <summary>

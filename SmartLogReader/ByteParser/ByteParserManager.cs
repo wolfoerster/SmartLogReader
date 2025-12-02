@@ -22,7 +22,6 @@ using System.Linq;
 using System.Reflection;
 using SmartLogging;
 using SmartLogReader.Common;
-using SmartLogReader.ViewModels;
 
 namespace SmartLogReader
 {

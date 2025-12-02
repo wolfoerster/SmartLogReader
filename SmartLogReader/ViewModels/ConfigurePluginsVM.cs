@@ -21,7 +21,7 @@ using System.Linq;
 using System.Windows.Input;
 using SmartLogReader.Common;
 
-namespace SmartLogReader.ViewModels
+namespace SmartLogReader
 {
     public class ConfigurePluginsVM : ViewModel
     {

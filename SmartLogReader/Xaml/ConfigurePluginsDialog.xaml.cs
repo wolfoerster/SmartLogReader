@@ -16,7 +16,6 @@
 //******************************************************************************************
 
 using SmartLogReader.Common;
-using SmartLogReader.ViewModels;
 
 namespace SmartLogReader
 {
@@ -36,6 +35,7 @@ namespace SmartLogReader
             {
                 Utils.OnlyOnce(viewModel, value);
                 DataContext = viewModel = value;
+                CommandBindings.AddRange(viewModel.CommandBindings);
             }
         }
     }

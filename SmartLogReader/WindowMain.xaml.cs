@@ -17,13 +17,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SmartLogging;
 using SmartLogReader.Common;
-using SmartLogReader.ViewModels;
 
 namespace SmartLogReader
 {

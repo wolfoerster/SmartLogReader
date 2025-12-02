@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:my="clr-namespace:SmartLogReader"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=my:ConfigurePluginsVM}"
         Title="ConfigurePluginsDialog" 
         Height="450" SizeToContent="Width">
   <Grid Margin="4">

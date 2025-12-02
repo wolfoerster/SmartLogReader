@@ -17,7 +17,7 @@
 
 using SmartLogReader.Common;
 
-namespace SmartLogReader.ViewModels
+namespace SmartLogReader
 {
     public class PluginVM : ViewModel
     {
