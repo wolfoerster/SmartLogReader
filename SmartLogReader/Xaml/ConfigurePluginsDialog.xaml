@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:my="clr-namespace:SmartLogReader"
         mc:Ignorable="d"
-           SizeToContent="Width"
-        Title="ConfigurePluginsDialog" Height="450" Width="800">
+        Title="ConfigurePluginsDialog" 
+        Height="450" SizeToContent="Width">
   <Grid Margin="4">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
@@ -34,8 +34,8 @@
     </DataGrid>
     <Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Padding="4">
       <StackPanel Orientation="Vertical">
-        <Button Content="Move up"/>
-        <Button Content="Move down" Margin="0,4,0,0"/>
+        <Button Content="Move up" Command="{Binding MoveUpCmd}"/>
+        <Button Content="Move down" Command="{Binding MoveDownCmd}" Margin="0,4,0,0"/>
       </StackPanel>
     </Border>
     <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">

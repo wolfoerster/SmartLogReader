@@ -75,7 +75,10 @@ namespace SmartLogReader
             SearchDownCmd = new UICommand("Search records down (Enter, F3)", "Search down", Key.Return, ModifierKeys.None, "Return");
             NewWorkspaceCmd = new UICommand("New workspace (Ctrl+Enter)", "New", Key.Return, ModifierKeys.Control, "Ctrl+Return");
             DeleteWorkspaceCmd = new UICommand("Delete workspace (Ctrl+D)", "Delete", Key.D, ModifierKeys.Control, "Ctrl+D");
+
             ConfigurePluginsCmd = new UICommand("Configure plugins (Ctrl+P)", "Plugins", Key.P, ModifierKeys.Control, "Ctrl+P");
+            MoveUpCmd = new UICommand("Move selected up", "Move up", Key.Up, ModifierKeys.Control, "Ctrl+Up");
+            MoveDownCmd = new UICommand("Move selected down", "Move down", Key.Down, ModifierKeys.Control, "Ctrl+Down");
         }
 
         static public UICommand CopyCmd { get; set; }
@@ -90,7 +93,10 @@ namespace SmartLogReader
         static public UICommand SearchDownCmd { get; set; }
         static public UICommand NewWorkspaceCmd { get; set; }
         static public UICommand DeleteWorkspaceCmd { get; set; }
+
         static public UICommand ConfigurePluginsCmd { get; set; }
+        static public UICommand MoveUpCmd { get; set; }
+        static public UICommand MoveDownCmd { get; set; }
     }
 
     /// <summary>

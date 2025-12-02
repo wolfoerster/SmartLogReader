@@ -15,14 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 using SmartLogReader.Common;
 
 namespace SmartLogReader.ViewModels
 {
-    public class ConfigurePluginsVM
+    public class ConfigurePluginsVM : ViewModel
     {
         public ConfigurePluginsVM(IEnumerable<IByteParser> parsers)
         {
@@ -30,10 +31,35 @@ namespace SmartLogReader.ViewModels
             {
                 Plugins.Add(new PluginVM(parser));
             }
+
+            CommandBindings.Add(new CommandBinding(MoveUpCmd, ExecuteMoveUpCmd, CanExecuteMoveUpCmd));
+            CommandBindings.Add(new CommandBinding(MoveDownCmd, ExecuteMoveDownCmd, CanExecuteMoveDownCmd));
         }
 
         public ObservableCollection<PluginVM> Plugins { get; } = new ObservableCollection<PluginVM>();
 
         public PluginVM SelectedPlugin { get; set; }
+
+        void CanExecuteMoveUpCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = SelectedPlugin != null && SelectedPlugin != Plugins.First();
+        }
+
+        void ExecuteMoveUpCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            var index = Plugins.IndexOf(SelectedPlugin);
+            Plugins.Move(index, index - 1);
+        }
+
+        void CanExecuteMoveDownCmd(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = SelectedPlugin != null && SelectedPlugin != Plugins.Last();
+        }
+
+        void ExecuteMoveDownCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            var index = Plugins.IndexOf(SelectedPlugin);
+            Plugins.Move(index, index + 1);
+        }
     }
 }
