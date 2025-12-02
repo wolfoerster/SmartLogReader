@@ -22,26 +22,28 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.Properties;
 
 namespace SmartLogReader
 {
     public partial class WindowMain : Window
     {
-        private static readonly SmartLogger log = new SmartLogger();
-        private readonly DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
+        private static readonly SmartLogger Log = new SmartLogger();
+        private readonly Properties.Settings Settings = Settings.Default;
+        private readonly DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Background);
 
         public WindowMain()
         {
             InitializeComponent();
-            log.Debug(Title);
+            Log.Debug(Title);
 
             Loaded += MeLoaded;
             Closing += MeClosing;
             RestoreSizeAndPosition();
 
-            timer.Tick += TimerTick;
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Start();
+            Timer.Tick += TimerTick;
+            Timer.Interval = TimeSpan.FromSeconds(1);
+            Timer.Start();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -64,12 +66,14 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.IsMaximized)
-                this.WindowState = WindowState.Maximized;
+            ByteParserManager.LastParsers = Settings.ByteParsers;
+
+            if (Settings.IsMaximized)
+                WindowState = WindowState.Maximized;
 
             if (App.OpenFileName == null)
             {
-                smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(Properties.Settings.Default.LastWorkspace);
+                smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(Settings.LastWorkspace);
                 smartLogControl.ViewModel.LoadFiles();
             }
             else
@@ -77,49 +81,47 @@ namespace SmartLogReader
                 smartLogControl.ViewModel = SmartLogControlVM.FromWorkspace(null);
                 smartLogControl.ViewModel.LoadFileFromCommandLine(App.OpenFileName);
             }
-
-#warning weg damit:
-            ByteParserManager.ConfigurePlugins();
         }
 
         private void MeClosing(object sender, CancelEventArgs e)
         {
-            Properties.Settings.Default.LastWorkspace = smartLogControl.ViewModel.Shutdown();
+            Settings.LastWorkspace = smartLogControl.ViewModel.Shutdown();
             StoreSizeAndPosition();
             LogWriter.Flush();
         }
 
         private void RestoreSizeAndPosition()
         {
-            var name = Properties.Settings.Default.ScreenName;
+            var name = Settings.ScreenName;
             var screen = Screen.LookUpByName(name);
             if (screen == null) 
                 return;
 
-            this.Top = Properties.Settings.Default.Top;
-            this.Left = Properties.Settings.Default.Left;
-            this.Width = Properties.Settings.Default.Width;
-            this.Height = Properties.Settings.Default.Height;
-            this.WindowState = WindowState.Normal;
-            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            Top = Settings.Top;
+            Left = Settings.Left;
+            Width = Settings.Width;
+            Height = Settings.Height;
+            WindowState = WindowState.Normal;
+            WindowStartupLocation = WindowStartupLocation.Manual;
         }
 
         private void StoreSizeAndPosition()
         {
-            Properties.Settings.Default.IsMaximized = this.WindowState == WindowState.Maximized;
+            Settings.IsMaximized = WindowState == WindowState.Maximized;
 
-            if (this.WindowState != WindowState.Normal)
-                this.WindowState = WindowState.Normal;
+            if (WindowState != WindowState.Normal)
+                WindowState = WindowState.Normal;
 
-            var pt = new Point(this.Left, this.Top);
+            var pt = new Point(Left, Top);
             var screen = Screen.LookUpByPixel(pt.ToPixel(this));
-            Properties.Settings.Default.ScreenName = screen?.Name;
+            Settings.ScreenName = screen?.Name;
 
-            Properties.Settings.Default.Top = this.Top;
-            Properties.Settings.Default.Left = this.Left;
-            Properties.Settings.Default.Width = this.Width;
-            Properties.Settings.Default.Height = this.Height;
-            Properties.Settings.Default.Save();
+            Settings.Top = Top;
+            Settings.Left = Left;
+            Settings.Width = Width;
+            Settings.Height = Height;
+            Settings.ByteParsers = ByteParserManager.LastParsers;
+            Settings.Save();
         }
     }
 }

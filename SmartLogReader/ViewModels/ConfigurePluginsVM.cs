@@ -25,9 +25,9 @@ namespace SmartLogReader
 {
     public class ConfigurePluginsVM : ViewModel
     {
-        public ConfigurePluginsVM(IEnumerable<IByteParser> parsers)
+        public ConfigurePluginsVM(IEnumerable<IByteParser> byteParsers, string lastParsers)
         {
-            foreach (var parser in parsers)
+            foreach (var parser in byteParsers)
             {
                 Plugins.Add(new PluginVM(parser));
             }

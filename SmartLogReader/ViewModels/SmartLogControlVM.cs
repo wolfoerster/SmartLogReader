@@ -34,7 +34,7 @@ namespace SmartLogReader
     /// </summary>
     public class SmartLogControlVM : SplitGridViewModel3
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SmartLogger Log = new SmartLogger();
 
         /// <summary>
         /// Fill some static lists.
@@ -70,7 +70,7 @@ namespace SmartLogReader
                 path = GetWorkspaceFile(DefaultWorkspace);
 
             string xml = File.Exists(path) ? File.ReadAllText(path) : null;
-            log.Debug($"Create viewmodel from the following settings:\r\n{xml}");
+            Log.Debug($"Create viewmodel from the following settings:\r\n{xml}");
 
             //--- There are property setters which call ReloadFiles() during XML deserialization. 
             //--- To prevent this, we use this static boolean value:
@@ -749,7 +749,7 @@ namespace SmartLogReader
             get { return selectedWorkspace; }
             set
             {
-                log.Debug($"old = {selectedWorkspace}, new = {value}");
+                Log.Debug($"old = {selectedWorkspace}, new = {value}");
                 if (selectedWorkspace != value)
                 {
                     if (IsInitialized)
@@ -870,7 +870,7 @@ namespace SmartLogReader
         private string SaveWorkspace()
         {
             string path = GetWorkspaceFile();
-            log.Debug($"path = '{path}'");
+            Log.Debug($"path = '{path}'");
             if (path != null)
                 File.WriteAllText(path, ToXML());
             return path;
@@ -882,7 +882,7 @@ namespace SmartLogReader
         private void DeleteWorkspace()
         {
             string path = GetWorkspaceFile();
-            log.Debug($"path = '{path}'");
+            Log.Debug($"path = '{path}'");
             if (path != null)
             {
                 var msg = $"Do you really want to delete workspace {workspaces[selectedWorkspace]}?";
@@ -902,10 +902,10 @@ namespace SmartLogReader
         private void LoadWorkspace()
         {
             string path = GetWorkspaceFile();
-            log.Debug($"path = '{path}'");
+            Log.Debug($"path = '{path}'");
             if (!File.Exists(path))
             {
-                log.Debug("file does not exist");
+                Log.Debug("file does not exist");
                 return;
             }
 
@@ -919,7 +919,7 @@ namespace SmartLogReader
 
             if (vm == null)
             {
-                log.Warning("vm == null");
+                Log.Warning("vm == null");
                 IsInitialized = true;
                 return;
             }

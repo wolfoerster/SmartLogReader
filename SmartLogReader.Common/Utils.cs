@@ -35,7 +35,7 @@ namespace SmartLogReader.Common;
 
 public static class Utils
 {
-    private static readonly SmartLogger log = new();
+    private static readonly SmartLogger Log = new();
 
     public static Point ToPixel(this Point pointInDip, Visual visual)
     {
@@ -147,7 +147,7 @@ public static class Utils
             }
             catch (Exception e)
             {
-                log.Error(e.ToString());
+                Log.Error(e.ToString());
             }
         }
         return obj as T;
@@ -168,7 +168,7 @@ public static class Utils
         }
         catch (Exception e)
         {
-            log.Error(e.ToString());
+            Log.Error(e.ToString());
         }
         return false;
     }
@@ -185,7 +185,7 @@ public static class Utils
         }
         catch (Exception e)
         {
-            log.Error(e.ToString());
+            Log.Error(e.ToString());
         }
         return false;
     }
@@ -440,7 +440,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
     {
         if (!File.Exists(name))
         {
-            log.Debug($"File >{name}< does not exist");
+            Log.Debug($"File >{name}< does not exist");
             return null;
         }
         try
@@ -449,7 +449,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         }
         catch (Exception e)
         {
-            log.Error(e.ToString());
+            Log.Error(e.ToString());
         }
         return null;
     }
@@ -692,7 +692,7 @@ https://social.msdn.microsoft.com/Forums/vstudio/en-US/9efbbd24-9780-4381-90cc-a
         }
         catch (Exception e)
         {
-            log.Error(e.ToString());
+            Log.Error(e.ToString());
         }
 
         return null;

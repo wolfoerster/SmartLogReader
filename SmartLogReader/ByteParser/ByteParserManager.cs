@@ -29,6 +29,22 @@ namespace SmartLogReader
     {
         private static readonly SmartLogger Log = new SmartLogger();
         private static readonly List<IByteParser> byteParsers = new List<IByteParser>();
+        private static string lastParsers;
+
+        public static string LastParsers
+        {
+            get => lastParsers;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    ConfigurePlugins();
+                    return;
+                }
+
+                lastParsers = value;
+            }
+        }
 
         public static void Initialize()
         {
@@ -75,7 +91,7 @@ namespace SmartLogReader
 
         public static void ConfigurePlugins()
         {
-            var dlg = new ConfigurePluginsDialog { ViewModel = new ConfigurePluginsVM(byteParsers) };
+            var dlg = new ConfigurePluginsDialog { ViewModel = new ConfigurePluginsVM(byteParsers, lastParsers) };
             dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text);
         }
 

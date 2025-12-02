@@ -35,7 +35,7 @@ namespace SmartLogReader
     /// </summary>
     public partial class App : Application
     {
-        private static readonly SmartLogger log = new SmartLogger();
+        private static readonly SmartLogger Log = new SmartLogger();
         public static Version Version;
 
         /// <summary>
@@ -90,13 +90,13 @@ namespace SmartLogReader
             int count = Process.GetProcesses().Count(p => p.ProcessName == myprocessname);
             if (count > 1)
             {
-                log.Debug($"found {count} processes with the same name {myprocessname} ==> shutdown");
+                Log.Debug($"found {count} processes with the same name {myprocessname} ==> shutdown");
                 Shutdown();
                 return;
             }
 
             string action = option == "/restart" ? "Restarting" : "Starting";
-            log.Debug($"{action} application {localName}, option: '{option}'");
+            Log.Debug($"{action} application {localName}, option: '{option}'");
 
             //--- attach overall exception handler
             DispatcherUnhandledException += MeDispatcherUnhandledException;
@@ -105,7 +105,7 @@ namespace SmartLogReader
             //--- if option is "/nocheck", we're done
             if (option == "/nocheck")
             {
-                log.Debug($"Option '{option}' detected ==> will not check for new version");
+                Log.Debug($"Option '{option}' detected ==> will not check for new version");
                 return;
             }
 
@@ -113,7 +113,7 @@ namespace SmartLogReader
             if (File.Exists(option))
             {
                 OpenFileName = option;
-                log.Debug($"File '{option}' will be opened ==> will not check for new version");
+                Log.Debug($"File '{option}' will be opened ==> will not check for new version");
                 return;
             }
 
@@ -131,7 +131,7 @@ namespace SmartLogReader
         /// </summary>
         protected override void OnExit(ExitEventArgs e)
         {
-            log.Debug($"Exiting application {localName}");
+            Log.Debug($"Exiting application {localName}");
             base.OnExit(e);
         }
 
@@ -153,8 +153,8 @@ namespace SmartLogReader
         void MeDomainUnhandledException(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            log.Error(e.ToString());
-            log.Debug($"args.IsTerminating = {args.IsTerminating}");
+            Log.Error(e.ToString());
+            Log.Debug($"args.IsTerminating = {args.IsTerminating}");
             MessageBox.Show(e.Message, "DomainUnhandledException");
         }
 
@@ -164,7 +164,7 @@ namespace SmartLogReader
         void MeDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.Exception;
-            log.Error(e.ToString());
+            Log.Error(e.ToString());
             MessageBox.Show(e.Message, "DispatcherUnhandledException");
             args.Handled = true;
         }
@@ -180,7 +180,7 @@ namespace SmartLogReader
             //--- if this is the temporary executable, we're in the middle of the update
             if (localName.equals(tempName))
             {
-                log.Debug($"About to copy temp file to {original}");
+                Log.Debug($"About to copy temp file to {original}");
                 if (CopyFile(localName, original))
                     Start(original);
 
@@ -191,7 +191,7 @@ namespace SmartLogReader
                 //--- if there is a temporary executable, we're nearly finished with the update
                 if (File.Exists(tempName))
                 {
-                    log.Debug($"About to delete temp file {tempName}");
+                    Log.Debug($"About to delete temp file {tempName}");
                     DeleteFile(tempName);
                     UpdateFinished();
                     return false;
@@ -202,7 +202,7 @@ namespace SmartLogReader
                 if (newName != null)
                 {
                     //--- start the update process
-                    log.Debug($"About to copy new file to {tempName}");
+                    Log.Debug($"About to copy new file to {tempName}");
                     if (CopyFile(newName, tempName))
                         Start(tempName);
 
@@ -243,7 +243,7 @@ namespace SmartLogReader
         /// </summary>
         void Start(string path)
         {
-            log.Debug($"About to start {Path.GetFileName(path)}");
+            Log.Debug($"About to start {Path.GetFileName(path)}");
             Process.Start(path, "/restart");
         }
 
@@ -254,7 +254,7 @@ namespace SmartLogReader
         {
             if (IsBlocked)
             {
-                log.Debug("Blocking file detected! Will shutdown.");
+                Log.Debug("Blocking file detected! Will shutdown.");
                 Shutdown();
                 return null;
             }
@@ -267,12 +267,12 @@ namespace SmartLogReader
             {
                 if (remoteInfo.LastWriteTime > localInfo.LastWriteTime)
                 {
-                    log.Debug("Found new version on remote directory");
+                    Log.Debug("Found new version on remote directory");
                     //--- IsBlocked will be set to false in UpdateFinished()
                     return remoteInfo.FullName;
                 }
 
-                log.Debug("No new version on remote directory");
+                Log.Debug("No new version on remote directory");
             }
 
             IsBlocked = false;
@@ -289,12 +289,12 @@ namespace SmartLogReader
             {
                 if (value == false)
                 {
-                    log.Debug("Remove blocking file");
+                    Log.Debug("Remove blocking file");
                     Utils.DeleteFile(blockingFile);
                 }
                 else
                 {
-                    log.Debug("Create blocking file");
+                    Log.Debug("Create blocking file");
                     lock (locker)
                     {
                         File.WriteAllText(blockingFile, "Blocking new instances");
@@ -311,17 +311,17 @@ namespace SmartLogReader
             string remoteDir = ConfigurationManager.AppSettings["RemoteDir"];
             if (string.IsNullOrWhiteSpace(remoteDir))
             {
-                log.Debug("Did not find RemoteDir in appSettings");
+                Log.Debug("Did not find RemoteDir in appSettings");
                 return null;
             }
 
             if (!Directory.Exists(remoteDir))
             {
-                log.Debug($"Did not find remote directory >{remoteDir}<");
+                Log.Debug($"Did not find remote directory >{remoteDir}<");
                 return null;
             }
 
-            log.Debug($"Remote directory is {remoteDir}");
+            Log.Debug($"Remote directory is {remoteDir}");
             return GetFileInfo(remoteDir + "\\" + Path.GetFileName(localName));
         }
 
@@ -332,18 +332,18 @@ namespace SmartLogReader
         {
             if (!File.Exists(name))
             {
-                log.Debug($"File >{name}< does not exist");
+                Log.Debug($"File >{name}< does not exist");
                 return null;
             }
             try
             {
                 FileInfo fileInfo = new FileInfo(name);
-                log.Debug($"LastWriteTime is {fileInfo.LastWriteTime}");
+                Log.Debug($"LastWriteTime is {fileInfo.LastWriteTime}");
                 return fileInfo;
             }
             catch (Exception e)
             {
-                log.Error(e.ToString());
+                Log.Error(e.ToString());
             }
             return null;
         }
@@ -359,7 +359,7 @@ namespace SmartLogReader
                 {
                     if (Utils.CopyFile(source, dest))
                     {
-                        log.Debug("success");
+                        Log.Debug("success");
                         return true;
                     }
                     Sleep();
@@ -369,7 +369,7 @@ namespace SmartLogReader
                 if (res != MessageBoxResult.Yes)
                     break;
             }
-            log.Debug("cancelled");
+            Log.Debug("cancelled");
             return false;
         }
 
@@ -384,7 +384,7 @@ namespace SmartLogReader
                 {
                     if (Utils.DeleteFile(source))
                     {
-                        log.Debug("success");
+                        Log.Debug("success");
                         return true;
                     }
                     Sleep();
@@ -394,7 +394,7 @@ namespace SmartLogReader
                 if (res != MessageBoxResult.Yes)
                     break;
             }
-            log.Debug("cancelled");
+            Log.Debug("cancelled");
             return false;
         }
 
@@ -404,9 +404,9 @@ namespace SmartLogReader
         void Sleep()
         {
             int delay = 50;
-            log.Debug($"Going to sleep for {delay}ms");
+            Log.Debug($"Going to sleep for {delay}ms");
             Thread.Sleep(delay);
-            log.Debug("Woke up from sleep");
+            Log.Debug("Woke up from sleep");
         }
     }
 }
