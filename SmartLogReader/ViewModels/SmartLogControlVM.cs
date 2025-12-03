@@ -19,10 +19,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+//using System.Windows.Shapes;
 using System.Xml.Serialization;
 using SmartLogging;
 using SmartLogReader.Common;
@@ -850,7 +852,11 @@ namespace SmartLogReader
 
         void ExecuteConfigurePluginsCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            ByteParserManager.ConfigurePlugins();
+            if (ByteParserManager.ConfigurePlugins())
+            {
+                Application.Current.MainWindow.Close();
+                Process.Start(typeof(SmartLogControlVM).Assembly.Location);
+            }
         }
 
         /// <summary>

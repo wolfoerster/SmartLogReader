@@ -66,8 +66,7 @@ namespace SmartLogReader
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            ByteParserManager.LastParsers = Settings.ByteParsers;
-
+            ByteParserManager.Initialize(Settings.LastParsers);
             if (Settings.IsMaximized)
                 WindowState = WindowState.Maximized;
 
@@ -120,7 +119,7 @@ namespace SmartLogReader
             Settings.Left = Left;
             Settings.Width = Width;
             Settings.Height = Height;
-            Settings.ByteParsers = ByteParserManager.LastParsers;
+            Settings.LastParsers = ByteParserManager.LastParsers;
             Settings.Save();
         }
     }

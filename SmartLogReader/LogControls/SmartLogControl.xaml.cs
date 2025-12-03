@@ -36,7 +36,6 @@ namespace SmartLogReader
         public SmartLogControl()
         {
             InitializeComponent();
-            ByteParserManager.Initialize();
         }
 
         /// <summary>

@@ -110,12 +110,12 @@ namespace SmartLogReader.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ByteParsers {
+        public string LastParsers {
             get {
-                return ((string)(this["ByteParsers"]));
+                return ((string)(this["LastParsers"]));
             }
             set {
-                this["ByteParsers"] = value;
+                this["LastParsers"] = value;
             }
         }
     }

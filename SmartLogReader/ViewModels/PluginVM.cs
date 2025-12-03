@@ -15,19 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
-using SmartLogReader.Common;
-
 namespace SmartLogReader
 {
     public class PluginVM : ViewModel
     {
-        private readonly IByteParser parser;
         private bool isSelected;
-
-        public PluginVM(IByteParser parser)
-        {
-            this.parser = parser;
-        }
+        private string name;
 
         public bool IsSelected
         {
@@ -42,6 +35,10 @@ namespace SmartLogReader
             }
         }
 
-        public string Name => parser.GetType().FullName;
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
     }
 }

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 using SmartLogging;
 using SmartLogReader.Common;
 
@@ -28,31 +29,115 @@ namespace SmartLogReader
     public static class ByteParserManager
     {
         private static readonly SmartLogger Log = new SmartLogger();
-        private static readonly List<IByteParser> byteParsers = new List<IByteParser>();
-        private static string lastParsers;
+        private static readonly Dictionary<string, IByteParser> existingParsers = new Dictionary<string, IByteParser>();
+        private static List<(string Name, bool IsSelected)> configuredParsers;
 
-        public static string LastParsers
+        public static void Initialize(string lastParsers)
         {
-            get => lastParsers;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    ConfigurePlugins();
-                    return;
-                }
+            configuredParsers = JsonConvert.DeserializeObject<List<(string, bool)>>(lastParsers);
 
-                lastParsers = value;
+            if (configuredParsers == null)
+            {
+                configuredParsers = new List<(string, bool)>
+                {
+                    ("SmartLogReader.Common.ByteParserSmartLogger", true),
+                    ("ByteParserTrimble.ByteParserJsonLogger", true),
+                    ("ByteParserTrimble.ByteParserNewRelic", true),
+                    ("ByteParserTrimble.ByteParserSumoLogic", true),
+                    ("ByteParserTrimble.ByteParserDocker", true),
+                    ("SmartLogReader.ByteParserPlainJson", true),
+                    ("SmartLogReader.ByteParserPlainText", true),
+                    ("ByteParserTrimble.ByteParserLegacy", true),
+                    ("SmartLogReader.Common.ByteParser", true),
+                };
+            }
+
+            if (string.IsNullOrEmpty(lastParsers))
+                ConfigurePlugins();
+            else
+                InitConfiguration();
+        }
+
+        public static string LastParsers => JsonConvert.SerializeObject(configuredParsers, Formatting.None);
+
+        public static string CreateParser(string path, out IByteParser byteParser)
+        {
+            byteParser = null;
+            var bytes = Utils.ReadBytes(path);
+
+            if (bytes.Length == 0)
+                return path;
+
+            foreach (var (name, isSelected) in configuredParsers)
+            {
+                if (isSelected)
+                {
+                    var parser = existingParsers[name];
+                    var ok = parser.CheckFormat(bytes, out var newPath);
+                    if (ok)
+                    {
+                        byteParser = parser;
+                        return newPath ?? path;
+                    }
+                }
+            }
+
+            byteParser = new ByteParser() { Bytes = bytes };
+            return path;
+        }
+
+        public static bool ConfigurePlugins()
+        {
+            InitConfiguration();
+
+            var configureVM = new ConfigurePluginsVM(configuredParsers);
+            var dlg = new ConfigurePluginsDialog { ViewModel = configureVM };
+
+            if (!dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text))
+                return false;
+
+            configuredParsers.Clear();
+
+            foreach (var parserVM in configureVM.Plugins)
+                configuredParsers.Add((parserVM.Name, parserVM.IsSelected));
+
+            return true;
+        }
+
+        private static void InitConfiguration()
+        {
+            LookForExistingParsers();
+
+            // remove not-existing parsers
+            var toBeRemoved = new List<(string, bool)>();
+
+            foreach (var parser in configuredParsers)
+                if (!existingParsers.ContainsKey(parser.Name))
+                    toBeRemoved.Add(parser);
+
+            foreach (var parser in toBeRemoved)
+                configuredParsers.Remove(parser);
+
+            // add missing parsers
+            foreach (var name in existingParsers.Keys)
+            {
+                var found = configuredParsers.Find(x => x.Name == name);
+                if (found == default)
+                    configuredParsers.Add((name, false));
             }
         }
 
-        public static void Initialize()
+        private static void LookForExistingParsers()
         {
-            var executable = typeof(ByteParserManager).Assembly;
-            GetParsers(executable);
-            GetParsers(typeof(IByteParser).Assembly);
+            existingParsers.Clear();
 
-            var dir = Path.Combine(Path.GetDirectoryName(executable.Location), "Plugins");
+            var smartLogReader = typeof(ByteParserManager).Assembly;
+            GetParsers(smartLogReader);
+
+            var smartLogReaderCommon = typeof(IByteParser).Assembly;
+            GetParsers(smartLogReaderCommon);
+
+            var dir = Path.Combine(Path.GetDirectoryName(smartLogReader.Location), "Plugins");
             foreach (var file in Directory.GetFiles(dir, "*.dll"))
             {
                 try
@@ -67,34 +152,6 @@ namespace SmartLogReader
             }
         }
 
-        public static string CreateParser(string path, out IByteParser byteParser)
-        {
-            byteParser = null;
-            var bytes = Utils.ReadBytes(path);
-
-            if (bytes.Length == 0)
-                return path;
-
-            foreach (var parser in byteParsers)
-            {
-                var ok = parser.CheckFormat(bytes, out var newPath);
-                if (ok)
-                {
-                    byteParser = parser;
-                    return newPath ?? path;
-                }
-            }
-
-            byteParser = new ByteParser() { Bytes = bytes };
-            return path;
-        }
-
-        public static void ConfigurePlugins()
-        {
-            var dlg = new ConfigurePluginsDialog { ViewModel = new ConfigurePluginsVM(byteParsers, lastParsers) };
-            dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text);
-        }
-
         private static void GetParsers(Assembly assembly)
         {
             Log.Information(new { assembly.Location });
@@ -104,15 +161,11 @@ namespace SmartLogReader
             {
                 if (typeof(IByteParser).IsAssignableFrom(type))
                 {
-                    var existingParser = byteParsers.Find(x => x.GetType().FullName == type.FullName);
-                    if (existingParser == null)
+                    var instance = Activator.CreateInstance(type);
+                    if (instance is IByteParser parser)
                     {
-                        Log.Information(new { type.FullName });
-                        var instance = Activator.CreateInstance(type);
-                        if (instance is IByteParser parser)
-                        {
-                            byteParsers.Add(parser);
-                        }
+                        Log.Debug(new { type.FullName });
+                        existingParsers[type.FullName] = parser;
                     }
                 }
             }

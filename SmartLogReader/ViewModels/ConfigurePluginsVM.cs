@@ -15,22 +15,22 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Newtonsoft.Json;
 using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
     public class ConfigurePluginsVM : ViewModel
     {
-        public ConfigurePluginsVM(IEnumerable<IByteParser> byteParsers, string lastParsers)
+        public ConfigurePluginsVM(List<(string, bool)> configuredParsers)
         {
-            foreach (var parser in byteParsers)
-            {
-                Plugins.Add(new PluginVM(parser));
-            }
+            foreach (var (name, isSelected) in configuredParsers)
+                Plugins.Add(new PluginVM { Name = name, IsSelected = isSelected});
 
             CommandBindings.Add(new CommandBinding(MoveUpCmd, ExecuteMoveUpCmd, CanExecuteMoveUpCmd));
             CommandBindings.Add(new CommandBinding(MoveDownCmd, ExecuteMoveDownCmd, CanExecuteMoveDownCmd));

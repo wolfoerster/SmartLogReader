@@ -21,12 +21,14 @@
       ItemsSource="{Binding Plugins}"
       SelectedItem="{Binding SelectedPlugin}"
       Margin="0,0,4,0"
+      CanUserAddRows="False"
+      CanUserDeleteRows="False"
       AutoGenerateColumns="False">
       <DataGrid.Columns>
         <DataGridTemplateColumn Header="Select" Width="Auto">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <CheckBox IsChecked="{Binding IsSelected}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
