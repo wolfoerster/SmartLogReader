@@ -41,14 +41,8 @@ namespace SmartLogReader
                 configuredParsers = new List<(string, bool)>
                 {
                     ("SmartLogReader.Common.ByteParserSmartLogger", true),
-                    ("ByteParserTrimble.ByteParserJsonLogger", true),
-                    ("ByteParserTrimble.ByteParserNewRelic", true),
-                    ("ByteParserTrimble.ByteParserSumoLogic", true),
-                    ("ByteParserTrimble.ByteParserDocker", true),
                     ("SmartLogReader.ByteParserPlainJson", true),
                     ("SmartLogReader.ByteParserPlainText", true),
-                    ("ByteParserTrimble.ByteParserLegacy", true),
-                    ("SmartLogReader.Common.ByteParser", true),
                 };
             }
 
@@ -58,7 +52,7 @@ namespace SmartLogReader
                 InitConfiguration();
         }
 
-        public static string LastParsers => JsonConvert.SerializeObject(configuredParsers, Formatting.None);
+        public static string LastParsers => configuredParsers.ToJson();
 
         public static string CreateParser(string path, out IByteParser byteParser)
         {
@@ -86,6 +80,9 @@ namespace SmartLogReader
             return path;
         }
 
+        /// <summary>
+        /// Returns true, if configuration has changed.
+        /// </summary>
         public static bool ConfigurePlugins()
         {
             InitConfiguration();
@@ -96,12 +93,14 @@ namespace SmartLogReader
             if (!dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text))
                 return false;
 
+            var previousParsers = configuredParsers.ToJson();
             configuredParsers.Clear();
 
             foreach (var parserVM in configureVM.Plugins)
                 configuredParsers.Add((parserVM.Name, parserVM.IsSelected));
 
-            return true;
+            var actualParsers = configuredParsers.ToJson();
+            return previousParsers != actualParsers;
         }
 
         private static void InitConfiguration()
@@ -138,6 +137,9 @@ namespace SmartLogReader
             GetParsers(smartLogReaderCommon);
 
             var dir = Path.Combine(Path.GetDirectoryName(smartLogReader.Location), "Plugins");
+            if (!Directory.Exists(dir))
+                return;
+
             foreach (var file in Directory.GetFiles(dir, "*.dll"))
             {
                 try
@@ -161,14 +163,19 @@ namespace SmartLogReader
             {
                 if (typeof(IByteParser).IsAssignableFrom(type))
                 {
-                    var instance = Activator.CreateInstance(type);
-                    if (instance is IByteParser parser)
+                    if (type.FullName != "SmartLogReader.Common.ByteParser")
                     {
-                        Log.Debug(new { type.FullName });
-                        existingParsers[type.FullName] = parser;
+                        var instance = Activator.CreateInstance(type);
+                        if (instance is IByteParser parser)
+                        {
+                            Log.Debug(new { type.FullName });
+                            existingParsers[type.FullName] = parser;
+                        }
                     }
                 }
             }
         }
+
+        private static string ToJson(this object obj) => JsonConvert.SerializeObject(obj, Formatting.None);
     }
 }
