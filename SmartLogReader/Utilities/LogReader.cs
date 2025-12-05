@@ -122,10 +122,6 @@ namespace SmartLogReader
                     if (entry == null)
                         break;
 
-#warning do we still need it?
-                    //if (entry.Time == null && byteParser is ByteParserJsonLogger)
-                    //    continue;
-
                     if (watch.ElapsedMilliseconds > 60)
                     {
                         watch.Restart();
