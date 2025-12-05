@@ -25,20 +25,20 @@ using SmartLogReader.Common;
 
 namespace SmartLogReader
 {
-    public class ConfigurePluginsVM : ViewModel
+    public class ConfigureParsersVM : ViewModel
     {
-        public ConfigurePluginsVM(List<(string, bool)> configuredParsers)
+        public ConfigureParsersVM(List<(string, bool)> configuredParsers)
         {
             foreach (var (name, isSelected) in configuredParsers)
-                Plugins.Add(new PluginVM { Name = name, IsSelected = isSelected});
+                Plugins.Add(new ParserVM { Name = name, IsSelected = isSelected});
 
             CommandBindings.Add(new CommandBinding(MoveUpCmd, ExecuteMoveUpCmd, CanExecuteMoveUpCmd));
             CommandBindings.Add(new CommandBinding(MoveDownCmd, ExecuteMoveDownCmd, CanExecuteMoveDownCmd));
         }
 
-        public ObservableCollection<PluginVM> Plugins { get; } = new ObservableCollection<PluginVM>();
+        public ObservableCollection<ParserVM> Plugins { get; } = new ObservableCollection<ParserVM>();
 
-        public PluginVM SelectedPlugin { get; set; }
+        public ParserVM SelectedPlugin { get; set; }
 
         void CanExecuteMoveUpCmd(object sender, CanExecuteRoutedEventArgs e)
         {

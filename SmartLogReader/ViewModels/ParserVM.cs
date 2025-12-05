@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -15,28 +15,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 
-using SmartLogReader.Common;
-
 namespace SmartLogReader
 {
-    public partial class ConfigurePluginsDialog : Dialog
+    public class ParserVM : ViewModel
     {
-        private ConfigurePluginsVM viewModel;
+        private bool isSelected;
+        private string name;
 
-        public ConfigurePluginsDialog()
+        public bool IsSelected
         {
-            InitializeComponent();
-        }
-
-        public ConfigurePluginsVM ViewModel
-        {
-            get { return viewModel; }
+            get => isSelected;
             set
             {
-                Utils.OnlyOnce(viewModel, value);
-                DataContext = viewModel = value;
-                CommandBindings.AddRange(viewModel.CommandBindings);
+                if (isSelected != value)
+                {
+                    isSelected = value;
+                    OnPropertyChanged();
+                }
             }
+        }
+
+        public string Name
+        {
+            get => name;
+            set => name = value;
         }
     }
 }

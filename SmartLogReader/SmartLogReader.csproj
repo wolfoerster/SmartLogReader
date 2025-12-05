@@ -91,10 +91,10 @@
     <Compile Include="Utilities\Notifier.cs" />
     <Compile Include="Utilities\Record.cs" />
     <Compile Include="Utilities\Screen.cs" />
-    <Compile Include="ViewModels\ConfigurePluginsVM.cs" />
-    <Compile Include="ViewModels\PluginVM.cs" />
-    <Compile Include="Xaml\ConfigurePluginsDialog.xaml.cs">
-      <DependentUpon>ConfigurePluginsDialog.xaml</DependentUpon>
+    <Compile Include="ViewModels\ConfigureParsersVM.cs" />
+    <Compile Include="ViewModels\ParserVM.cs" />
+    <Compile Include="Xaml\ConfigureParsersDialog.xaml.cs">
+      <DependentUpon>ConfigureParsersDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Xaml\NewWorkspaceDialog.xaml.cs">
       <DependentUpon>NewWorkspaceDialog.xaml</DependentUpon>
@@ -147,7 +147,7 @@
     <Compile Include="Xaml\WaitControl.xaml.cs">
       <DependentUpon>WaitControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="Xaml\ConfigurePluginsDialog.xaml">
+    <Page Include="Xaml\ConfigureParsersDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

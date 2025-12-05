@@ -106,8 +106,8 @@ namespace SmartLogReader
         {
             AdjustConfiguredParsers();
 
-            var configureVM = new ConfigurePluginsVM(configuredParsers);
-            var dlg = new ConfigurePluginsDialog { ViewModel = configureVM };
+            var configureVM = new ConfigureParsersVM(configuredParsers);
+            var dlg = new ConfigureParsersDialog { ViewModel = configureVM };
 
             if (!dlg.ShowDialog(ViewModel.ConfigurePluginsCmd.Text))
                 return false;

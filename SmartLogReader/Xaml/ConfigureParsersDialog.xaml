@@ -1,11 +1,11 @@
-﻿<my:Dialog x:Class="SmartLogReader.ConfigurePluginsDialog"
+﻿<my:Dialog x:Class="SmartLogReader.ConfigureParsersDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:my="clr-namespace:SmartLogReader"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=my:ConfigurePluginsVM}"
+        d:DataContext="{d:DesignInstance Type=my:ConfigureParsersVM}"
         Title="ConfigurePluginsDialog" 
         Height="450" SizeToContent="Width">
   <Grid Margin="4">
