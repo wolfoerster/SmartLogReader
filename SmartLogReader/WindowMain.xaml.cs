@@ -67,6 +67,7 @@ namespace SmartLogReader
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
             ByteParserManager.Initialize(Settings.LastParsers);
+
             if (Settings.IsMaximized)
                 WindowState = WindowState.Maximized;
 

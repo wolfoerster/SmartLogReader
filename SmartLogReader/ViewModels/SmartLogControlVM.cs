@@ -852,7 +852,7 @@ namespace SmartLogReader
 
         void ExecuteConfigurePluginsCmd(object sender, ExecutedRoutedEventArgs e)
         {
-            if (ByteParserManager.ConfigurePlugins())
+            if (ByteParserManager.ConfigureParsers())
             {
                 Application.Current.MainWindow.Close();
                 Process.Start(typeof(SmartLogControlVM).Assembly.Location);

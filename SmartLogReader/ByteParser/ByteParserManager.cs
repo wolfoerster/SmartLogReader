@@ -34,22 +34,41 @@ namespace SmartLogReader
 
         public static void Initialize(string lastParsers)
         {
-            configuredParsers = JsonConvert.DeserializeObject<List<(string, bool)>>(lastParsers);
-
-            if (configuredParsers == null)
+            try
             {
-                configuredParsers = new List<(string, bool)>
+                configuredParsers = JsonConvert.DeserializeObject<List<(string, bool)>>(lastParsers);
+            }
+            catch
+            {
+                configuredParsers = null;
+            }
+
+            if (IsValidParsersConfig())
+            {
+                AdjustConfiguredParsers();
+                return;
+            }
+
+            configuredParsers = new List<(string, bool)>
                 {
                     ("SmartLogReader.Common.ByteParserSmartLogger", true),
                     ("SmartLogReader.ByteParserPlainJson", true),
                     ("SmartLogReader.ByteParserPlainText", true),
                 };
-            }
 
-            if (string.IsNullOrEmpty(lastParsers))
-                ConfigurePlugins();
-            else
-                InitConfiguration();
+            ConfigureParsers();
+        }
+
+        private static bool IsValidParsersConfig()
+        {
+            if (configuredParsers == null || configuredParsers.Count == 0)
+                return false;
+
+            foreach (var (name, _) in configuredParsers)
+                if (string.IsNullOrWhiteSpace(name))
+                    return false;
+
+            return true;
         }
 
         public static string LastParsers => configuredParsers.ToJson();
@@ -83,9 +102,9 @@ namespace SmartLogReader
         /// <summary>
         /// Returns true, if configuration has changed.
         /// </summary>
-        public static bool ConfigurePlugins()
+        public static bool ConfigureParsers()
         {
-            InitConfiguration();
+            AdjustConfiguredParsers();
 
             var configureVM = new ConfigurePluginsVM(configuredParsers);
             var dlg = new ConfigurePluginsDialog { ViewModel = configureVM };
@@ -103,9 +122,9 @@ namespace SmartLogReader
             return previousParsers != actualParsers;
         }
 
-        private static void InitConfiguration()
+        private static void AdjustConfiguredParsers()
         {
-            LookForExistingParsers();
+            GetExistingParsers();
 
             // remove not-existing parsers
             var toBeRemoved = new List<(string, bool)>();
@@ -126,7 +145,7 @@ namespace SmartLogReader
             }
         }
 
-        private static void LookForExistingParsers()
+        private static void GetExistingParsers()
         {
             existingParsers.Clear();
 
@@ -168,7 +187,7 @@ namespace SmartLogReader
                         var instance = Activator.CreateInstance(type);
                         if (instance is IByteParser parser)
                         {
-                            Log.Debug(new { type.FullName });
+                            Log.Information(new { type.FullName });
                             existingParsers[type.FullName] = parser;
                         }
                     }
