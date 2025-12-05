@@ -16,14 +16,10 @@
 //******************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SmartLogging;
 using SmartLogReader.Common;
 
@@ -319,6 +315,14 @@ namespace SmartLogReader
             log.Debug("begin");
             ReportStatus(ReaderStatus.StartedWork);
 
+            //--- first check if there is a backup file
+            string backupFile = GetBackupFileName();
+            if (File.Exists(backupFile))
+            {
+                byte[] bytes = ReadBytes(backupFile);
+                ExtractRecords(bytes);
+            }
+
             //--- go into an endless loop and check the file every second
             for (int count = 0; ; ++count)
             {
@@ -341,6 +345,16 @@ namespace SmartLogReader
             }
 
             log.Debug("end");
+        }
+
+        private string GetBackupFileName()
+        {
+            var ext = Path.GetExtension(fileName);
+
+            if (string.IsNullOrEmpty(ext))
+                ext = ".log";
+
+            return fileName + ext;
         }
 
         /// <summary>
