@@ -85,6 +85,7 @@
     <Compile Include="ByteParser\ByteParserPlainText.cs" />
     <Compile Include="ByteParser\ByteParserPlainJson.cs" />
     <Compile Include="Utilities\ColorBox.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\Filter.cs" />
     <Compile Include="Utilities\FilterWarning.cs" />
     <Compile Include="Utilities\IndexValuePair.cs" />

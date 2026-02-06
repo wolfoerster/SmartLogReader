@@ -35,6 +35,7 @@ namespace SmartLogReader
         RecordsChanged,
         ProgressChanged,
         FinishedWork,
+        FinishedFirstTime,
     }
 
     /// <summary>
@@ -319,6 +320,8 @@ namespace SmartLogReader
                 ExtractRecords(bytes);
             }
 
+            var reportFirstTime = true;
+
             //--- go into an endless loop and check the file every second
             for (int count = 0; ; ++count)
             {
@@ -326,6 +329,12 @@ namespace SmartLogReader
                 {
                     byte[] bytes = ReadNextBytes();
                     ExtractRecords(bytes);
+
+                    if (reportFirstTime)
+                    {
+                        reportFirstTime = false;
+                        ReportStatus(ReaderStatus.FinishedFirstTime);
+                    }
                 }
 
                 if (worker.CancellationPending)

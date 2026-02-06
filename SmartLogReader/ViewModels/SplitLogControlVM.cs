@@ -24,6 +24,7 @@ using System.Xml.Serialization;
 using Microsoft.Win32;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.Utilities;
 
 namespace SmartLogReader
 {
@@ -337,7 +338,17 @@ namespace SmartLogReader
                 case ReaderStatus.FinishedWork:
                     HandleFinishedWork(text);
                     break;
+                case ReaderStatus.FinishedFirstTime:
+                    HandleFinishedTime();
+                    break;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void HandleFinishedTime()
+        {
         }
 
         /// <summary>
@@ -451,7 +462,7 @@ namespace SmartLogReader
             if (view2 == null || SelectedRecord == null)
                 return;
 
-            var match = FindMatchingRecord(view2, SelectedRecord);
+            var match = view2.FindMatchingRecord(SelectedRecord);
             if (match != null)
                 HighlightRecord(view2, match);
         }
@@ -475,49 +486,10 @@ namespace SmartLogReader
         {
             if (view != null)
             {
-                var match = FindMatchingRecord(view, extRecord);
+                var match = view.FindMatchingRecord(extRecord);
                 if (match != null)
                     HighlightRecord(view, match);
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private Record FindMatchingRecord(ListCollectionView view, Record record)
-        {
-            Record match = null;
-
-            for (int i = 0; i < view.Count; i++)
-            {
-                var candidate = view.GetItemAt(i) as Record;
-
-                if (candidate.UtcTime >= record.UtcTime)
-                {
-                    match = candidate;
-
-                    for (var j = i + 1; j < view.Count; j++)
-                    {
-                        candidate = view.GetItemAt(j) as Record;
-
-                        if (candidate.UtcTime > record.UtcTime)
-                            break;
-
-                        if (candidate.Equals(record))
-                        {
-                            match = candidate;
-                            break;
-                        }
-                    }
-
-                    break;
-                }
-            }
-
-            if (match == null && view.Count > 0)
-                match = view.GetItemAt(view.Count - 1) as Record;
-
-            return match;
         }
 
         /// <summary>
