@@ -344,9 +344,7 @@ namespace SmartLogReader
             var match = view.FindMatchingRecord(record);
             if (match != null)
             {
-                var wnd = Application.Current.MainWindow;
-                var act = new Action(() => view.MoveCurrentTo(match));
-                wnd.Dispatcher.BeginInvoke(act, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                Log.Information(record.ShortString);
             }
 
             return record;

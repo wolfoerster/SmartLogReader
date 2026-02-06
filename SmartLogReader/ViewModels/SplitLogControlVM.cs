@@ -339,7 +339,7 @@ namespace SmartLogReader
                     HandleFinishedWork(text);
                     break;
                 case ReaderStatus.FinishedFirstTime:
-                    HandleFinishedTime();
+                    HandleFinishedFirstTime();
                     break;
             }
         }
@@ -347,8 +347,9 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        private void HandleFinishedTime()
+        private void HandleFinishedFirstTime()
         {
+            log.Information();
         }
 
         /// <summary>
