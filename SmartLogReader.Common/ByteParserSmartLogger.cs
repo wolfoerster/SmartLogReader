@@ -99,7 +99,7 @@ public class ByteParserSmartLogger : ByteParser
             var logEntry = JsonConvert.DeserializeObject<LogEntryV2>(json);
             entry.Time = Convert(logEntry.Time);
             entry.Level = logEntry.Level;
-            entry.Context = logEntry.Class;
+            entry.Context = logEntry.Context;
             entry.Method = logEntry.Method;
             entry.Message = logEntry.Message ?? string.Empty;
             entry.Annex = logEntry.ThreadId.ToString();
@@ -140,7 +140,7 @@ public class ByteParserSmartLogger : ByteParser
         public string Time { get; set; }
         public int ThreadId { get; set; }
         public string Level { get; set; }
-        public string Class { get; set; }
+        public string Context { get; set; }
         public string Method { get; set; }
         public string Message { get; set; }
     }
