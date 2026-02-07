@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2021 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2021 - 2026 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -23,6 +23,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.Utilities;
 
 namespace SmartLogReader
 {
@@ -194,7 +195,5 @@ namespace SmartLogReader
                 }
             }
         }
-
-        private static string ToJson(this object obj) => JsonConvert.SerializeObject(obj, Formatting.None);
     }
 }

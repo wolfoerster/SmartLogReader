@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net48</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>latestMajor</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
