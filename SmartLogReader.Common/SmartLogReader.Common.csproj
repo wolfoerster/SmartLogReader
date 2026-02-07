@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net48</TargetFrameworks>
     <LangVersion>latestMajor</LangVersion>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
