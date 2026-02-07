@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2026 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -24,10 +24,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-//using System.Windows.Shapes;
 using System.Xml.Serialization;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.Utilities;
 
 namespace SmartLogReader
 {
@@ -323,11 +323,31 @@ namespace SmartLogReader
             {
                 if (SelectedLogLevel != value)
                 {
+                    var record = HandleSelectedRecord();
                     LogReader.Level = (LogLevel)value;
                     OnPropertyChanged();
                     ReloadFiles();
+                    HandleSelectedRecord(record);
                 }
             }
+        }
+
+        private Record HandleSelectedRecord(Record record = null)
+        {
+            var view = LogControlVM.CurrentVM?.RecordsView;
+            if (view == null)
+                return null;
+
+            if (record == null)
+                return view.CurrentItem as Record;
+
+            var match = view.FindMatchingRecord(record);
+            if (match != null)
+            {
+                Log.Information(record.ShortString);
+            }
+
+            return record;
         }
 
         /// <summary>

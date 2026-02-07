@@ -23,6 +23,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.Utilities;
 
 namespace SmartLogReader
 {
@@ -194,7 +195,5 @@ namespace SmartLogReader
                 }
             }
         }
-
-        private static string ToJson(this object obj) => JsonConvert.SerializeObject(obj, Formatting.None);
     }
 }
