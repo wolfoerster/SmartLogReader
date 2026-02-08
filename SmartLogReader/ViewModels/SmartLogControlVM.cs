@@ -27,7 +27,6 @@ using System.Windows.Media;
 using System.Xml.Serialization;
 using SmartLogging;
 using SmartLogReader.Common;
-using SmartLogReader.Utilities;
 
 namespace SmartLogReader
 {
@@ -323,32 +322,11 @@ namespace SmartLogReader
             {
                 if (SelectedLogLevel != value)
                 {
-#warning don't handle selected record here, but in ReloadFiles()!
-                    var record = HandleSelectedRecord();
                     LogReader.Level = (LogLevel)value;
                     OnPropertyChanged();
-                    ReloadFiles();
-                    HandleSelectedRecord(record);
+                    ReloadFiles(true);
                 }
             }
-        }
-
-        private Record HandleSelectedRecord(Record record = null)
-        {
-            var view = LogControlVM.CurrentVM?.RecordsView;
-            if (view == null)
-                return null;
-
-            if (record == null)
-                return view.CurrentItem as Record;
-
-            var match = view.FindMatchingRecord(record);
-            if (match != null)
-            {
-                Log.Information(match.ShortString);
-            }
-
-            return record;
         }
 
         /// <summary>
@@ -363,7 +341,7 @@ namespace SmartLogReader
                 {
                     LogReader.ReadMode = (LogReadMode)value;
                     OnPropertyChanged();
-                    ReloadFiles();
+                    ReloadFiles(true);
                 }
             }
         }
@@ -582,14 +560,14 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        void ReloadFiles()
+        void ReloadFiles(bool doReselect)
         {
             if (!IsInitialized)
                 return;
 
-            myClientControlVM.ReloadFile();
-            myServerControlVM.ReloadFile();
-            myAdditionalControlVM.ReloadFile();
+            myClientControlVM.ReloadFile(doReselect);
+            myServerControlVM.ReloadFile(doReselect);
+            myAdditionalControlVM.ReloadFile(doReselect);
         }
 
         /// <summary>
@@ -956,7 +934,7 @@ namespace SmartLogReader
             CopyValues(vm.MyAdditionalControlVM, MyAdditionalControlVM, true);
             CopyValues(vm);
             IsInitialized = true;
-            ReloadFiles();
+            ReloadFiles(false);
         }
 
         private void CopyValues(SplitLogControlVM source, SplitLogControlVM target, bool setGridLengths = false)

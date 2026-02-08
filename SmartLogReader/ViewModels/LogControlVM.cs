@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2017 - 2026 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the SmartLogReader project which can be found on github.com
 //
@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 using SmartLogging;
 using SmartLogReader.Common;
+using SmartLogReader.Utilities;
 
 namespace SmartLogReader
 {
@@ -160,6 +161,33 @@ namespace SmartLogReader
             }
 
             CheckListEmptyReason();
+        }
+
+        private Record storedRecord;
+
+        public void StoreSelectedRecord()
+        {
+            storedRecord = RecordsView?.CurrentItem as Record;
+        }
+
+        public void RestoreSelectedRecord()
+        {
+            if (storedRecord == null)
+                return;
+
+            var match = RecordsView?.FindMatchingRecord(storedRecord);
+            storedRecord = null;
+
+            if (match != null)
+            {
+                RecordsView.MoveCurrentTo(match);
+                OnPropertyChanged("ScrollSelectedIntoView");
+                OnPropertyChanged("SetFocusOnSelected");
+                //what is missing?
+                //current item is moved and selected but background is not blue!
+                //ScrollCurrentIntoView();
+                //RecordsView.Refresh();
+            }
         }
 
         /// <summary>

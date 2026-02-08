@@ -18,6 +18,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Serialization;
@@ -236,12 +237,18 @@ namespace SmartLogReader
         /// <summary>
         /// Stop the reader and wait for RunWorkerCompleted notification.
         /// </summary>
-        public void ReloadFile()
+        public void ReloadFile(bool doReselect)
         {
             if (!File.Exists(LastFile))
             {
                 HandleNoLastFile();
                 return;
+            }
+
+            if (doReselect)
+            {
+                myLogControlVM1.StoreSelectedRecord();
+                //myLogControlVM2.StoreSelectedRecord();
             }
 
             LoadFile(LastFile);
@@ -349,7 +356,10 @@ namespace SmartLogReader
         /// </summary>
         private void HandleFinishedFirstTime()
         {
-            log.Information();
+            //var act = new Action(() => myLogControlVM1.RestoreSelectedRecord());
+            //Application.Current.MainWindow.Dispatcher.BeginInvoke(act, System.Windows.Threading.DispatcherPriority.SystemIdle);
+            myLogControlVM1.RestoreSelectedRecord();
+            //myLogControlVM2.RestoreSelectedRecord();
         }
 
         /// <summary>
