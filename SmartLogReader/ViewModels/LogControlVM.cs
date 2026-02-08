@@ -180,13 +180,10 @@ namespace SmartLogReader
 
             if (match != null)
             {
+                match.IsSelected = true;
                 RecordsView.MoveCurrentTo(match);
                 OnPropertyChanged("ScrollSelectedIntoView");
                 OnPropertyChanged("SetFocusOnSelected");
-                //what is missing?
-                //current item is moved and selected but background is not blue!
-                //ScrollCurrentIntoView();
-                //RecordsView.Refresh();
             }
         }
 
