@@ -39,7 +39,7 @@ namespace SmartLogReader
         {
             TimeString = entry.Time;
             LevelString = entry.Level;
-            ConnId = entry.Annex;
+            ConnId = entry.ThreadId;
             Class = entry.Context;
             Method = entry.Method;
             Message = entry.Message;

@@ -91,7 +91,7 @@ namespace SmartLogReader
                 return false;
 
             var text = Utils.BytesToString(bytes, i0, i1 - i0);
-            entry.Annex = text;
+            entry.ThreadId = text;
 
             i0 = i1 + 1;
             i1 = MoveToNextPipe(bytes, i0); // log level

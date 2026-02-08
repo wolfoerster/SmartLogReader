@@ -57,7 +57,7 @@ namespace SmartLogReader
             }
             else
             {
-                entry.Annex = GetNext();
+                entry.ThreadId = GetNext();
                 entry.Level = GetNext();
                 entry.Context = GetNext();
                 entry.Method = GetNext();

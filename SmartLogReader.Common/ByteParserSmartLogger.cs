@@ -28,7 +28,7 @@ namespace SmartLogReader.Common;
 /// </summary>
 public class ByteParserSmartLogger : ByteParser
 {
-    enum LoggerVersion { V1, V2, V3 }
+    enum LoggerVersion { V1, V2, V3, V4 }
 
     private LoggerVersion loggerVersion;
 
@@ -45,7 +45,7 @@ public class ByteParserSmartLogger : ByteParser
             loggerVersion = LoggerVersion.V1;
 
         else if (text.Contains("ThreadId"))
-            loggerVersion = LoggerVersion.V2;
+            loggerVersion = IsV2(text) ? LoggerVersion.V2 : LoggerVersion.V4;
 
         else if (text.Contains("Annex"))
             loggerVersion = LoggerVersion.V3;
@@ -54,6 +54,13 @@ public class ByteParserSmartLogger : ByteParser
             return false;
 
         return true;
+    }
+
+    private static bool IsV2(string text)
+    {
+        var str = "ThreadId\":";
+        var index = text.IndexOf(str);
+        return char.IsDigit(text[index + str.Length]);
     }
 
     protected override LogEntry ReadEntry()
@@ -90,7 +97,7 @@ public class ByteParserSmartLogger : ByteParser
             entry.Context = logEntry.Class;
             entry.Method = logEntry.Method;
             entry.Message = logEntry.Message ?? string.Empty;
-            entry.Annex = logEntry.ThreadIds;
+            entry.ThreadId = logEntry.ThreadIds;
             return;
         }
 
@@ -102,7 +109,7 @@ public class ByteParserSmartLogger : ByteParser
             entry.Context = logEntry.Context;
             entry.Method = logEntry.Method;
             entry.Message = logEntry.Message ?? string.Empty;
-            entry.Annex = logEntry.ThreadId.ToString();
+            entry.ThreadId = logEntry.ThreadId.ToString();
             return;
         }
 
@@ -114,7 +121,19 @@ public class ByteParserSmartLogger : ByteParser
             entry.Context = logEntry.Context;
             entry.Method = logEntry.Method;
             entry.Message = logEntry.Message ?? string.Empty;
-            entry.Annex = logEntry.Annex;
+            entry.ThreadId = logEntry.Annex;
+            return;
+        }
+
+        if (loggerVersion == LoggerVersion.V4)
+        {
+            var logEntry = JsonConvert.DeserializeObject<LogEntryV4>(json);
+            entry.Time = Convert(logEntry.Time);
+            entry.Level = logEntry.Level;
+            entry.Context = logEntry.Context;
+            entry.Method = logEntry.Method;
+            entry.Message = logEntry.Message ?? string.Empty;
+            entry.ThreadId = logEntry.ThreadId;
             return;
         }
 
@@ -153,5 +172,15 @@ public class ByteParserSmartLogger : ByteParser
         public string Method { get; set; }
         public string Message { get; set; }
         public string Annex { get; set; }
+    }
+
+    private class LogEntryV4
+    {
+        public string Time { get; set; }
+        public string ThreadId { get; set; }
+        public string Level { get; set; }
+        public string Context { get; set; }
+        public string Method { get; set; }
+        public string Message { get; set; }
     }
 }
