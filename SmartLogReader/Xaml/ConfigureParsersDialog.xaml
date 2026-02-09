@@ -1,0 +1,56 @@
+﻿<my:Dialog x:Class="SmartLogReader.ConfigureParsersDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:my="clr-namespace:SmartLogReader"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=my:ConfigureParsersVM}"
+        Title="ConfigurePluginsDialog" 
+        Height="450" SizeToContent="Width">
+  <Grid Margin="4">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <DataGrid
+      ItemsSource="{Binding Plugins}"
+      SelectedItem="{Binding SelectedPlugin}"
+      Margin="0,0,4,0"
+      CanUserAddRows="False"
+      CanUserDeleteRows="False"
+      AutoGenerateColumns="False">
+      <DataGrid.Columns>
+        <DataGridTemplateColumn Header="Select" Width="Auto">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTextColumn Header="Name" Width="Auto" Binding="{Binding Name}"/>
+      </DataGrid.Columns>
+    </DataGrid>
+    <Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Padding="4">
+      <StackPanel Orientation="Vertical">
+        <Button Content="Move up" Command="{Binding MoveUpCmd}"/>
+        <Button Content="Move down" Command="{Binding MoveDownCmd}" Margin="0,4,0,0"/>
+      </StackPanel>
+    </Border>
+    <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="2" x:Name="okButton" MinWidth="80" IsDefault="True" Click="OnButtonOK" Content="OK"/>
+      <Button Grid.Column="4" x:Name="btnCancel" MinWidth="80" IsCancel="True" Content="Cancel"/>
+    </Grid>
+  </Grid>
+</my:Dialog>
