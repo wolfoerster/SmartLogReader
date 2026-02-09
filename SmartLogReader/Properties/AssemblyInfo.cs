@@ -22,11 +22,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SmartLogReader")]
-[assembly: AssemblyDescription("Show log files")]
+[assembly: AssemblyDescription("Monitor and analyze log files")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wolfgang Foerster")]
 [assembly: AssemblyProduct("SmartLogReader")]
-[assembly: AssemblyCopyright("Copyright © 2017 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)")]
+[assembly: AssemblyCopyright("Copyright © 2017 - 2026 Wolfgang Foerster (wolfoerster@gmx.de)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

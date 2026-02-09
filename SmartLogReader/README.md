@@ -1,6 +1,6 @@
 # SmartLogReader
 
-A powerful Windows application to view and analyze log files.
+A powerful Windows application to monitor and analyze log files.
 
 You might also want to have a look at the accompanying project called 
 *SmartLoggging*: https://github.com/wolfoerster/SmartLogging
@@ -18,8 +18,8 @@ Most logging frameworks use a common set of properties for their log entries:
 
 1. the time of the entry
 2. the log level of the entry
-3. the log context (usually the name of the class who is logging)
-4. the log method  (usually the name of the method who is logging)
+3. the log context (usually the name of the class which is logging)
+4. the log method  (usually the name of the method which is logging)
 5. the log message (the actual message to be logged)
 
 SmartLogReader tries to identify each of these properties and shows them in a 
@@ -30,8 +30,8 @@ this property is allowed to occupy.
 
 SmartLogReader has a number of built-in log file parsers for several logging
 frameworks. If the files that you want to analyze cannot be interpreted by 
-SmartLogReader just implement a new class derived from ByteParser and add it
-to the ParserFactory.
+SmartLogReader just create a new DLL with a class which implements IByteParser 
+and add it to the Plugins folder.
 
 ### Live View
 
@@ -61,7 +61,7 @@ shows all entries while the lower one only shows entries with a certain context.
 
 You can open up to three log files in SmartLogReader. 
 
-If those files belong together in some way (e.g. a client application which calls
+If these files belong together in some way (e.g. a client application which calls
 two services) then it makes sense to identify which log entry is followed by which 
 one in the other file.
 
