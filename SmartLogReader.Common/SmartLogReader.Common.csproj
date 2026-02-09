@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SmartLogging" Version="4.0.0" />
+    <PackageReference Include="SmartLogging" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
