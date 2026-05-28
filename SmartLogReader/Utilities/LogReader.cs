@@ -138,6 +138,7 @@ namespace SmartLogReader
                     if (CheckLevelAndTime(record))
                     {
                         hasChanges = true;
+                        record.GetZeroTime = () => Records.UtcTime0;
                         Records.Add(record);
                     }
                 }
@@ -152,7 +153,7 @@ namespace SmartLogReader
             if (firstCall)
             {
                 if (Records.Count > 0)
-                    Record.UtcTime0 = Records[0].UtcTime;
+                    Records.UtcTime0 = Records[0].UtcTime;
 
                 if (!hasChanges)
                     ReportStatus(ReaderStatus.RecordsChanged);

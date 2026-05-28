@@ -177,7 +177,8 @@ namespace SmartLogReader
                 var pt = e.GetPosition(this);
                 if (pt.X < 150)
                 {
-                    Record.UtcTime0 = record.UtcTime;
+                    var records = ((RecordsView)myListBox.ItemsSource).Records;
+                    records.UtcTime0 = record.UtcTime;
                     viewModel.RefreshAll();
                     return;
                 }

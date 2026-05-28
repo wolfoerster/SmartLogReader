@@ -16,9 +16,11 @@
 //******************************************************************************************
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Windows.Data;
 using System.Windows.Media;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -150,12 +152,9 @@ namespace SmartLogReader
         /// <summary>
         /// 
         /// </summary>
-        public string TimeDiffString => timeString == null ? null : (this.UtcTime - UtcTime0).TotalMilliseconds.ToString("F0");
+        public string TimeDiffString => timeString == null ? null : (this.UtcTime - GetZeroTime()).TotalMilliseconds.ToString("F0");
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public static DateTime UtcTime0;
+        public Func<DateTime> GetZeroTime { get; set; }
 
         /// <summary>
         /// 
@@ -490,5 +489,20 @@ namespace SmartLogReader
             : base(collection)
         {
         }
+
+        public DateTime UtcTime0 { get; set; }
+    }
+
+    public class RecordsView: ListCollectionView
+    {
+        private readonly RecordCollection records;
+
+        public RecordsView(IList list)
+            : base(list)
+        {
+            records = list as RecordCollection;
+        }
+
+        public RecordCollection Records => records;
     }
 }

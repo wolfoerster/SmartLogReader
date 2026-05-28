@@ -98,7 +98,7 @@ namespace SmartLogReader
 
                 if (records != null)
                 {
-                    RecordsView = new ListCollectionView(records);
+                    RecordsView = new RecordsView(records);
                     RecordsView.Filter = Test;
                 }
 
