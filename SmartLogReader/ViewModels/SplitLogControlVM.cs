@@ -101,6 +101,15 @@ namespace SmartLogReader
             {
                 OnPropertyChanged(e.PropertyName);
             }
+            else if (e.PropertyName == "ZeroTime")
+            {
+                if (isSplitLog)
+                {
+                    var theOtherVM = myCurrentVM == myLogControlVM1 ? myLogControlVM2 : myLogControlVM1;
+                    theOtherVM.Records.UtcTime0 = myCurrentVM.Records.UtcTime0;
+                }
+                OnPropertyChanged(e.PropertyName);
+            }
         }
         LogControlVM myCurrentVM;
 
@@ -548,6 +557,16 @@ namespace SmartLogReader
         {
             if (IsSyncSelection)
                 FollowTail = vm.FollowTail;
+        }
+
+        public void SetZeroTime(SplitLogControlVM vm)
+        {
+            if (IsSyncSelection && vm != this)
+            {
+                var zeroTime = vm.MyLogControlVM1.Records.UtcTime0;
+                myLogControlVM1.Records.UtcTime0 = zeroTime;
+                myLogControlVM2.Records.UtcTime0 = zeroTime;
+            }
         }
 
         /// <summary>

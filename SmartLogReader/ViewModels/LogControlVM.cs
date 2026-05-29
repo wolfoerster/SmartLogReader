@@ -97,10 +97,7 @@ namespace SmartLogReader
                 records = value;
 
                 if (records != null)
-                {
-                    RecordsView = new RecordsView(records);
-                    RecordsView.Filter = Test;
-                }
+                    RecordsView = new RecordsView(records) { Filter = Test };
 
                 CheckListEmptyReason();
                 OnPropertyChanged("RecordsView");
@@ -227,6 +224,12 @@ namespace SmartLogReader
         public void RefreshAll()
         {
             OnPropertyChanged("RefreshAll");
+        }
+
+        public void SetZeroTime(DateTime zeroTime)
+        {
+            Records.UtcTime0 = zeroTime;
+            OnPropertyChanged("ZeroTime");
         }
 
         #region Filtering

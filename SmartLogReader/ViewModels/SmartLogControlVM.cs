@@ -248,6 +248,16 @@ namespace SmartLogReader
             {
                 UpdateUI();
             }
+            else if (e.PropertyName == "ZeroTime")
+            {
+                if (vm.IsSyncSelection)
+                {
+                    myClientControlVM.SetZeroTime(vm);
+                    myServerControlVM.SetZeroTime(vm);
+                    myAdditionalControlVM.SetZeroTime(vm);
+                }
+                UpdateUI();
+            }
         }
 
         [XmlIgnore]
