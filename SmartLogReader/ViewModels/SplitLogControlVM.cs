@@ -456,9 +456,9 @@ namespace SmartLogReader
             if (!FollowTail)
             {
                 SelectedRecord = view.CurrentItem as Record;
+                FindMatchingInternal(view, true);
                 if (IsSyncSelection)
                 {
-                    FindMatchingInternal(view, true);
                     OnPropertyChanged("FindMatchingExternal");
                 }
             }
