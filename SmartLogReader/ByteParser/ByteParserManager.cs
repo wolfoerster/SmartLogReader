@@ -90,7 +90,7 @@ namespace SmartLogReader
                     var ok = parser.CheckFormat(bytes, out var newPath);
                     if (ok)
                     {
-                        byteParser = parser;
+                        byteParser = parser.Clone();
                         return newPath ?? path;
                     }
                 }

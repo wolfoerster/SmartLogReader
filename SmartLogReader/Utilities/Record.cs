@@ -154,7 +154,9 @@ namespace SmartLogReader
         /// </summary>
         public string TimeDiffString => timeString == null ? null : (this.UtcTime - GetZeroTime()).TotalMilliseconds.ToString("F0");
 
-        public Func<DateTime> GetZeroTime { get; set; }
+        public Func<DateTime> GetZeroTime { get; set; } = () => zeroTime;
+
+        private static readonly DateTime zeroTime = DateTime.UtcNow;
 
         /// <summary>
         /// 

@@ -35,6 +35,8 @@ public class ByteParser : IByteParser
     protected byte[] bytes;
     protected int lastPos;
 
+    public virtual IByteParser Clone() => new ByteParser();
+
     public virtual byte[] Bytes
     {
         get => bytes;

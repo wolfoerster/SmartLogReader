@@ -32,6 +32,8 @@ public class ByteParserSmartLogger : ByteParser
 
     private LoggerVersion loggerVersion;
 
+    public override IByteParser Clone() => new ByteParserSmartLogger();
+
     public override bool CheckFormat(byte[] bytes, out string newFileName)
     {
         newFileName = null;

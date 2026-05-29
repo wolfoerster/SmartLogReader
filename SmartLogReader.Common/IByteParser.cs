@@ -42,4 +42,9 @@ public interface IByteParser
     /// Reads the next log entry and updates the current position.
     /// </summary>
     LogEntry ReadNextEntry();
+
+    /// <summary>
+    /// Create a copy of the current instance.
+    /// </summary>
+    IByteParser Clone();
 }

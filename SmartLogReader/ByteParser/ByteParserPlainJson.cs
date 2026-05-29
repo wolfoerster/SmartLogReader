@@ -34,6 +34,8 @@ namespace SmartLogReader
     /// </summary>
     public class ByteParserPlainJson : ByteParser
     {
+        public override IByteParser Clone() => new ByteParserPlainJson();
+
         public override bool CheckFormat(byte[] bytes, out string newFileName)
         {
             newFileName = null;

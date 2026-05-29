@@ -37,6 +37,8 @@ namespace SmartLogReader
     {
         private bool lookForPipe;
 
+        public override IByteParser Clone() => new ByteParserPlainText();
+
         public override bool CheckFormat(byte[] bytes, out string newFileName)
         {
             newFileName = null;
