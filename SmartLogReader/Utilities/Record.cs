@@ -154,9 +154,9 @@ namespace SmartLogReader
         /// </summary>
         public string TimeDiffString => timeString == null ? null : (this.UtcTime - GetZeroTime()).TotalMilliseconds.ToString("F0");
 
-        public Func<DateTime> GetZeroTime { get; set; } = () => zeroTime;
+        public Func<DateTime> GetZeroTime { get; set; }// = () => zeroTime;
 
-        private static readonly DateTime zeroTime = DateTime.UtcNow;
+        //private static readonly DateTime zeroTime = DateTime.UtcNow;
 
         /// <summary>
         /// 
@@ -493,6 +493,12 @@ namespace SmartLogReader
         }
 
         public DateTime UtcTime0 { get; set; }
+
+        public new void Add(Record record)
+        {
+            record.GetZeroTime = () => UtcTime0;
+            base.Add(record);
+        }
     }
 
     public class RecordsView: ListCollectionView
